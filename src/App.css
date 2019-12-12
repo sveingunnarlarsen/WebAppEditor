@@ -33,6 +33,8 @@ body {
 }
 
 .webix_view {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     height: 100% !important;
     width: 100% !important;
     background-color: transparent;
