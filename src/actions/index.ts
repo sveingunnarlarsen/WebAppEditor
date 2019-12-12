@@ -11,26 +11,30 @@ import {RECEIVE_EDITOR_DATA} from "../constants/action-types";
 import {START_COMPILE} from "../constants/action-types";
 import {END_COMPILE} from "../constants/action-types";
 
+import {TOOL_RESIZED} from "../constants/action-types";
+import {EDITOR_RESIZED} from "../constants/action-types";
+import {TERMINAL_RESIZED} from "../constants/action-types";
+
 import {DialogAction, DialogType} from "../types/dialog";
 
 export function resizeTool() {
     console.log("resizeTool");
 	return {
-		type: "TOOL_RESIZED"
+		type: TOOL_RESIZED,
 	};
 }
 
 export function resizeEditor() {
     console.log("resizeEditor");
 	return {
-	    type: "EDITOR_RESIZED"
+	    type: EDITOR_RESIZED,
 	};
 }
 
 export function resizeTerminal() {
     console.log("resizeTerminal");
 	return {
-	    type: "TERMINAL_RESIZED"
+	    type: TERMINAL_RESIZED,
 	};
 }
 
