@@ -123,8 +123,10 @@ class GitCommand {
 
 	static async status(args, opts) {
 		let ret: string = `On branch ${await git.currentBranch({dir: currentGitDir})}\n`;
+		
 		const statusMatrix = await git.statusMatrix({dir: currentGitDir});
 		const stagedChanges = await this.getStagedChanges();
+		
 		if (stagedChanges.length > 0) {
 			ret += `Changes to be commited:\n  (use "git rm --cached <file>..." to unstage)\n \n`;
 			ret += `\n${forcedChalk.green("\t" + (await Promise.all(stagedChanges.map(file => appendFileStatus(file)))).join(`\n\t`))}\n \n`;
@@ -140,6 +142,10 @@ class GitCommand {
 		if (untrackedFiles.length > 0) {
 			ret += `Untracked files:\n  (use "git add <file>..." to include what will be committed)\n \n`;
 			ret += `\n${forcedChalk.red("\t" + (await Promise.all(untrackedFiles.map(file => appendFileStatus(file)))).join(`\n\t`))}\n \n`;
+		}
+		
+		if (stagedChanges.length < 1 && unstagedChanges.length < 1 && untrackedFiles.length < 1) {
+		    ret += `\nnothing to commit, working tree clean\n`;
 		}
 
 		return ret;
