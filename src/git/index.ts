@@ -160,6 +160,10 @@ class GitCommand {
 		} else {
 			diffFiles = (await this.getUntrackedFiles()).concat(await this.getUnstagedChanges());
 		}
+		
+		if (args[0]) {
+            diffFiles = diffFiles.filter(f => new RegExp(args[0], "g").test(f));
+		}
 
 		let ret = "";
 		for (let i = 0; i < diffFiles.length; i++) {
@@ -212,6 +216,14 @@ class GitCommand {
 			return `Nothing specified, nothing added.\nMaybe you wanted to say 'git add .'?`;
 		} else if (args.length === 1 && args[0] === ".") {
 			const modifiedPaths = await this.getModifiedFiles();
+			for (let i = 0; i < modifiedPaths.length; i++) {
+				const filepath = modifiedPaths[i];
+				console.log("Running git add for filepath: ", filepath);
+				await git.add({dir: currentGitDir, filepath});
+			}
+		} else if (args.length === 1) {
+			let modifiedPaths = await this.getModifiedFiles();
+			modifiedPaths = modifiedPaths.filter(f => new RegExp(args[0], "g").test(f));
 			for (let i = 0; i < modifiedPaths.length; i++) {
 				const filepath = modifiedPaths[i];
 				console.log("Running git add for filepath: ", filepath);
