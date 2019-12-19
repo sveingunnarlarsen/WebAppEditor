@@ -63,7 +63,6 @@ class Content extends React.Component {
 					defaultSize={defaultPreviewSize}
 					className={splitPanePreviewClass}
 					onDragFinished={() => {
-						// Preview expands. terminal, ace editor and tool should resize.
 						this.props.resizeTool();
 						this.props.resizeEditor();
 						this.props.resizeTerminal();
@@ -74,16 +73,15 @@ class Content extends React.Component {
 						defaultSize={defaultContentSize}
 						className={splitPaneContentSize}
 						onDragFinished={() => {
-							// Terminal expands. ace editor and tool should resize.
 							this.props.resizeTool();
 							this.props.resizeEditor();
+							this.props.resizeTerminal();
 						}}
 					>
 						<SplitPane
 							split="vertical"
 							defaultSize={"15%"}
 							onDragFinished={() => {
-								// Tool and ace editor should resize
 								this.props.resizeTool();
 								this.props.resizeEditor();
 							}}
