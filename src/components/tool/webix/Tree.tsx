@@ -98,11 +98,6 @@ class WebixTree extends React.Component {
 	    this.ui.filter("#value", e.target.value);
 	};
 	
-	componentShouldUpdate() {
-	    console.log("Should component update", this.props.toolResized);
-	    return true;
-	}
-
 	render() {
 	    console.log("Rendering tree: ", this.props.toolResized);
 		const {classes} = this.props;
