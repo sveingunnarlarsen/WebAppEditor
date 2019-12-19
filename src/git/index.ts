@@ -318,6 +318,14 @@ class GitCommand {
 		}
         return message;
 	}
+	
+	static async pull(args, opts) {
+	    throw "Not implemented";
+	}
+	
+	static async stash(args, opts) {
+	    throw "Not implemented";
+	}
 
 	static async remote(args, opts) {
 		const subCommand = args[0];
