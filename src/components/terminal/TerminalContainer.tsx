@@ -26,23 +26,23 @@ class TerminalContainer extends React.Component {
 	getTerminal = () => {
 	    const {visibleCommandLine} = this.state;
 	    if (visibleCommandLine === "Server") {
-	        return <TerminalServer />;
+	        return <TerminalServer container={this} />;
 	    }
 	    else if (visibleCommandLine === "Git") {
-	        return <TerminalLocal />;
+	        return <TerminalLocal container={this} />;
 	    }
 	}
 
 	render() {
 	    const {classes} = this.props;
 		return (
-			<React.Fragment>
-					<Toolbar className={classes.toolbar}>
+			<div ref={ref => {this.containerRef = ref}}>
+					<Toolbar style={{minHeight: "32px"}} className={classes.toolbar}>
 						<Button onClick={() => this.setState({visibleCommandLine: "Git"})} color="inherit">Git</Button>
 						<Button onClick={() => this.setState({visibleCommandLine: "Server"})} color="inherit">Server</Button>
 					</Toolbar>
 				{this.getTerminal()}
-			</React.Fragment>
+			</div>
 		);
 	}
 }

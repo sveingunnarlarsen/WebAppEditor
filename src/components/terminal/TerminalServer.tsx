@@ -1,9 +1,14 @@
 import React, {useState, useEffect} from "react";
+import {connect} from "react-redux";
 import {Terminal} from "xterm";
 import {FitAddon} from "xterm-addon-fit";
 import {events, createServerTerminal, sendData} from "../../terminal";
 
 import "xterm/css/xterm.css";
+
+const mapState = state => {
+	return {terminalResized: state.terminalResized, commandLineVisible: state.commandLineVisible};
+};
 
 class XTerminal extends React.Component {
 	constructor(props) {
@@ -13,30 +18,45 @@ class XTerminal extends React.Component {
 		});
 		this.fitAddon = new FitAddon();
 		this.terminal.loadAddon(this.fitAddon);
-		
+		this.container = props.container;
+
 		createServerTerminal();
-		events.on('created', this.onTerminalCreated);
+		events.on("created", this.onTerminalCreated);
 		events.on("data", this.onTerminalData);
 	}
-	
+
 	onTerminalCreated = data => {
-	    this.terminal.write(data);
-	}
-	
+		this.terminal.write(data);
+	};
+
 	onTerminalData = data => {
-	    console.log(data.toString());
-        this.terminal.write(data);
-    }
+		this.terminal.write(data);
+	};
 
 	componentDidMount() {
 		this.terminal.open(this.terminalRef);
-		this.fitAddon.fit();
 		this.terminal.onData(data => sendData(data));
 	}
-	
+
 	componentWillUnmount() {
-	    events.off('created', this.onTerminalCreated);
-	    events.off('data', this.onTerminalData);
+		events.off("created", this.onTerminalCreated);
+		events.off("data", this.onTerminalData);
+	}
+
+	componentDidUpdate() {
+		setTimeout(() => {
+			this.setHeight();
+		}, 0);
+	}
+
+	setHeight() {
+		if (this.container && this.container.containerRef) {
+			const parent = this.container.containerRef.parentNode.parentNode.offsetHeight;
+			const sibling = this.container.containerRef.parentNode.parentNode.children[0].offsetHeight;
+			const height = parent - sibling;
+			this.terminalRef.style.height = height - 40 + "px";
+		}
+		this.fitAddon.fit();
 	}
 
 	render() {
@@ -50,4 +70,4 @@ class XTerminal extends React.Component {
 	}
 }
 
-export default XTerminal;
+export default connect(mapState)(XTerminal);
