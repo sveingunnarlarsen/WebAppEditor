@@ -128,10 +128,17 @@ class SearchApp extends React.Component {
 		});
 	};
 
+	handleDoubleClick = row => {
+		if (this.state.selectedFile) {
+			this.props.close();
+			this.props.showFile(this.state.selectedFile.id);
+		}
+	};
+
 	componentDidMount() {
 		const inputHeight = this.inputRef.clientHeight;
 		const contentHeight = parseInt(window.getComputedStyle(this.contentRef).getPropertyValue("height"));
-		const splitPaneHeight = `${contentHeight - inputHeight - 25}px`;
+		const splitPaneHeight = `${contentHeight - inputHeight - 40}px`;
 		this.panelRef.splitPane.style.height = splitPaneHeight;
 	}
 
@@ -153,7 +160,6 @@ class SearchApp extends React.Component {
 		if (selectedFile) {
 			return (
 				<React.Fragment>
-					<div style={{background: "#333333", color: "white", paddingLeft: "5px", paddingBottom: "5px", paddingTop: "3px"}}>{selectedFile.path}</div>
 					<AceEditorContainer
 						fileId={selectedFile.id}
 						handle={ref => {
@@ -220,7 +226,7 @@ class SearchApp extends React.Component {
 										alreadySelected = true;
 									}
 									return (
-										<TableRow ref={ref => (selected ? (this.selectedRef = ref) : null)} tabIndex={index} key={index} selected={selected} onClick={() => this.handleClick(row)}>
+										<TableRow onDoubleClick={() => this.handleDoubleClick(row)} ref={ref => (selected ? (this.selectedRef = ref) : null)} tabIndex={index} key={index} selected={selected} onClick={() => this.handleClick(row)}>
 											<TableCell component="th" scope="row">
 												{row.lineContent.trim()}
 											</TableCell>
