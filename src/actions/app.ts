@@ -1,7 +1,7 @@
 import {AppActions} from "../types/app";
 import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData} from "./utils";
 import {closeFile, closeAllTabs} from "./editor";
-import {syncFile} from "../git";
+import {syncFile, removeFile} from "../git";
 
 export function fetchWebApp(id: string) {
 	return function(dispatch, getState) {
@@ -159,6 +159,7 @@ export function requestDelete() {
 }
 
 export function receiveDelete(fileId) {
+    removeFile(fileId);
 	return {
 		type: AppActions.RECEIVE_DELETE,
 		fileId
