@@ -2,6 +2,21 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import {withStyles} from "@material-ui/styles";
+
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import InboxIcon from "@material-ui/icons/Inbox";
+import DraftsIcon from "@material-ui/icons/Drafts";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+
+import {makeStyles} from "@material-ui/core/styles";
+
 import {openDialog} from "../../../actions";
 import {DialogType} from "../../../types/dialog";
 
@@ -13,6 +28,16 @@ function mapDispatch(dispatch) {
 		renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE))
 	};
 }
+
+const styles = theme => ({
+	root: {
+		position: "fixed",
+		width: "100%",
+		maxWidth: 200,
+		backgroundColor: theme.palette.background.paper,
+		zIndex: 2000
+	}
+});
 
 class TreeContextMenu extends React.Component {
 	constructor(props) {
@@ -85,7 +110,7 @@ class TreeContextMenu extends React.Component {
 
 	render() {
 		const {visible} = this.state;
-		const {renameFile, deleteFile} = this.props;
+		const {classes, renameFile, deleteFile} = this.props;
 
 		return (
 			(visible || null) && (
@@ -93,14 +118,22 @@ class TreeContextMenu extends React.Component {
 					ref={ref => {
 						this.root = ref;
 					}}
-					className="contextMenu"
+					className={classes.root}
 				>
-					<div onClick={deleteFile} className="contextMenu--option">
-						Delete
-					</div>
-					<div onClick={renameFile} className="contextMenu--option">
-						Rename
-					</div>
+					<List component="nav" dense disablePadding>
+						<ListItem button dense onClick={event => null}>
+							<ListItemIcon>
+								<EditIcon />
+							</ListItemIcon>
+							<ListItemText primary="Rename" />
+						</ListItem>
+						<ListItem button dense onClick={event => handleListItemClick(event, 1)}>
+							<ListItemIcon>
+								<DeleteIcon />
+							</ListItemIcon>
+							<ListItemText primary="Delete" />
+						</ListItem>
+					</List>
 				</div>
 			)
 		);
@@ -110,4 +143,4 @@ class TreeContextMenu extends React.Component {
 export default connect(
 	null,
 	mapDispatch
-)(TreeContextMenu);
+)(withStyles(styles)(TreeContextMenu));

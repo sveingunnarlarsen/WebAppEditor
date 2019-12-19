@@ -2,6 +2,22 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 
+import {withStyles} from "@material-ui/styles";
+
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import InboxIcon from "@material-ui/icons/Inbox";
+import DraftsIcon from "@material-ui/icons/Drafts";
+import AccountTreeIcon from "@material-ui/icons/AccountTreeOutlined";
+import UndoIcon from "@material-ui/icons/Undo";
+import RedoIcon from "@material-ui/icons/Redo";
+import BrushIcon from "@material-ui/icons/Brush";
+import FormatIndentIncreaseIcon from "@material-ui/icons/FormatIndentIncrease";
+import VerticalSplitIcon from "@material-ui/icons/VerticalSplit";
+import HorizontalSplitIcon from "@material-ui/icons/HorizontalSplit";
+
 import {splitEditor} from "../../actions/editor";
 import {prettyPrint, calculatePos} from "./utils";
 import {findReferences} from "../../completer";
@@ -14,6 +30,16 @@ function mapDispatch(dispatch) {
 		splitEditor: (direction, editorId, fileId) => dispatch(splitEditor(direction, editorId, fileId))
 	};
 }
+
+const styles = theme => ({
+	root: {
+		position: "fixed",
+		width: "100%",
+		maxWidth: 200,
+		backgroundColor: theme.palette.background.paper,
+		zIndex: 2000
+	}
+});
 
 class EditorContextMenu extends React.Component {
 	constructor(props) {
@@ -45,7 +71,6 @@ class EditorContextMenu extends React.Component {
 	};
 
 	handleContextMenu = event => {
-	    
 		event.preventDefault();
 
 		this.setState({visible: true});
@@ -75,49 +100,72 @@ class EditorContextMenu extends React.Component {
 	render() {
 		const {editor, fso} = this.props.container.props;
 		const {visible} = this.state;
-		
+		const {classes} = this.props;
+
 		return (
 			(visible || null) && (
 				<div
 					ref={ref => {
 						this.root = ref;
 					}}
-					className="contextMenu"
+					className={classes.root}
 				>
-					<div onClick={this.findReferences} className="contextMenu--option">
-						Find References
-					</div>
-					<div
-						onClick={() => {
-							console.log("Clicked undo");
-						}}
-						className="contextMenu--option"
-					>
-						Undo
-					</div>
-					<div className="contextMenu--option">Redo</div>
-					<div onClick={this.prettyPrint} className="contextMenu--option">
-						Beautify
-					</div>
-					<div className="contextMenu--option">Toggle Comment</div>
-					<div
-						onClick={() => {
-							this.splitEditor(SplitDirection.VERTICAL, editor.id, fso.id);
-						}}
-						className="contextMenu--option"
-					>
-						Split Vertically
-					</div>
-					<div
-						onClick={() => {
-							this.splitEditor(SplitDirection.HORIZONTAL, editor.id, fso.id);
-						}}
-						className="contextMenu--option"
-					>
-						Split Horizontally
-					</div>
-					<div className="contextMenu--option">Api Browser</div>
-					<div className="contextMenu--option">Npm Browser</div>
+					<List component="nav" dense disablePadding>
+						<ListItem button onClick={this.findReferences}>
+							<ListItemIcon>
+								<AccountTreeIcon />
+							</ListItemIcon>
+							<ListItemText primary="Find References" />
+						</ListItem>
+						<ListItem button onClick={event => console.log("Not implemented")}>
+							<ListItemIcon>
+								<UndoIcon />
+							</ListItemIcon>
+							<ListItemText primary="Undo" />
+						</ListItem>
+						<ListItem button onClick={event => console.log("Not Implemented")}>
+							<ListItemIcon>
+								<RedoIcon />
+							</ListItemIcon>
+							<ListItemText primary="Redo" />
+						</ListItem>
+						<ListItem button onClick={this.prettyPrint}>
+							<ListItemIcon>
+								<BrushIcon />
+							</ListItemIcon>
+							<ListItemText primary="Beautify" />
+						</ListItem>
+						<ListItem button onClick={event => null}>
+							<ListItemIcon>
+								<FormatIndentIncreaseIcon />
+							</ListItemIcon>
+							<ListItemText primary="Toggle Comment" />
+						</ListItem>
+						<ListItem button onClick={() => () => this.splitEditor(SplitDirection.VERTICAL, editor.id, fso.id)}>
+							<ListItemIcon>
+								<VerticalSplitIcon />
+							</ListItemIcon>
+							<ListItemText primary="Split Vertically" />
+						</ListItem>
+						<ListItem button onClick={() => this.splitEditor(SplitDirection.HORIZONTAL, editor.id, fso.id)}>
+							<ListItemIcon>
+								<HorizontalSplitIcon />
+							</ListItemIcon>
+							<ListItemText primary="Split Horizontal" />
+						</ListItem>
+						<ListItem button onClick={event => null}>
+							<ListItemIcon>
+								<DraftsIcon />
+							</ListItemIcon>
+							<ListItemText primary="Api Browser" />
+						</ListItem>
+						<ListItem button onClick={event => null}>
+							<ListItemIcon>
+								<DraftsIcon />
+							</ListItemIcon>
+							<ListItemText primary="Npm Browser" />
+						</ListItem>
+					</List>
 				</div>
 			)
 		);
@@ -127,4 +175,4 @@ class EditorContextMenu extends React.Component {
 export default connect(
 	null,
 	mapDispatch
-)(EditorContextMenu);
+)(withStyles(styles)(EditorContextMenu));
