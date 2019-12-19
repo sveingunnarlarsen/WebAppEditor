@@ -1,4 +1,5 @@
 import store from "../store";
+import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
 import {updateFileState} from "../actions/app";
@@ -382,3 +383,18 @@ export async function syncFile({path, content}: {path: string; content: string})
 		console.log("Error syncing file to fs: ", e.message);
 	}
 }
+
+export async function removeFile(fileId: string) {
+    const file = getFileById(fileId);
+    try {
+        await pfs.unlink(`${currentGitDir}${file.path}`);
+        await git.remove({dir: currentGitDir, filepath: file.path});
+    } catch (e) {
+        console.log("Error deleting file from fs or removing from git", e.message);
+    }
+}
+
+
+
+
+
