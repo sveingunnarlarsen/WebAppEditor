@@ -121,13 +121,25 @@ class TreeContextMenu extends React.Component {
 					className={classes.root}
 				>
 					<List component="nav" dense disablePadding>
-						<ListItem button dense onClick={event => null}>
+						<ListItem
+							button
+							dense
+							onClick={() => {
+								this.props.renameFile();
+							}}
+						>
 							<ListItemIcon>
 								<EditIcon />
 							</ListItemIcon>
 							<ListItemText primary="Rename" />
 						</ListItem>
-						<ListItem button dense onClick={event => handleListItemClick(event, 1)}>
+						<ListItem
+							button
+							dense
+							onClick={() => {
+								this.props.deleteFile();
+							}}
+						>
 							<ListItemIcon>
 								<DeleteIcon />
 							</ListItemIcon>
