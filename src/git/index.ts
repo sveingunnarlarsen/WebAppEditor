@@ -271,21 +271,21 @@ class GitCommand {
 		const branch = await git.currentBranch({dir: currentGitDir});
 		console.log("Git push: ", branch, args, opts);
 		let result, remote;
-		
+
 		if (!args[0]) {
-		    const remotes = await git.listRemotes({dir: currentGitDir});
-		    if (remotes[0]) {
-		        remote = remotes[0].remote;
-		    } else {
-		        const error = `fatal: No configured push destination.\nEither specify the URL from the command-line or configure a remote repository using`;
-		        error += `\n \n\tgit remote add <name> <url>\n \n`;
-		        error += `and then push the remote name\n \n\tgit push <name>`;
-		        return error;
-		    }
+			const remotes = await git.listRemotes({dir: currentGitDir});
+			if (remotes[0]) {
+				remote = remotes[0].remote;
+			} else {
+				const error = `fatal: No configured push destination.\nEither specify the URL from the command-line or configure a remote repository using`;
+				error += `\n \n\tgit remote add <name> <url>\n \n`;
+				error += `and then push the remote name\n \n\tgit push <name>`;
+				return error;
+			}
 		} else {
-		    remote = args[0];
+			remote = args[0];
 		}
-		
+
 		if (opts.force) {
 			result = await git.push({
 				dir: currentGitDir,
@@ -308,23 +308,23 @@ class GitCommand {
 				token: opts.token
 			});
 		}
-		
+
 		let message = ``;
 		if (result.ok && result.ok.length > 0) {
-		    message = result.ok.map(m => m).join('\n');
+			message = result.ok.map(m => m).join("\n");
 		}
 		if (result.errors && result.errors.length > 0) {
-		    message += result.errors.map(m => m).join('\n');
+			message += result.errors.map(m => m).join("\n");
 		}
-        return message;
+		return message;
 	}
-	
+
 	static async pull(args, opts) {
-	    throw "Not implemented";
+		throw "Not implemented";
 	}
-	
+
 	static async stash(args, opts) {
-	    throw "Not implemented";
+		throw "Not implemented";
 	}
 
 	static async remote(args, opts) {
