@@ -9,7 +9,7 @@ const forcedChalk = new chalk.constructor(options);
 
 // TODO: Should use the planet9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
-window.fs = new LightningFS('fs');
+window.fs = new LightningFS("fs");
 git.plugins.set("fs", window.fs);
 window.pfs = window.fs.promises;
 window.git = git;
@@ -123,10 +123,10 @@ class GitCommand {
 
 	static async status(args, opts) {
 		let ret: string = `On branch ${await git.currentBranch({dir: currentGitDir})}\n`;
-		
+
 		const statusMatrix = await git.statusMatrix({dir: currentGitDir});
 		const stagedChanges = await this.getStagedChanges();
-		
+
 		if (stagedChanges.length > 0) {
 			ret += `Changes to be commited:\n  (use "git rm --cached <file>..." to unstage)\n \n`;
 			ret += `\n${forcedChalk.green("\t" + (await Promise.all(stagedChanges.map(file => appendFileStatus(file)))).join(`\n\t`))}\n \n`;
@@ -143,9 +143,9 @@ class GitCommand {
 			ret += `Untracked files:\n  (use "git add <file>..." to include what will be committed)\n \n`;
 			ret += `\n${forcedChalk.red("\t" + (await Promise.all(untrackedFiles.map(file => appendFileStatus(file)))).join(`\n\t`))}\n \n`;
 		}
-		
+
 		if (stagedChanges.length < 1 && unstagedChanges.length < 1 && untrackedFiles.length < 1) {
-		    ret += `\nnothing to commit, working tree clean\n`;
+			ret += `\nnothing to commit, working tree clean\n`;
 		}
 
 		return ret;
@@ -160,9 +160,9 @@ class GitCommand {
 		} else {
 			diffFiles = (await this.getUntrackedFiles()).concat(await this.getUnstagedChanges());
 		}
-		
+
 		if (args[0]) {
-            diffFiles = diffFiles.filter(f => new RegExp(args[0], "g").test(f));
+			diffFiles = diffFiles.filter(f => new RegExp(args[0], "g").test(f));
 		}
 
 		let ret = "";
@@ -233,7 +233,6 @@ class GitCommand {
 	}
 
 	static async checkout(args, opts) {
-
 		const currentBranch = await git.currentBranch({dir: currentGitDir});
 
 		if (!args.length) {
@@ -270,16 +269,54 @@ class GitCommand {
 
 	static async push(args, opts) {
 		const branch = await git.currentBranch({dir: currentGitDir});
-		const result = await git.push({
-			dir: currentGitDir,
-			corsProxy,
-			ref: branch,
-			remote: "origin",
-			username: opts.username,
-			password: opts.password,
-			token: opts.token
-		});
-		return result;
+		console.log("Git push: ", branch, args, opts);
+		let result, remote;
+		
+		if (!args[0]) {
+		    const remotes = await git.listRemotes({dir: currentGitDir});
+		    if (remotes[0]) {
+		        remote = remotes[0].remote;
+		    } else {
+		        const error = `fatal: No configured push destination.\nEither specify the URL from the command-line or configure a remote repository using`;
+		        error += `\n \n\tgit remote add <name> <url>\n \n`;
+		        error += `and then push the remote name\n \n\tgit push <name>`;
+		        return error;
+		    }
+		} else {
+		    remote = args[0];
+		}
+		
+		if (opts.force) {
+			result = await git.push({
+				dir: currentGitDir,
+				corsProxy,
+				ref: branch,
+				remote,
+				username: opts.username,
+				password: opts.password,
+				token: opts.token,
+				force: true
+			});
+		} else {
+			result = await git.push({
+				dir: currentGitDir,
+				corsProxy,
+				ref: branch,
+				remote,
+				username: opts.username,
+				password: opts.password,
+				token: opts.token
+			});
+		}
+		
+		let message = ``;
+		if (result.ok && result.ok.length > 0) {
+		    message = result.ok.map(m => m).join('\n');
+		}
+		if (result.errors && result.errors.length > 0) {
+		    message += result.errors.map(m => m).join('\n');
+		}
+        return message;
 	}
 
 	static async remote(args, opts) {
@@ -288,7 +325,17 @@ class GitCommand {
 			if (!args[1] || !args[2]) return `usage: git remote add <name> <url>`;
 			await git.addRemote({dir: currentGitDir, remote: args[1], url: args[2]});
 		} else {
-			return `Unknown subcommand: ${args[0]}`;
+			if (opts.v) {
+				const remotes = (await git.listRemotes({dir: currentGitDir}))
+					.map(remote => {
+						return `${remote.remote} ${remote.url}`;
+					})
+					.join("\n");
+				console.log(remotes);
+				return remotes;
+			} else {
+				return `Unknown subcommand: ${args[0]}`;
+			}
 		}
 	}
 }
@@ -306,17 +353,17 @@ export async function runCommand(command) {
 	}
 
 	try {
-	    if (typeof GitCommand[_[1]] === "function") {
-	        return await GitCommand[_[1]](_.slice(2), parsedCommand);    
-	    } else {
-           return `git: '${_[1]}' is not a git command. See 'git --help'`;
-	    }
+		if (typeof GitCommand[_[1]] === "function") {
+			return await GitCommand[_[1]](_.slice(2), parsedCommand);
+		} else {
+			return `git: '${_[1]}' is not a git command. See 'git --help'`;
+		}
 	} catch (e) {
-	    if (e.message) {
-	        return e.message;
-	    } else {
-	        return e;   
-	    }
+		if (e.message) {
+			return e.message;
+		} else {
+			return e;
+		}
 	}
 }
 
