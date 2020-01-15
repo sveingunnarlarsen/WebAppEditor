@@ -18,6 +18,16 @@ export function fetchWebApp(id: string) {
 	};
 }
 
+export function createApp(opts) {
+    return function(dispatch, getState) {
+        if (opts.remote) {
+            // TODO: Clone git repository
+            
+        }
+        // TODO: Create app on server.
+    }
+}
+
 export function save() {
 	return function(dispatch, getState) {
 		dispatch(requestSave());

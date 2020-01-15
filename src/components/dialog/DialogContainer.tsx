@@ -10,6 +10,7 @@ import Draggable from "react-draggable";
 
 import SyntaxError from "./SyntaxError";
 import CompileError from "./CompileError";
+import CreateProject from "./CreateProject";
 import Projects from "./Projects";
 import NewFile from "./NewFile";
 import NewFolder from "./NewFolder";
@@ -68,7 +69,11 @@ class DialogContainer extends React.Component {
 		const {close, classes} = this.props;
 		switch (dialog.type) {
 			case DialogType.CREATE_PROJECT:
-				return null;
+				return (
+					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+						<CreateProject close={close} />
+					</Dialog>
+				);
 			case DialogType.PROJECT_LIST:
 				return (
 					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
