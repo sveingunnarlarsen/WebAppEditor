@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {connect} from "react-redux";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import {splitEditor} from "../../actions/editor";
 import {prettyPrint, calculatePos} from "./utils";

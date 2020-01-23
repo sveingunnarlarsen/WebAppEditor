@@ -72,6 +72,7 @@ class Content extends React.Component {
 						split="horizontal"
 						defaultSize={defaultContentSize}
 						className={splitPaneContentSize}
+						pane2Style={{background: "#000000"}}
 						onDragFinished={() => {
 							this.props.resizeTool();
 							this.props.resizeEditor();

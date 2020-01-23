@@ -9,8 +9,8 @@
     min-width: 160px;
     cursor: default;
     font-size: 12px;
-    background: linear-gradient(to top, #555, #333);
-    color: white;    
+    background: #333333;
+    color: white;
 }
 
 .signatureHelp--spearator {

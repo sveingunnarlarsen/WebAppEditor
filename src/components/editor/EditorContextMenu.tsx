@@ -23,7 +23,7 @@ import {prettyPrint, calculatePos} from "./utils";
 import {findReferences} from "../../completer";
 import {SplitDirection} from "../../types/editor";
 
-import "./EditorContextMenu.css";
+//import "./EditorContextMenu.css";
 
 function mapDispatch(dispatch) {
 	return {

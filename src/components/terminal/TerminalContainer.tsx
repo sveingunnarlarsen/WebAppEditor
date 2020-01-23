@@ -12,6 +12,7 @@ import TerminalServer from "./TerminalServer";
 const styles = {
     toolbar: {
         color: "white",
+        backgroundColor: "#252526",
     }
 }
 
