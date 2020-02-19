@@ -35,7 +35,7 @@ const aceCompleter = {
 
 (async function() {
 	try {
-		await client.connect("wss://p9:1339");
+		await client.connect("wss://p9:8082");
 		tool.setCompleters([aceCompleter]);
 		console.log("Language client connected");
 	} catch (e) {
