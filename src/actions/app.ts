@@ -18,13 +18,36 @@ export function fetchWebApp(id: string) {
 	};
 }
 
-export function createApp(opts) {
+export function createProject(opts) {
     return function(dispatch, getState) {
         if (opts.remote) {
             // TODO: Clone git repository
             
         }
-        // TODO: Create app on server.
+        
+        return fetch("/api/webapp?fetch=true", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                template: "react",
+                app: {
+                    type: opts.type,
+                    name: opts.name,
+                    description: opts.description,
+                    settings: {
+                        repo: "",
+                        branch: "master",
+                    },
+                    projectFolder: null,
+                }
+            })
+        })
+        .then(response => response.json(), error => console.log("An error occured", error))
+        .then(json => convertApiWebAppData(json))
+        .then(app => dispatch(receiveWebApp(app)))
+        .catch(error => console.log("Error in createProject", error));
     }
 }
 

@@ -10,10 +10,11 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
+import {createProject} from '../../actions/app';
 
 function mapDispatch(dispatch) {
 	return {
-		createProject: () => dispatch(createProject())
+		createProject: (opts) => dispatch(createProject(opts))
 	};
 }
 
@@ -51,6 +52,7 @@ class CreateProject extends React.Component {
 
 	handleSubmit = e => {
 		e.preventDefault();
+		this.props.createProject(this.state);
 		this.props.close();
 	};
 
@@ -82,7 +84,7 @@ class CreateProject extends React.Component {
 							}}
 						/>
 						<TextField
-							value={name}
+							value={description}
 							onChange={this.updateDescription}
 							fullWidth
 							label="Description"
@@ -93,7 +95,7 @@ class CreateProject extends React.Component {
 							}}
 						/>
 						<TextField
-							value={name}
+							value={remote}
 							onChange={this.updateRemote}
 							fullWidth
 							label="Clone Git Repository"
