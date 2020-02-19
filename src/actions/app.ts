@@ -1,13 +1,13 @@
 import {AppActions} from "../types/app";
 import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData} from "./utils";
 import {closeFile, closeAllTabs} from "./editor";
-import {syncFile, removeFile} from "../git";
+import {syncFile, removeFile, cloneGitRepo} from "../git";
 
 export function fetchWebApp(id: string) {
 	return function(dispatch, getState) {
-	    if (id !== getState().app.id) {
-	        dispatch(closeAllTabs());
-	    }
+		if (id !== getState().app.id) {
+			dispatch(closeAllTabs());
+		}
 		dispatch(requestWebApp(id));
 
 		return fetch("/api/webapp/" + id)
@@ -19,36 +19,67 @@ export function fetchWebApp(id: string) {
 }
 
 export function createProject(opts) {
-    return function(dispatch, getState) {
-        if (opts.remote) {
-            // TODO: Clone git repository
-            
-        }
-        
-        return fetch("/api/webapp?fetch=true", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                template: "react",
-                app: {
-                    type: opts.type,
-                    name: opts.name,
-                    description: opts.description,
-                    settings: {
-                        repo: "",
-                        branch: "master",
-                        projectFolder: null,
-                    },
-                }
-            })
-        })
-        .then(response => response.json(), error => console.log("An error occured", error))
-        .then(json => convertApiWebAppData(json))
-        .then(app => dispatch(receiveWebApp(app)))
-        .catch(error => console.log("Error in createProject", error));
-    }
+	return function(dispatch, getState) {
+		if (opts.remote) {
+			// TODO: Clone git repository.
+			// https://github.com/sveingunnarlarsen/WebAppEditor.git
+
+			return fetch("/api/webapp?fetch=true", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					app: {
+						type: opts.type,
+						name: opts.name,
+						description: opts.description,
+						settings: {
+							entryPoint: {
+								javascript: "",
+								html: ""
+							},
+							git: {
+								repo: opts.remote,
+								branch: "master"
+							},
+							projectFolder: null
+						}
+					}
+				})
+			})
+				.then(response => response.json(), error => console.log("An error occured", error))
+				.then(json => convertApiWebAppData(json))
+				.then(app => dispatch(receiveWebApp(app)))
+				.then(() => cloneGitRepo())
+				.catch(error => console.log("Error in createProject from git repo", error));
+
+		} else {
+			return fetch("/api/webapp?fetch=true", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					template: "react",
+					app: {
+						type: opts.type,
+						name: opts.name,
+						description: opts.description,
+						settings: {
+							repo: "",
+							branch: "master",
+							projectFolder: null
+						}
+					}
+				})
+			})
+				.then(response => response.json(), error => console.log("An error occured", error))
+				.then(json => convertApiWebAppData(json))
+				.then(app => dispatch(receiveWebApp(app)))
+				.catch(error => console.log("Error in createProject", error));
+		}
+	};
 }
 
 export function save() {
@@ -57,7 +88,7 @@ export function save() {
 
 		const app = getState().app;
 		const filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);
-		if (filesToSave.length < 1) return; 
+		if (filesToSave.length < 1) return;
 		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
 			method: "PATCH",
 			headers: {
@@ -74,12 +105,12 @@ export function save() {
 }
 
 export function saveApp(data) {
-    return function(dispatch, getState) {
-        dispatch(requestSave());
-        
-        const app = getState().app;
-        return fetch("/api/webapp")
-    }
+	return function(dispatch, getState) {
+		dispatch(requestSave());
+
+		const app = getState().app;
+		return fetch("/api/webapp");
+	};
 }
 
 export function saveFile(fso) {
@@ -143,7 +174,6 @@ export function deleteFile() {
 	};
 }
 
-
 export function requestWebApp(id) {
 	return {
 		type: AppActions.REQUEST_WEBAPP,
@@ -192,7 +222,7 @@ export function requestDelete() {
 }
 
 export function receiveDelete(fileId) {
-    removeFile(fileId);
+	removeFile(fileId);
 	return {
 		type: AppActions.RECEIVE_DELETE,
 		fileId
@@ -200,7 +230,7 @@ export function receiveDelete(fileId) {
 }
 
 export function updateFileState(file) {
-    syncFile(file);
+	syncFile(file);
 	return {
 		type: AppActions.UPDATE_FILE_STATE,
 		file

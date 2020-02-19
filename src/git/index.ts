@@ -29,9 +29,11 @@ async function handleChange() {
 			await syncFilesToFS();
 		} catch (e) {
 			if (e.message.indexOf("ENOENT") > -1) {
+				console.log("Initializing git");
 				pfs.mkdir(currentGitDir);
 				await git.init({dir: currentGitDir});
 				await syncFilesToFS();
+				console.log("Git initialized");
 			} else {
 				console.log("Failed to initialize git", e.message);
 			}
@@ -347,6 +349,24 @@ class GitCommand {
 			}
 		}
 	}
+
+	static async clone(args, opts) {
+		try {
+			await git.clone({
+				dir: currentGitDir,
+				corsProxy,
+				url: args[0],
+				ref: "master",
+				singleBranch: false,
+				noCheckout: false,
+				noTags: true,
+				// username: nwd.git.username,
+				// password: nwd.git.password,
+				// token: nwd.git.token,
+				depth: 100
+			});
+		} catch (e) {}
+	}
 }
 
 export async function runCommand(command) {
@@ -376,6 +396,34 @@ export async function runCommand(command) {
 	}
 }
 
+export async function cloneGitRepo() {
+	try {
+		console.log("currentAppName", currentAppName);
+		console.log("currentGitDir", currentGitDir);
+
+		await git.clone({
+			dir: currentGitDir,
+			corsProxy,
+			url: "https://github.com/sveingunnarlarsen/WebAppEditor.git",
+			ref: "master",
+			singleBranch: false,
+			noCheckout: false,
+			noTags: true,
+			// username: nwd.git.username,
+			// password: nwd.git.password,
+			// token: nwd.git.token,
+			depth: 100
+		});
+		
+		await syncFilesFromFS();
+		// const branch = await git.currentBranch({dir: currentGitDir});
+
+		console.log("Current branch");
+	} catch (e) {
+		console.log("Error cloning git repository", e);
+	}
+}
+
 export async function syncFile({path, content}: {path: string; content: string}) {
 	try {
 		await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
@@ -385,16 +433,11 @@ export async function syncFile({path, content}: {path: string; content: string})
 }
 
 export async function removeFile(fileId: string) {
-    const file = getFileById(fileId);
-    try {
-        await pfs.unlink(`${currentGitDir}${file.path}`);
-        await git.remove({dir: currentGitDir, filepath: file.path});
-    } catch (e) {
-        console.log("Error deleting file from fs or removing from git", e.message);
-    }
+	const file = getFileById(fileId);
+	try {
+		await pfs.unlink(`${currentGitDir}${file.path}`);
+		await git.remove({dir: currentGitDir, filepath: file.path});
+	} catch (e) {
+		console.log("Error deleting file from fs or removing from git", e.message);
+	}
 }
-
-
-
-
-
