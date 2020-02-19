@@ -39,8 +39,8 @@ export function createProject(opts) {
                     settings: {
                         repo: "",
                         branch: "master",
+                        projectFolder: null,
                     },
-                    projectFolder: null,
                 }
             })
         })
