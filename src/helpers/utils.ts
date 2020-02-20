@@ -26,3 +26,7 @@ export function getLineAndContentByChar(text, char) {
         lineContent,
     }
 }
+
+export function folderExists(path, fsos) {
+    
+}

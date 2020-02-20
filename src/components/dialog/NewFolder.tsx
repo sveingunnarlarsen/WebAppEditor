@@ -11,7 +11,7 @@ import {createFile} from "../../actions/app";
 
 function mapDispatch(dispatch) {
 	return {
-		createFolder: value => dispatch(createFile(value, "folder"))
+		createFolder: value => dispatch(createFile(value, {type: "folder"}))
 	};
 }
 

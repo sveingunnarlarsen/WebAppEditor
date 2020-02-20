@@ -21,9 +21,6 @@ export function fetchWebApp(id: string) {
 export function createProject(opts) {
 	return function(dispatch, getState) {
 		if (opts.remote) {
-			// TODO: Clone git repository.
-			// https://github.com/sveingunnarlarsen/WebAppEditor.git
-
 			return fetch("/api/webapp?fetch=true", {
 				method: "POST",
 				headers: {
@@ -53,7 +50,6 @@ export function createProject(opts) {
 				.then(app => dispatch(receiveWebApp(app)))
 				.then(() => cloneGitRepo())
 				.catch(error => console.log("Error in createProject from git repo", error));
-
 		} else {
 			return fetch("/api/webapp?fetch=true", {
 				method: "POST",
@@ -89,6 +85,7 @@ export function save() {
 		const app = getState().app;
 		const filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);
 		if (filesToSave.length < 1) return;
+
 		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
 			method: "PATCH",
 			headers: {
@@ -101,6 +98,33 @@ export function save() {
 			.then(response => response.json(), error => console.log("An error occured", error))
 			.then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects)))
 			.then(files => dispatch(receiveSave(files)));
+	};
+}
+
+export function create(fsos) {
+	return function(dispatch, getState) {
+		const app = getState().app;
+
+		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				fileSystemObjects: fsos
+			})
+		})
+			.then(response => response.json(), error => console.log("AN error occured", error))
+			.then(json =>
+				convertApiWebAppData({
+					app: {
+						...getState().app,
+						fileSystemObjects: json.fileSystemObjects
+					}
+				})
+			)
+			.then(app => dispatch(receiveWebApp(app)))
+			.catch(error => console.log("An error occured: ", error));
 	};
 }
 
@@ -133,15 +157,19 @@ export function saveFile(fso) {
 	};
 }
 
-export function createFile(fileName, type: string = "file") {
+export function createFile(fileName, opts?: {type?: string; content?: string; path?: string}) {
 	return function(dispatch, getState) {
 		dispatch(requestCreate());
 
-		const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
+		let folderPath;
+		if (!opts.path) {
+			folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
+		}
+
 		const fso = {
-			content: "",
-			path: folderPath + "/" + fileName,
-			type,
+			content: opts.content ? opts.content : "",
+			path: opts.path ? opts.path : folderPath + "/" + fileName,
+			type: opts.type ? opts.type : "file",
 			webAppId: getState().app.id
 		};
 

@@ -2,11 +2,27 @@ import store from "../store";
 import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
-import {updateFileState} from "../actions/app";
+import {updateFileState, create} from "../actions/app";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 let options: any = {enabled: true, level: 2};
 const forcedChalk = new chalk.constructor(options);
+
+class GitEmitter extends EventTarget {
+	isInitializing: false;
+
+	start() {
+		this.isInitializing = true;
+		this.dispatchEvent(new Event("initStart"));
+	}
+
+	end() {
+		this.isInitializing = true;
+		this.dispatchEvent(new Event("initEnd"));
+	}
+}
+
+const gitEmitter = new GitEmitter();
 
 // TODO: Should use the planet9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
@@ -21,6 +37,7 @@ let currentGitDir: string;
 async function handleChange() {
 	//Switch to new project.
 	if (store.getState().app.name && store.getState().app.name != currentAppName) {
+		gitEmitter.start();
 		currentAppName = store.getState().app.name;
 		currentGitDir = `/${currentAppName}`;
 
@@ -38,6 +55,7 @@ async function handleChange() {
 				console.log("Failed to initialize git", e.message);
 			}
 		}
+		gitEmitter.end();
 	}
 }
 
@@ -76,6 +94,46 @@ async function syncFilesToFS() {
 	}
 }
 
+async function createFilesFromFS() {
+    const files = await git.listFiles({dir: currentGitDir});
+    console.log("Files after clone: ", files);
+    const createdFolders = [];
+    const fsos = [];
+    
+    for (let i = 0; i < files.length; i++) {
+        const filepath = files[i];
+
+        const parts = filepath.split("/");
+        
+        for (let y = 1; y < parts.length; y++) {
+        
+            const folderPath = parts.slice(0, y).join("/");
+            
+            console.log("Parts: ", parts);
+            console.log("FolderPath: ", folderPath);
+            
+            if (createdFolders.indexOf(folderPath) < 0) {
+                createdFolders.push(folderPath);
+                fsos.push({
+                    path: "/" + folderPath,
+                    type: "folder",
+                })
+            }
+        }
+        
+        const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
+        
+        fsos.push({
+            type: "file",
+            path: "/" + filepath,
+            content: fileContent,
+        });
+    }
+    
+    console.log(fsos);
+    store.dispatch(create(fsos));
+}
+
 async function syncFilesFromFS(pattern) {
 	let files = await git.listFiles({dir: currentGitDir});
 	if (pattern) {
@@ -92,7 +150,7 @@ async function syncFilesFromFS(pattern) {
 			// Remove git directory before updating file in project
 			store.dispatch(updateFileState({path: "/" + filepath, content: fileContent}));
 		} catch (e) {
-			console.log("Trouble reading file: ", e.message, files[i]);
+			console.log("Error reading file: ", e.message, files[i]);
 		}
 	}
 }
@@ -349,23 +407,9 @@ class GitCommand {
 			}
 		}
 	}
-
+	
 	static async clone(args, opts) {
-		try {
-			await git.clone({
-				dir: currentGitDir,
-				corsProxy,
-				url: args[0],
-				ref: "master",
-				singleBranch: false,
-				noCheckout: false,
-				noTags: true,
-				// username: nwd.git.username,
-				// password: nwd.git.password,
-				// token: nwd.git.token,
-				depth: 100
-			});
-		} catch (e) {}
+        return `If you want to clone a git repository please create a new project`;
 	}
 }
 
@@ -396,32 +440,32 @@ export async function runCommand(command) {
 	}
 }
 
-export async function cloneGitRepo() {
-	try {
-		console.log("currentAppName", currentAppName);
-		console.log("currentGitDir", currentGitDir);
+async function clone() {
+    console.log("Start clone");
+    
+	await git.clone({
+		dir: currentGitDir,
+		corsProxy,
+		url: "https://github.com/sveingunnarlarsen/WebAppEditor.git",
+		singleBranch: false,
+		noCheckout: false,
+		noTags: true,
+		depth: 100
+	});
+	gitEmitter.removeEventListener("initEnd", clone);
+	console.log("Clone done");
+	await createFilesFromFS();
+}
 
-		await git.clone({
-			dir: currentGitDir,
-			corsProxy,
-			url: "https://github.com/sveingunnarlarsen/WebAppEditor.git",
-			ref: "master",
-			singleBranch: false,
-			noCheckout: false,
-			noTags: true,
-			// username: nwd.git.username,
-			// password: nwd.git.password,
-			// token: nwd.git.token,
-			depth: 100
-		});
-		
-		await syncFilesFromFS();
-		// const branch = await git.currentBranch({dir: currentGitDir});
+export async function cloneGitRepo(repo) {
+	console.log("currentAppName", currentAppName);
+	console.log("currentGitDir", currentGitDir);
 
-		console.log("Current branch");
-	} catch (e) {
-		console.log("Error cloning git repository", e);
-	}
+    if (gitEmitter.isInitializing) {
+        gitEmitter.addEventListener("initEnd", clone);
+    } else {
+        await clone();
+    }
 }
 
 export async function syncFile({path, content}: {path: string; content: string}) {
