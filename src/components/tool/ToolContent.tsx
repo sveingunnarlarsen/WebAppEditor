@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import FileExplorer from "./FileExplorer";
+import NpmExplorer from "./NpmExplorer";
 import Settings from "./Settings";
 
 import {Tool} from "../../types";
@@ -36,6 +37,7 @@ class ToolContent extends React.Component {
 				<div className={classes.label}>{visibleTool}</div>
 				<FileExplorer show={visibleTool === Tool.EXPLORER ? true : false} />
 				<Settings show={visibleTool === Tool.SETTINGS ? true : false} />
+				<NpmExplorer show={visibleTool === Tool.NPM ? true : false} />
 			</div>
 		);
 	}

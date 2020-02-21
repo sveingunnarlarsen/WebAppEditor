@@ -9,8 +9,9 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import SearchOutlinedIcon from "@material-ui/icons/SearchOutlined";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import VerticalSplitOutlinedIcon from "@material-ui/icons/VerticalSplitOutlined";
+import ViewModuleOutlinedIcon from '@material-ui/icons/ViewModuleOutlined';
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
-import CallToActionIcon from '@material-ui/icons/CallToActionOutlined';
+import CallToActionIcon from "@material-ui/icons/CallToActionOutlined";
 
 import {withStyles} from "@material-ui/styles";
 import {connect} from "react-redux";
@@ -30,7 +31,7 @@ const styles = {
 		zIndex: 1
 	},
 	icon: {
-		minWidth: 0,
+		minWidth: 0
 	}
 };
 
@@ -40,7 +41,7 @@ function mapDispatch(dispatch) {
 		openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
 		togglePreview: () => dispatch(togglePreview()),
 		closeAllTabs: () => dispatch(closeAllTabs()),
-		toggleCommandLine: () => dispatch(toggleCommandLine()),
+		toggleCommandLine: () => dispatch(toggleCommandLine())
 	};
 }
 
@@ -62,6 +63,11 @@ class SideMenu extends React.Component {
 					<ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
 						<ListItemIcon className={classes.icon}>
 							<SettingsOutlinedIcon />
+						</ListItemIcon>
+					</ListItem>
+					<ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
+						<ListItemIcon className={classes.icon}>
+							<ViewModuleOutlinedIcon />
 						</ListItemIcon>
 					</ListItem>
 					<ListItem button onClick={() => this.props.openSearch()}>

@@ -4,6 +4,7 @@ import {EditorState} from "./editor";
 export enum Tool {
 	EXPLORER = "EXPLORER",
 	SEARCH = "SEARCH",
+	NPM = "NPM",
 	SETTINGS = "SETTINGS",
 	GIT = "GIT"
 }
