@@ -157,23 +157,19 @@ export function saveFile(fso) {
 	};
 }
 
-export function createFile(fileName, opts?: {type?: string; content?: string; path?: string}) {
+export function createFile(fileName, type: string = "file") {
 	return function(dispatch, getState) {
 		dispatch(requestCreate());
 
-		let folderPath;
-		if (!opts.path) {
-			folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
-		}
+		const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
 
 		const fso = {
-			content: opts.content ? opts.content : "",
-			path: opts.path ? opts.path : folderPath + "/" + fileName,
-			type: opts.type ? opts.type : "file",
-			webAppId: getState().app.id
+			content: "",
+			path: folderPath + "/" + fileName,
+			type,
 		};
 
-		return fetch("/api/webapp/" + fso.webAppId + "/fso?fetch=true", {
+		return fetch("/api/webapp/" + getState().app.id + "/fso?fetch=true", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -237,6 +233,7 @@ export function requestCreate() {
 }
 
 export function receiveCreate(file) {
+    syncFile(file);
 	return {
 		type: AppActions.RECEIVE_CREATE,
 		file
