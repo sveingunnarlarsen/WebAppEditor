@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import UpdateOutlinedIcon from '@material-ui/icons/UpdateOutlined';
 import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
 
-import {installNpmModules} from "../../actions/app";
+import {installNpmModules, deleteNpmModules} from "../../actions/app";
 
 const styles = {
 	container: {
