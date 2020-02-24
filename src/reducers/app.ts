@@ -15,7 +15,8 @@ const initState: AppState = {
 	isFetching: false,
 	fileSystemObjects: [],
 	updateTree: false,
-	isSaving: false
+	isSaving: false,
+	modules: [],
 };
 
 const requestWebApp = produce((draft, appId) => {
@@ -24,7 +25,7 @@ const requestWebApp = produce((draft, appId) => {
 });
 
 const receiveWebApp = produce((draft, app) => {
-	return app;
+	return {...app, modules: []};
 });
 
 const requestSave = produce(draft => {
@@ -58,6 +59,15 @@ const requestDelete = produce((draft, file) => {
 const receiveDelete = produce((draft, id) => {
 	const index = draft.fileSystemObjects.findIndex(f => f.id === id);
 	draft.fileSystemObjects.splice(index, 1);
+});
+
+const requestModules = produce((draft) => {
+
+});
+
+const receiveModules = produce((draft, modules) => {
+    console.log(modules);
+    draft.modules = modules;    
 });
 
 const updateFileState = produce((draft, updatedFile) => {
@@ -94,6 +104,10 @@ export default function app(state = initState, action) {
 			return receiveDelete(state, action.fileId);
 		case AppActions.UPDATE_FILE_STATE:
 			return updateFileState(state, action.file);
+		case AppActions.REQUEST_MODULES:
+			return requestModules(state);
+		case AppActions.RECEIVE_MODULES:
+			return receiveModules(state, action.modules);
 		default:
 			return state;
 	}

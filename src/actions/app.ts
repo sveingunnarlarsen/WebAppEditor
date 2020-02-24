@@ -3,6 +3,25 @@ import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData
 import {closeFile, closeAllTabs} from "./editor";
 import {syncFile, removeFile, cloneGitRepo} from "../git";
 
+
+export function fetchNpmModules() {
+    return function(dispatch, getState) {
+        dispatch(requestModules())
+        
+        return fetch("/api/webapp/" + getState().app.id + "/npm")
+            .then(response => response.json(), error => console.log("An error occured", error))
+            .then(json => dispatch(receiveModules(json)))
+            .catch(error => console.log("Error in fetch modules", error));
+    }
+}
+
+export function installNpmModules() {
+    return function(dispatch, getState) {
+        //dispatch(requestNpmInstall())
+        //return fetch("/api/webapp/" + getState().app.id + "/npm")
+    }
+}
+
 export function fetchWebApp(id: string) {
 	return function(dispatch, getState) {
 		if (id !== getState().app.id) {
@@ -14,6 +33,7 @@ export function fetchWebApp(id: string) {
 			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch
 			.then(json => convertApiWebAppData(json))
 			.then(app => dispatch(receiveWebApp(app)))
+			.then(() => dispatch(fetchNpmModules()))
 			.catch(error => console.log("Error in fetchWebApp", error)); //TODO: Error dispatch
 	};
 }
@@ -196,6 +216,19 @@ export function deleteFile() {
 			method: "DELETE"
 		}).then(response => dispatch(receiveDelete(fileId)), error => console.log("An error occured", error));
 	};
+}
+
+export function requestModules() {
+    return {
+        type: AppActions.REQUEST_MODULES,
+    }
+}
+
+export function receiveModules(modules) {
+    return {
+        type: AppActions.RECEIVE_MODULES,
+        modules,
+    }
 }
 
 export function requestWebApp(id) {
