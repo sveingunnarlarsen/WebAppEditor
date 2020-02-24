@@ -55,6 +55,7 @@ class Content extends React.Component {
 		commandLineVisible ? (defaultContentSize = "60%") : ((defaultContentSize = "100%"), (splitPaneContentSize = "soloPane1"));
 
 		const useClass = this.state.isDragging ? classes.nonInteractive : classes.interactive;
+		console.log("Using class: ", useClass);
 
 		return (
 			<div style={{position: "absolute", top, left, width: `calc(100% - ${left})`, height: `calc(100% - ${top})`, background: "#252526"}}>
@@ -62,7 +63,15 @@ class Content extends React.Component {
 					split="vertical"
 					defaultSize={defaultPreviewSize}
 					className={splitPanePreviewClass}
+					onDragStarted={() => {
+					    this.setState({
+					        isDragging: true,
+					    })
+					}}
 					onDragFinished={() => {
+					    this.setState({
+					        isDragging: false,
+					    })
 						this.props.resizeTool();
 						this.props.resizeEditor();
 						this.props.resizeTerminal();

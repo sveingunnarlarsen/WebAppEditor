@@ -3,23 +3,47 @@ import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData
 import {closeFile, closeAllTabs} from "./editor";
 import {syncFile, removeFile, cloneGitRepo} from "../git";
 
-
 export function fetchNpmModules() {
-    return function(dispatch, getState) {
-        dispatch(requestModules())
-        
-        return fetch("/api/webapp/" + getState().app.id + "/npm")
-            .then(response => response.json(), error => console.log("An error occured", error))
-            .then(json => dispatch(receiveModules(json)))
-            .catch(error => console.log("Error in fetch modules", error));
-    }
+	return function(dispatch, getState) {
+		dispatch(requestModules());
+
+		return fetch("/api/webapp/" + getState().app.id + "/npm")
+			.then(response => response.json(), error => console.log("An error occured", error))
+			.then(json => dispatch(receiveModules(json)))
+			.catch(error => console.log("Error in fetch modules", error));
+	};
 }
 
 export function installNpmModules() {
-    return function(dispatch, getState) {
-        //dispatch(requestNpmInstall())
-        //return fetch("/api/webapp/" + getState().app.id + "/npm")
-    }
+	return function(dispatch, getState) {
+		dispatch(requestModules());
+
+		return fetch("/api/webapp/" + getState().app.id + "/npm", {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(response => response.json(), error => console.log("An error occured", error))
+			.then(json => dispatch(receiveModules(json)))
+			.catch(error => console.log("Error in install modules", error));
+	};
+}
+
+export function deleteNpmModules() {
+	return function(dispatch, getState) {
+		// dispatch(requestModules)
+
+		return fetch("/api/webapp/" + getState().app.id + "/npm", {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(response => response.json(), error => console.log("An error occured", error))
+			.then(json => dispatch(receiveModules(json)))
+			.catch(error => console.log("Error deleting modules", error));
+	};
 }
 
 export function fetchWebApp(id: string) {
@@ -186,7 +210,7 @@ export function createFile(fileName, type: string = "file") {
 		const fso = {
 			content: "",
 			path: folderPath + "/" + fileName,
-			type,
+			type
 		};
 
 		return fetch("/api/webapp/" + getState().app.id + "/fso?fetch=true", {
@@ -219,16 +243,16 @@ export function deleteFile() {
 }
 
 export function requestModules() {
-    return {
-        type: AppActions.REQUEST_MODULES,
-    }
+	return {
+		type: AppActions.REQUEST_MODULES
+	};
 }
 
 export function receiveModules(modules) {
-    return {
-        type: AppActions.RECEIVE_MODULES,
-        modules,
-    }
+	return {
+		type: AppActions.RECEIVE_MODULES,
+		modules
+	};
 }
 
 export function requestWebApp(id) {
@@ -266,7 +290,7 @@ export function requestCreate() {
 }
 
 export function receiveCreate(file) {
-    syncFile(file);
+	syncFile(file);
 	return {
 		type: AppActions.RECEIVE_CREATE,
 		file
