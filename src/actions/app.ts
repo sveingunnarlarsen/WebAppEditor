@@ -2,7 +2,15 @@ import {AppActions} from "../types/app";
 import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData} from "./utils";
 import {closeFile, closeAllTabs} from "./editor";
 import {syncFile, removeFile, cloneGitRepo} from "../git";
+import {openDialog} from "./";
+import {DialogType} from "../types/dialog";
 import {throwError} from "./ajax";
+
+
+async function handleAppError(error, dispatch) {
+    const json = await error.json()
+	return dispatch(openDialog(DialogType.COMPILE_ERROR, json.status));
+}
 
 export function saveAppData() {
     return function(dispatch, getState) {
@@ -53,9 +61,11 @@ export function installNpmModules() {
 				"Content-Type": "application/json"
 			}
 		})
-			.then(response => response.json(), error => console.log("An error occured", error))
+		    .then(throwError)
+			.then(response => response.json())
+			.then(json => {console.log("feth didn't throw"); return json;})
 			.then(json => dispatch(receiveModules(json)))
-			.catch(error => console.log("Error in install modules", error));
+			.catch(error => handleAppError(error, dispatch))
 	};
 }
 
