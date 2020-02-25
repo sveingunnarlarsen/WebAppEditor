@@ -6,37 +6,34 @@ import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
 import {throwError} from "./ajax";
 
-
 async function handleAppError(error, dispatch) {
-    const json = await error.json()
+	const json = await error.json();
 	return dispatch(openDialog(DialogType.COMPILE_ERROR, json.status));
 }
 
 export function saveAppData() {
-    return function(dispatch, getState) {
-        
-        const app = getState().app;
-        
-        return fetch("/api/webapp/" + getState().app.id, {
-            method: "PATCH",
+	return function(dispatch, getState) {
+		const app = getState().app;
+
+		return fetch("/api/webapp/" + getState().app.id, {
+			method: "PATCH",
 			headers: {
-			    "Content-Type": "application/json"
+				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
-		        app: {
-		            id: app.id,
-		            name: app.name,
-		            type: app.type,
-		            description: app.description,
-		            settings: app.settings,
-		        }
-			}),
-        })
-            .then(throwError)
-            .then(response => response.json(), error => console.log("Failed to connect", error))
-            .then()
-        
-    }
+				app: {
+					id: app.id,
+					name: app.name,
+					type: app.type,
+					description: app.description,
+					settings: app.settings
+				}
+			})
+		})
+			.then(throwError)
+			.then(response => response.json(), error => console.log("Failed to connect", error))
+			.then();
+	};
 }
 
 export function fetchNpmModules() {
@@ -44,7 +41,7 @@ export function fetchNpmModules() {
 		dispatch(requestModules());
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm")
-		    .then(throwError)
+			.then(throwError)
 			.then(response => response.json(), error => console.log("An error occured", error))
 			.then(json => dispatch(receiveModules(json)))
 			.catch(error => console.log("Error in fetch modules", error));
@@ -61,11 +58,14 @@ export function installNpmModules() {
 				"Content-Type": "application/json"
 			}
 		})
-		    .then(throwError)
+			.then(throwError)
 			.then(response => response.json())
-			.then(json => {console.log("feth didn't throw"); return json;})
+			.then(json => {
+				console.log("feth didn't throw");
+				return json;
+			})
 			.then(json => dispatch(receiveModules(json)))
-			.catch(error => handleAppError(error, dispatch))
+			.catch(error => handleAppError(error, dispatch));
 	};
 }
 
@@ -146,8 +146,14 @@ export function createProject(opts) {
 						name: opts.name,
 						description: opts.description,
 						settings: {
-							repo: "",
-							branch: "master",
+							entryPoint: {
+								javascript: "",
+								html: ""
+							},
+							git: {
+								repo: opts.remote,
+								branch: "master"
+							},
 							projectFolder: null
 						}
 					}
@@ -359,13 +365,8 @@ export function updateFileState(file) {
 }
 
 export function updateAppData(data) {
-    return {
-        type: AppActions.UPDATE_APP_DATA,
-        data,
-    }
+	return {
+		type: AppActions.UPDATE_APP_DATA,
+		data
+	};
 }
-
-
-
-
-
