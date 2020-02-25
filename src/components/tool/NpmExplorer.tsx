@@ -6,22 +6,24 @@ import {connect} from "react-redux";
 import Toolbar from "@material-ui/core/Toolbar";
 import Input from "@material-ui/core/Input";
 import IconButton from "@material-ui/core/IconButton";
-import UpdateOutlinedIcon from '@material-ui/icons/UpdateOutlined';
-import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
+import UpdateOutlinedIcon from "@material-ui/icons/UpdateOutlined";
+import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 
 import {installNpmModules, deleteNpmModules} from "../../actions/app";
 
 const styles = {
 	container: {
 		background: "#252526",
-		width: "100%",
 		height: "100%",
-		overflow: "scroll"
 	},
 	toolbar: {
 		background: "#333333",
 		minHeight: "2rem",
 		color: "white"
+	},
+	list: {
+		height: "95%",
+	    overflowY: "auto",
 	}
 };
 
@@ -32,7 +34,7 @@ const mapState = state => {
 function mapDispatch(dispatch) {
 	return {
 		update: () => dispatch(installNpmModules()),
-		delete: () => dispatch(deleteNpmModules()),
+		delete: () => dispatch(deleteNpmModules())
 	};
 }
 
@@ -49,7 +51,7 @@ class NpmExplorer extends React.Component {
 			</li>
 		));
 	};
-	
+
 	render() {
 		const {classes} = this.props;
 		const display = this.props.show ? "" : "none";
@@ -63,7 +65,9 @@ class NpmExplorer extends React.Component {
 						<DeleteForeverOutlinedIcon fontSize="small" />
 					</IconButton>
 				</Toolbar>
-				<ul>{this.createList()}</ul>
+				<div className={classes.list}>
+					<ul>{this.createList()}</ul>
+				</div>
 			</div>
 		);
 	}

@@ -2,12 +2,41 @@ import {AppActions} from "../types/app";
 import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData} from "./utils";
 import {closeFile, closeAllTabs} from "./editor";
 import {syncFile, removeFile, cloneGitRepo} from "../git";
+import {throwError} from "./ajax";
+
+export function saveAppData() {
+    return function(dispatch, getState) {
+        
+        const app = getState().app;
+        
+        return fetch("/api/webapp/" + getState().app.id, {
+            method: "PATCH",
+			headers: {
+			    "Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+		        app: {
+		            id: app.id,
+		            name: app.name,
+		            type: app.type,
+		            description: app.description,
+		            settings: app.settings,
+		        }
+			}),
+        })
+            .then(throwError)
+            .then(response => response.json(), error => console.log("Failed to connect", error))
+            .then()
+        
+    }
+}
 
 export function fetchNpmModules() {
 	return function(dispatch, getState) {
 		dispatch(requestModules());
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm")
+		    .then(throwError)
 			.then(response => response.json(), error => console.log("An error occured", error))
 			.then(json => dispatch(receiveModules(json)))
 			.catch(error => console.log("Error in fetch modules", error));
@@ -318,3 +347,15 @@ export function updateFileState(file) {
 		file
 	};
 }
+
+export function updateAppData(data) {
+    return {
+        type: AppActions.UPDATE_APP_DATA,
+        data,
+    }
+}
+
+
+
+
+

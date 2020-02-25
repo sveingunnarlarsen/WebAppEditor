@@ -1,7 +1,7 @@
 import {openDialog, startCompile, endCompile, requestWebApps, receiveWebApps, requestEditorData, receiveEditorData} from "./";
 import {DialogType} from "../types/dialog";
 
-function throwFetchError(response) {
+export function throwError(response) {
 	if (!response.ok) {
 		throw response;
 	}
@@ -25,7 +25,7 @@ export function compileProject() {
 		return fetch(`/api/webapp/${getState().app.id}/deploy`, {
 			method: "POST"
 		})
-			.then(throwFetchError)
+			.then(throwError)
 			.then(response => dispatch(endCompile()))
 			.catch(error => handleCompileError(error, dispatch));
 	};

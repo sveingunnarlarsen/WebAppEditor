@@ -7,7 +7,17 @@ const initState: AppState = {
 	name: "",
 	description: "",
 	type: "",
-	settings: null,
+	settings: {
+	    entryPoint: {
+	        javascript: "",
+	        html: "",
+	    },
+	    git: {
+	        repo: "",
+	        branch: "",
+	    },
+	    projectFolder: "",
+	},
 	updatedAt: 0,
 	changedBy: "",
 	createdAt: 0,
@@ -66,7 +76,6 @@ const requestModules = produce((draft) => {
 });
 
 const receiveModules = produce((draft, modules) => {
-    console.log(modules);
     draft.modules = modules;    
 });
 
@@ -83,6 +92,13 @@ const updateFileState = produce((draft, updatedFile) => {
 		...updatedFile
 	};
 });
+
+const updateAppData = produce((draft, data) => {
+    draft.name = data.name;
+    draft.description = data.description;
+    draft.type = data.type;
+    draft.settings = data.settings;
+}); 
 
 export default function app(state = initState, action) {
 	switch (action.type) {
@@ -108,6 +124,8 @@ export default function app(state = initState, action) {
 			return requestModules(state);
 		case AppActions.RECEIVE_MODULES:
 			return receiveModules(state, action.modules);
+		case AppActions.UPDATE_APP_DATA:
+		    return updateAppData(state, action.data);
 		default:
 			return state;
 	}

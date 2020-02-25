@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {withStyles} from "@material-ui/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import Divider from '@material-ui/core/Divider';
 
 import {openDialog} from "../../actions";
 import {DialogType} from "../../types/dialog";
@@ -29,6 +30,10 @@ class ProjectMenu extends React.Component {
 		this.props.openDialog(type);
 		this.props.closeMenu();
 	};
+	
+	exportToFile = () => {
+	    
+	}
 
 	render() {
 		const {classes, anchorEl, closeMenu} = this.props;
@@ -51,6 +56,10 @@ class ProjectMenu extends React.Component {
 				</MenuItem>
 				<MenuItem onClick={() => this.handleClick(DialogType.DELETE_PROJECT)}>
 					Delete
+				</MenuItem>
+				<Divider />
+				<MenuItem onClick={() => this.exportToFile()}>
+					Export to file
 				</MenuItem>
 			</Menu>
 		);
