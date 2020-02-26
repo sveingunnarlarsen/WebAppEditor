@@ -8,6 +8,12 @@ export function throwError(response) {
 	return response;
 }
 
+export async function handleAjaxError(error, dispatch) {
+	const status = error.status;
+	const json = status ? await error.json() : {status: "Request failed"}
+	return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json}));
+}
+
 async function handleCompileError(error, dispatch) {
 	dispatch(endCompile());
 	const reader = error.body.getReader();
@@ -36,8 +42,10 @@ export function fetchEditorData() {
 		dispatch(requestEditorData());
 
 		return fetch("/api/editor/data")
-			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch.
-			.then(json => dispatch(receiveEditorData(json)));
+		    .then(throwError)
+			.then(response => response.json())
+			.then(json => dispatch(receiveEditorData(json)))
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -46,7 +54,9 @@ export function fetchWebApps() {
 		dispatch(requestWebApps());
 
 		return fetch("/api/webapp")
-			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch
-			.then(json => dispatch(receiveWebApps(json.apps)));
+		    .then(throwError)
+			.then(response => response.json())
+			.then(json => dispatch(receiveWebApps(json.apps)))
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }

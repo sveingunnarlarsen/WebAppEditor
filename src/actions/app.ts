@@ -4,13 +4,11 @@ import {closeFile, closeAllTabs} from "./editor";
 import {syncFile, removeFile, cloneGitRepo} from "../git";
 import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
-import {throwError} from "./ajax";
+import {throwError, handleAjaxError} from "./ajax";
 
-async function handleAjaxError(error, dispatch) {
-	const status = error.status;
-	const json = status ? error.json() : {status: "Request failed"}
-	return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json}));
-}
+const headers = {
+	"Content-Type": "application/json"
+};
 
 export function saveAppData() {
 	return function(dispatch, getState) {
@@ -18,9 +16,7 @@ export function saveAppData() {
 
 		return fetch("/api/webapp/" + getState().app.id, {
 			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers,
 			body: JSON.stringify({
 				app: {
 					id: app.id,
@@ -55,9 +51,7 @@ export function installNpmModules() {
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm", {
 			method: "PUT",
-			headers: {
-				"Content-Type": "application/json"
-			}
+			headers
 		})
 			.then(throwError)
 			.then(response => response.json())
@@ -73,9 +67,7 @@ export function deleteNpmModules() {
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm", {
 			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json"
-			}
+			headers
 		})
 			.then(throwError)
 			.then(response => response.json())
@@ -106,9 +98,7 @@ export function createProject(opts) {
 		if (opts.remote) {
 			return fetch("/api/webapp?fetch=true", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
+				headers,
 				body: JSON.stringify({
 					app: {
 						type: opts.type,
@@ -137,9 +127,7 @@ export function createProject(opts) {
 		} else {
 			return fetch("/api/webapp?fetch=true", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
+				headers,
 				body: JSON.stringify({
 					template: "react",
 					app: {
@@ -179,9 +167,7 @@ export function save() {
 
 		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
 			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers,
 			body: JSON.stringify({
 				fileSystemObjects: filesToSave.map(f => extractServerProps(f))
 			})
@@ -200,9 +186,7 @@ export function create(fsos) {
 
 		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers,
 			body: JSON.stringify({
 				fileSystemObjects: fsos
 			})
@@ -228,9 +212,7 @@ export function saveFile(fso) {
 
 		return fetch("/api/webapp/" + fso.webAppId + "/fso/" + fso.id + "?fetch=true", {
 			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers,
 			body: JSON.stringify({
 				fileSystemObject: extractServerProps(fso)
 			})
@@ -257,9 +239,7 @@ export function createFile(fileName, type: string = "file") {
 
 		return fetch("/api/webapp/" + getState().app.id + "/fso?fetch=true", {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers,
 			body: JSON.stringify({
 				fileSystemObject: fso
 			})

@@ -23,12 +23,7 @@ class GitEmitter extends EventTarget {
 }
 
 const gitEmitter = new GitEmitter();
-
-// TODO: Should use the planet9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
-// import http from 'https://unpkg.com/isomorphic-git@beta/http/web/index.js'
-// window.fs = new LightningFS("fs");
-// window.pfs = window.fs.promises;
 window.git = git;
 
 let currentAppName: string;

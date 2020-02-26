@@ -18,21 +18,18 @@ import {TERMINAL_RESIZED} from "../constants/action-types";
 import {DialogAction, DialogType} from "../types/dialog";
 
 export function resizeTool() {
-    console.log("resizeTool");
 	return {
 		type: TOOL_RESIZED,
 	};
 }
 
 export function resizeEditor() {
-    console.log("resizeEditor");
 	return {
 	    type: EDITOR_RESIZED,
 	};
 }
 
 export function resizeTerminal() {
-    console.log("resizeTerminal");
 	return {
 	    type: TERMINAL_RESIZED,
 	};
