@@ -91,7 +91,6 @@ async function syncFilesToFS() {
 
 async function createFilesFromFS() {
 	const files = await git.listFiles({fs, dir: currentGitDir});
-	console.log("Files after clone: ", files);
 	const createdFolders = [];
 	const fsos = [];
 
@@ -102,9 +101,6 @@ async function createFilesFromFS() {
 
 		for (let y = 1; y < parts.length; y++) {
 			const folderPath = parts.slice(0, y).join("/");
-
-			console.log("Parts: ", parts);
-			console.log("FolderPath: ", folderPath);
 
 			if (createdFolders.indexOf(folderPath) < 0) {
 				createdFolders.push(folderPath);
@@ -124,7 +120,6 @@ async function createFilesFromFS() {
 		});
 	}
 
-	console.log(fsos);
 	store.dispatch(create(fsos));
 }
 
@@ -439,7 +434,6 @@ export async function runCommand(command) {
 
 async function clone(url) {
 	console.log("Start clone");
-
 	await git.clone({
 		fs,
 		http,
@@ -457,9 +451,6 @@ async function clone(url) {
 }
 
 export async function cloneGitRepo(repo) {
-	console.log("currentAppName", currentAppName);
-	console.log("currentGitDir", currentGitDir);
-
 	if (gitEmitter.isInitializing) {
 		gitEmitter.addEventListener("initEnd", () => {
 			clone(repo);
@@ -469,8 +460,18 @@ export async function cloneGitRepo(repo) {
 	}
 }
 
-export async function syncFile({path, content}: {path: string; content: string}) {
+export async function syncFile({id, path, content}: {id: string; path: string; content: string}) {
 	try {
+	    console.log("ID: ", id);
+	    console.log("Path: ", path);
+		if (id) {
+			const originalFile = getFileById(id);
+			if (originalFile.path !== path) {
+			    console.log("Original file should be removed from git and fs");
+			    await pfs.unlink(`${currentGitDir}${originalFile.path}`)
+			    await git.remove({fs, dir: currentGitDir, filepath: originalFile.path})
+			}
+		}
 		await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
 	} catch (e) {
 		console.log("Error syncing file to fs: ", e.message);

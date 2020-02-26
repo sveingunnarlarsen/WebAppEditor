@@ -326,6 +326,10 @@ export function requestSave() {
 }
 
 export function receiveSave(files) {
+    // If we receive only one file it was probably renmaed and must be synced with git.
+    if (files.length === 1) {
+        syncFile(files[0]);
+    }
 	return {
 		type: AppActions.RECEIVE_SAVE,
 		files
