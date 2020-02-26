@@ -26,9 +26,9 @@ const gitEmitter = new GitEmitter();
 
 // TODO: Should use the planet9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
-window.fs = new LightningFS("fs");
-git.plugins.set("fs", window.fs);
-window.pfs = window.fs.promises;
+// import http from 'https://unpkg.com/isomorphic-git@beta/http/web/index.js'
+// window.fs = new LightningFS("fs");
+// window.pfs = window.fs.promises;
 window.git = git;
 
 let currentAppName: string;
@@ -48,7 +48,7 @@ async function handleChange() {
 			if (e.message.indexOf("ENOENT") > -1) {
 				console.log("Initializing git");
 				pfs.mkdir(currentGitDir);
-				await git.init({dir: currentGitDir});
+				await git.init({fs, dir: currentGitDir});
 				await syncFilesToFS();
 				console.log("Git initialized");
 			} else {
@@ -95,7 +95,7 @@ async function syncFilesToFS() {
 }
 
 async function createFilesFromFS() {
-    const files = await git.listFiles({dir: currentGitDir});
+    const files = await git.listFiles({fs, dir: currentGitDir});
     console.log("Files after clone: ", files);
     const createdFolders = [];
     const fsos = [];
@@ -135,7 +135,7 @@ async function createFilesFromFS() {
 }
 
 async function syncFilesFromFS(pattern) {
-	let files = await git.listFiles({dir: currentGitDir});
+	let files = await git.listFiles({fs, dir: currentGitDir});
 	if (pattern) {
 		files = files.filter(f => new RegExp(pattern, "g").test(f));
 		if (files.length < 1) {
@@ -156,7 +156,7 @@ async function syncFilesFromFS(pattern) {
 }
 
 async function appendFileStatus(filepath) {
-	const status = await git.status({dir: currentGitDir, filepath});
+	const status = await git.status({fs, dir: currentGitDir, filepath});
 	return `${status} ${filepath}`;
 }
 
@@ -167,25 +167,25 @@ const FILE = 0,
 
 class GitCommand {
 	private static async getUntrackedFiles() {
-		return (await git.statusMatrix({dir: currentGitDir})).filter(row => row[HEAD] === 0 && row[WORKDIR] === 2 && row[STAGE] === 0).map(row => row[FILE]);
+		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] === 0 && row[WORKDIR] === 2 && row[STAGE] === 0).map(row => row[FILE]);
 	}
 
 	private static async getUnstagedChanges() {
-		return (await git.statusMatrix({dir: currentGitDir})).filter(row => row[HEAD] !== row[WORKDIR] && row[WORKDIR] !== row[STAGE] && row[HEAD] !== 0).map(row => row[FILE]);
+		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[WORKDIR] && row[WORKDIR] !== row[STAGE] && row[HEAD] !== 0).map(row => row[FILE]);
 	}
 
 	private static async getStagedChanges() {
-		return (await git.statusMatrix({dir: currentGitDir})).filter(row => row[HEAD] !== row[STAGE] && (row[STAGE] === 2 || row[STAGE] === 3)).map(row => row[FILE]);
+		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[STAGE] && (row[STAGE] === 2 || row[STAGE] === 3)).map(row => row[FILE]);
 	}
 
 	private static async getModifiedFiles() {
-		return (await git.statusMatrix({dir: currentGitDir})).filter(row => row[HEAD] !== row[WORKDIR]).map(row => row[FILE]);
+		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[WORKDIR]).map(row => row[FILE]);
 	}
 
 	static async status(args, opts) {
-		let ret: string = `On branch ${await git.currentBranch({dir: currentGitDir})}\n`;
+		let ret: string = `On branch ${await git.currentBranch({fs, dir: currentGitDir})}\n`;
 
-		const statusMatrix = await git.statusMatrix({dir: currentGitDir});
+		const statusMatrix = await git.statusMatrix({fs, dir: currentGitDir});
 		const stagedChanges = await this.getStagedChanges();
 
 		if (stagedChanges.length > 0) {
@@ -213,8 +213,8 @@ class GitCommand {
 	}
 
 	static async diff(args, opts) {
-		const branch = await git.currentBranch({dir: currentGitDir});
-		const sha = await git.resolveRef({dir: currentGitDir, ref: branch});
+		const branch = await git.currentBranch({fs, dir: currentGitDir});
+		const sha = await git.resolveRef({fs, dir: currentGitDir, ref: branch});
 		let diffFiles;
 		if (opts.cached) {
 			diffFiles = await this.getStagedChanges();
@@ -229,7 +229,7 @@ class GitCommand {
 		let ret = "";
 		for (let i = 0; i < diffFiles.length; i++) {
 			const filepath = diffFiles[i];
-			let {object: fileHEAD} = await git.readObject({dir: currentGitDir, oid: sha, filepath, encoding: "utf8"});
+			let {object: fileHEAD} = await git.readObject({fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8"});
 			let fileWORKDIR = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
 
 			const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD, fileWORKDIR);
@@ -258,16 +258,19 @@ class GitCommand {
 
 	static async log(args, opts) {
 		let depth = args[0] ? Math.abs(args[0]) : 10;
-		const commits = await git.log({dir: currentGitDir, depth});
+		const commits = await git.log({fs, dir: currentGitDir, depth});
 
 		let ret = "";
 		for (let i = 0; i < commits.length; i++) {
 			const commit = commits[i];
+			console.log("Commit: ", commit);
 			ret += forcedChalk.yellow(`commit ${commit.oid}\n`);
-			ret += `Author: ${commit.committer.name} <${commit.committer.email}>\n`;
-			ret += `Date: ${new Date(commit.committer.timestamp)}\n \n`;
-			ret += `\t ${commit.message}\n \n`;
+			ret += `Author: ${commit.commit.committer.name} <${commit.commit.committer.email}>\n`;
+			ret += `Date: ${new Date(commit.commit.committer.timestamp)}\n \n`;
+			ret += `\t ${commit.commit.message}\n \n`;
 		}
+		
+		console.log("Done", ret);
 
 		return ret;
 	}
@@ -280,7 +283,7 @@ class GitCommand {
 			for (let i = 0; i < modifiedPaths.length; i++) {
 				const filepath = modifiedPaths[i];
 				console.log("Running git add for filepath: ", filepath);
-				await git.add({dir: currentGitDir, filepath});
+				await git.add({fs, dir: currentGitDir, filepath});
 			}
 		} else if (args.length === 1) {
 			let modifiedPaths = await this.getModifiedFiles();
@@ -288,23 +291,23 @@ class GitCommand {
 			for (let i = 0; i < modifiedPaths.length; i++) {
 				const filepath = modifiedPaths[i];
 				console.log("Running git add for filepath: ", filepath);
-				await git.add({dir: currentGitDir, filepath});
+				await git.add({fs, dir: currentGitDir, filepath});
 			}
 		}
 	}
 
 	static async checkout(args, opts) {
-		const currentBranch = await git.currentBranch({dir: currentGitDir});
+		const currentBranch = await git.currentBranch({fs, dir: currentGitDir});
 
 		if (!args.length) {
 			return;
 		} else if (args.length === 1 && args[0] === ".") {
-			await git.checkout({dir: currentGitDir, ref: currentBranch});
+			await git.checkout({fs, dir: currentGitDir, ref: currentBranch});
 			await syncFilesFromFS();
 		} else if (args.length === 1) {
 			// Is this a branch or a file path.
 			const arg = args[0];
-			const branches = await git.listBranches({dir: currentGitDir});
+			const branches = await git.listBranches({fs, dir: currentGitDir});
 			if (branches.indexOf(arg) > -1) {
 				if (currentBranch === arg) {
 					return `Already on '${currentBranch}'`;
@@ -313,7 +316,7 @@ class GitCommand {
 				//await git.checkout({dir: currentGitDir, ref: arg});
 			} else {
 				// TODO: Check that the filepath is actually a file path.
-				await git.fastCheckout({dir: currentGitDir, force: true, filepaths: [arg]});
+				await git.fastCheckout({fs, dir: currentGitDir, force: true, filepaths: [arg]});
 				await syncFilesFromFS(arg);
 			}
 		}
@@ -322,19 +325,19 @@ class GitCommand {
 	static async commit(args, opts) {
 		if (opts.m) {
 			// TODO: Git config, user.name and user.email must be set.
-			return await git.commit({dir: currentGitDir, author: {name: "Svein Gunnar Larsen", email: "svein.gunnar.larsen@gmail.com"}, message: opts.m});
+			return await git.commit({fs, dir: currentGitDir, author: {name: "Svein Gunnar Larsen", email: "svein.gunnar.larsen@gmail.com"}, message: opts.m});
 		} else {
 			return `Aborting commit due to empty commit message`;
 		}
 	}
 
 	static async push(args, opts) {
-		const branch = await git.currentBranch({dir: currentGitDir});
+		const branch = await git.currentBranch({fs, dir: currentGitDir});
 		console.log("Git push: ", branch, args, opts);
 		let result, remote;
 
 		if (!args[0]) {
-			const remotes = await git.listRemotes({dir: currentGitDir});
+			const remotes = await git.listRemotes({fs, dir: currentGitDir});
 			if (remotes[0]) {
 				remote = remotes[0].remote;
 			} else {
@@ -349,6 +352,8 @@ class GitCommand {
 
 		if (opts.force) {
 			result = await git.push({
+			    fs,
+			    http,
 				dir: currentGitDir,
 				corsProxy,
 				ref: branch,
@@ -360,6 +365,8 @@ class GitCommand {
 			});
 		} else {
 			result = await git.push({
+			    fs,
+			    http,
 				dir: currentGitDir,
 				corsProxy,
 				ref: branch,
@@ -392,10 +399,10 @@ class GitCommand {
 		const subCommand = args[0];
 		if (subCommand === "add") {
 			if (!args[1] || !args[2]) return `usage: git remote add <name> <url>`;
-			await git.addRemote({dir: currentGitDir, remote: args[1], url: args[2]});
+			await git.addRemote({fs, dir: currentGitDir, remote: args[1], url: args[2]});
 		} else {
 			if (opts.v) {
-				const remotes = (await git.listRemotes({dir: currentGitDir}))
+				const remotes = (await git.listRemotes({fs, dir: currentGitDir}))
 					.map(remote => {
 						return `${remote.remote} ${remote.url}`;
 					})
@@ -440,17 +447,19 @@ export async function runCommand(command) {
 	}
 }
 
-async function clone() {
+async function clone(url) {
     console.log("Start clone");
     
 	await git.clone({
+	    fs,
+	    http,
 		dir: currentGitDir,
 		corsProxy,
-		url: "https://github.com/sveingunnarlarsen/WebAppEditor.git",
+		url,
 		singleBranch: false,
 		noCheckout: false,
 		noTags: true,
-		depth: 100
+		depth: 100,
 	});
 	gitEmitter.removeEventListener("initEnd", clone);
 	console.log("Clone done");
@@ -462,9 +471,9 @@ export async function cloneGitRepo(repo) {
 	console.log("currentGitDir", currentGitDir);
 
     if (gitEmitter.isInitializing) {
-        gitEmitter.addEventListener("initEnd", clone);
+        gitEmitter.addEventListener("initEnd", () => {clone(repo)});
     } else {
-        await clone();
+        await clone(repo);
     }
 }
 
@@ -480,7 +489,7 @@ export async function removeFile(fileId: string) {
 	const file = getFileById(fileId);
 	try {
 		await pfs.unlink(`${currentGitDir}${file.path}`);
-		await git.remove({dir: currentGitDir, filepath: file.path});
+		await git.remove({fs, dir: currentGitDir, filepath: file.path});
 	} catch (e) {
 		console.log("Error deleting file from fs or removing from git", e.message);
 	}

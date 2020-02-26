@@ -131,7 +131,7 @@ export function createProject(opts) {
 				.then(response => response.json(), error => console.log("An error occured", error))
 				.then(json => convertApiWebAppData(json))
 				.then(app => dispatch(receiveWebApp(app)))
-				.then(() => cloneGitRepo())
+				.then(() => cloneGitRepo(opts.remote))
 				.catch(error => console.log("Error in createProject from git repo", error));
 		} else {
 			return fetch("/api/webapp?fetch=true", {
