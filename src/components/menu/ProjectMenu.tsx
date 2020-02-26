@@ -62,13 +62,13 @@ class ProjectMenu extends React.Component {
 				<MenuItem onClick={() => this.handleClick(DialogType.DELETE_PROJECT)}>Delete</MenuItem>
 				<Divider />
 				<MenuItem onClick={this.exportToZip}>Export to zip</MenuItem>
-				<MenuItem onClick={() => this.importFolderZip("importFolder")}>
-					Import folder
-					<input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{display: "none"}} onChange={e => importFolderZip(e, "folder")} value="" />
-				</MenuItem>
 				<MenuItem onClick={() => this.importFolderZip("importZip")}>
 					Import zip
 					<input id="importZip" accept=".zip" multiple="single" type="file" style={{display: "none"}} onChange={e => importFolderZip(e, "zip")} value="" />
+				</MenuItem>
+				<MenuItem onClick={() => this.importFolderZip("importFolder")}>
+					Import folder
+					<input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{display: "none"}} onChange={e => importFolderZip(e, "folder")} value="" />
 				</MenuItem>
 			</Menu>
 		);

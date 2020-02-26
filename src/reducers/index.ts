@@ -17,6 +17,7 @@ import {REQUEST_WEBAPPS} from "../constants/action-types";
 import {RECEIVE_WEBAPPS} from "../constants/action-types";
 
 import {AppEditorState, Tool} from "../types";
+import {AppActions} from "../types/app";
 import {DialogAction} from "../types/dialog"
 
 import editor from "./editor";
@@ -27,6 +28,7 @@ const initialState: AppEditorState = {
 	previewVisible: false,
 	commandLineVisible: false,
 	isCompiling: false,
+	isUpdatingNpm: false,
 	toolResized: 0,
 	editorResized: 0,
 	terminalResized: 0,
@@ -85,10 +87,19 @@ function commandLineVisible(state = initialState.commandLineVisible, action) {
 	return state;
 }
 
-function isCompiling(state = initialState.previewVisible, action) {
+function isCompiling(state = initialState.isCompiling, action) {
 	if (action.type === START_COMPILE) {
 		return true;
 	} else if (action.type === END_COMPILE) {
+		return false;
+	}
+	return state;
+}
+
+function isUpdatingNpm(state = initialState.isUpdatingNpm, action) {
+	if (action.type === AppActions.REQUEST_MODULES) {
+		return true;
+	} else if (action.type === AppActions.RECEIVE_MODULES) {
 		return false;
 	}
 	return state;
@@ -164,6 +175,7 @@ const rootReducer = combineReducers({
 	editorResized,
 	terminalResized,
 	isCompiling,
+	isUpdatingNpm,
 	resources,
 	app,
 	apps,
