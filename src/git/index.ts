@@ -95,43 +95,42 @@ async function syncFilesToFS() {
 }
 
 async function createFilesFromFS() {
-    const files = await git.listFiles({fs, dir: currentGitDir});
-    console.log("Files after clone: ", files);
-    const createdFolders = [];
-    const fsos = [];
-    
-    for (let i = 0; i < files.length; i++) {
-        const filepath = files[i];
+	const files = await git.listFiles({fs, dir: currentGitDir});
+	console.log("Files after clone: ", files);
+	const createdFolders = [];
+	const fsos = [];
 
-        const parts = filepath.split("/");
-        
-        for (let y = 1; y < parts.length; y++) {
-        
-            const folderPath = parts.slice(0, y).join("/");
-            
-            console.log("Parts: ", parts);
-            console.log("FolderPath: ", folderPath);
-            
-            if (createdFolders.indexOf(folderPath) < 0) {
-                createdFolders.push(folderPath);
-                fsos.push({
-                    path: "/" + folderPath,
-                    type: "folder",
-                })
-            }
-        }
-        
-        const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
-        
-        fsos.push({
-            type: "file",
-            path: "/" + filepath,
-            content: fileContent,
-        });
-    }
-    
-    console.log(fsos);
-    store.dispatch(create(fsos));
+	for (let i = 0; i < files.length; i++) {
+		const filepath = files[i];
+
+		const parts = filepath.split("/");
+
+		for (let y = 1; y < parts.length; y++) {
+			const folderPath = parts.slice(0, y).join("/");
+
+			console.log("Parts: ", parts);
+			console.log("FolderPath: ", folderPath);
+
+			if (createdFolders.indexOf(folderPath) < 0) {
+				createdFolders.push(folderPath);
+				fsos.push({
+					path: "/" + folderPath,
+					type: "folder"
+				});
+			}
+		}
+
+		const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
+
+		fsos.push({
+			type: "file",
+			path: "/" + filepath,
+			content: fileContent
+		});
+	}
+
+	console.log(fsos);
+	store.dispatch(create(fsos));
 }
 
 async function syncFilesFromFS(pattern) {
@@ -269,7 +268,7 @@ class GitCommand {
 			ret += `Date: ${new Date(commit.commit.committer.timestamp)}\n \n`;
 			ret += `\t ${commit.commit.message}\n \n`;
 		}
-		
+
 		console.log("Done", ret);
 
 		return ret;
@@ -352,28 +351,24 @@ class GitCommand {
 
 		if (opts.force) {
 			result = await git.push({
-			    fs,
-			    http,
+				fs,
+				http,
 				dir: currentGitDir,
 				corsProxy,
 				ref: branch,
 				remote,
-				username: opts.username,
-				password: opts.password,
-				token: opts.token,
+				onAuth: () => ({username: opts.username, password: opts.password}),
 				force: true
 			});
 		} else {
 			result = await git.push({
-			    fs,
-			    http,
+				fs,
+				http,
 				dir: currentGitDir,
 				corsProxy,
 				ref: branch,
 				remote,
-				username: opts.username,
-				password: opts.password,
-				token: opts.token
+				onAuth: () => ({username: opts.username, password: opts.password})
 			});
 		}
 
@@ -414,9 +409,9 @@ class GitCommand {
 			}
 		}
 	}
-	
+
 	static async clone(args, opts) {
-        return `If you want to clone a git repository please create a new project`;
+		return `If you want to clone a git repository please create a new project`;
 	}
 }
 
@@ -448,18 +443,18 @@ export async function runCommand(command) {
 }
 
 async function clone(url) {
-    console.log("Start clone");
-    
+	console.log("Start clone");
+
 	await git.clone({
-	    fs,
-	    http,
+		fs,
+		http,
 		dir: currentGitDir,
 		corsProxy,
 		url,
 		singleBranch: false,
 		noCheckout: false,
 		noTags: true,
-		depth: 100,
+		depth: 100
 	});
 	gitEmitter.removeEventListener("initEnd", clone);
 	console.log("Clone done");
@@ -470,11 +465,13 @@ export async function cloneGitRepo(repo) {
 	console.log("currentAppName", currentAppName);
 	console.log("currentGitDir", currentGitDir);
 
-    if (gitEmitter.isInitializing) {
-        gitEmitter.addEventListener("initEnd", () => {clone(repo)});
-    } else {
-        await clone(repo);
-    }
+	if (gitEmitter.isInitializing) {
+		gitEmitter.addEventListener("initEnd", () => {
+			clone(repo);
+		});
+	} else {
+		await clone(repo);
+	}
 }
 
 export async function syncFile({path, content}: {path: string; content: string}) {
