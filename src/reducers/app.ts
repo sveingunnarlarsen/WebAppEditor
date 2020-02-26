@@ -26,7 +26,6 @@ const initState: AppState = {
 	fileSystemObjects: [],
 	updateTree: false,
 	isSaving: false,
-	modules: [],
 };
 
 const requestWebApp = produce((draft, appId) => {
@@ -35,7 +34,7 @@ const requestWebApp = produce((draft, appId) => {
 });
 
 const receiveWebApp = produce((draft, app) => {
-	return {...app, modules: []};
+	return {...initState, ...app};
 });
 
 const requestSave = produce(draft => {

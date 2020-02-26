@@ -6,9 +6,10 @@ import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
 import {throwError} from "./ajax";
 
-async function handleAppError(error, dispatch) {
-	const json = await error.json();
-	return dispatch(openDialog(DialogType.COMPILE_ERROR, json.status));
+async function handleAjaxError(error, dispatch) {
+	const status = error.status;
+	const json = status ? error.json() : {status: "Request failed"}
+	return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json}));
 }
 
 export function saveAppData() {
@@ -31,8 +32,8 @@ export function saveAppData() {
 			})
 		})
 			.then(throwError)
-			.then(response => response.json(), error => console.log("Failed to connect", error))
-			.then();
+			.then(response => response.json())
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -42,15 +43,15 @@ export function fetchNpmModules() {
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm")
 			.then(throwError)
-			.then(response => response.json(), error => console.log("An error occured", error))
+			.then(response => response.json())
 			.then(json => dispatch(receiveModules(json)))
-			.catch(error => console.log("Error in fetch modules", error));
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
 export function installNpmModules() {
 	return function(dispatch, getState) {
-		dispatch(requestModules());
+		dispatch(startUpdateModules());
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm", {
 			method: "PUT",
@@ -60,18 +61,15 @@ export function installNpmModules() {
 		})
 			.then(throwError)
 			.then(response => response.json())
-			.then(json => {
-				console.log("feth didn't throw");
-				return json;
-			})
-			.then(json => dispatch(receiveModules(json)))
-			.catch(error => handleAppError(error, dispatch));
+			.then(() => dispatch(fetchNpmModules()))
+			.catch(error => handleAjaxError(error, dispatch))
+			.finally(() => dispatch(endUpdateModules()));
 	};
 }
 
 export function deleteNpmModules() {
 	return function(dispatch, getState) {
-		// dispatch(requestModules)
+		dispatch(requestDeleteModules());
 
 		return fetch("/api/webapp/" + getState().app.id + "/npm", {
 			method: "DELETE",
@@ -79,9 +77,10 @@ export function deleteNpmModules() {
 				"Content-Type": "application/json"
 			}
 		})
-			.then(response => response.json(), error => console.log("An error occured", error))
-			.then(json => dispatch(receiveModules(json)))
-			.catch(error => console.log("Error deleting modules", error));
+			.then(throwError)
+			.then(response => response.json())
+			.then(json => dispatch(receiveDeleteModules()))
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -93,11 +92,12 @@ export function fetchWebApp(id: string) {
 		dispatch(requestWebApp(id));
 
 		return fetch("/api/webapp/" + id)
-			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch
+			.then(throwError)
+			.then(response => response.json())
 			.then(json => convertApiWebAppData(json))
 			.then(app => dispatch(receiveWebApp(app)))
 			.then(() => dispatch(fetchNpmModules()))
-			.catch(error => console.log("Error in fetchWebApp", error)); //TODO: Error dispatch
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -128,11 +128,12 @@ export function createProject(opts) {
 					}
 				})
 			})
-				.then(response => response.json(), error => console.log("An error occured", error))
+				.then(throwError)
+				.then(response => response.json())
 				.then(json => convertApiWebAppData(json))
 				.then(app => dispatch(receiveWebApp(app)))
 				.then(() => cloneGitRepo(opts.remote))
-				.catch(error => console.log("Error in createProject from git repo", error));
+				.catch(error => handleAjaxError(error, dispatch));
 		} else {
 			return fetch("/api/webapp?fetch=true", {
 				method: "POST",
@@ -159,10 +160,11 @@ export function createProject(opts) {
 					}
 				})
 			})
-				.then(response => response.json(), error => console.log("An error occured", error))
+				.then(throwError)
+				.then(response => response.json())
 				.then(json => convertApiWebAppData(json))
 				.then(app => dispatch(receiveWebApp(app)))
-				.catch(error => console.log("Error in createProject", error));
+				.catch(error => handleAjaxError);
 		}
 	};
 }
@@ -184,9 +186,11 @@ export function save() {
 				fileSystemObjects: filesToSave.map(f => extractServerProps(f))
 			})
 		})
-			.then(response => response.json(), error => console.log("An error occured", error))
+			.then(throwError)
+			.then(response => response.json())
 			.then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects)))
-			.then(files => dispatch(receiveSave(files)));
+			.then(files => dispatch(receiveSave(files)))
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -203,7 +207,8 @@ export function create(fsos) {
 				fileSystemObjects: fsos
 			})
 		})
-			.then(response => response.json(), error => console.log("AN error occured", error))
+			.then(throwError)
+			.then(response => response.json())
 			.then(json =>
 				convertApiWebAppData({
 					app: {
@@ -213,16 +218,7 @@ export function create(fsos) {
 				})
 			)
 			.then(app => dispatch(receiveWebApp(app)))
-			.catch(error => console.log("An error occured: ", error));
-	};
-}
-
-export function saveApp(data) {
-	return function(dispatch, getState) {
-		dispatch(requestSave());
-
-		const app = getState().app;
-		return fetch("/api/webapp");
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -239,10 +235,11 @@ export function saveFile(fso) {
 				fileSystemObject: extractServerProps(fso)
 			})
 		})
-			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch
+			.then(throwError)
+			.then(response => response.json())
 			.then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
 			.then(file => dispatch(receiveSave([file])))
-			.catch(error => console.log("Error in fileSave", error)); //TODO: Error dispatch
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -267,23 +264,25 @@ export function createFile(fileName, type: string = "file") {
 				fileSystemObject: fso
 			})
 		})
-			.then(response => response.json(), error => console.log("An error occured", error)) //TODO: Error dispatch
+			.then(throwError)
+			.then(response => response.json())
 			.then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
 			.then(file => dispatch(receiveCreate(file)))
-			.catch(error => console.log("Error in file create", error));
+			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
 export function deleteFile() {
 	return function(dispatch, getState) {
 		dispatch(requestDelete());
+
 		const webAppId = getState().app.id;
 		const fileId = getState().selectedNode;
 		dispatch(closeFile(fileId));
 
 		return fetch("/api/webapp/" + webAppId + "/fso/" + fileId, {
 			method: "DELETE"
-		}).then(response => dispatch(receiveDelete(fileId)), error => console.log("An error occured", error));
+		}).then(response => dispatch(receiveDelete(fileId)), error => handleAjaxError(error, dispatch));
 	};
 }
 
@@ -297,6 +296,31 @@ export function receiveModules(modules) {
 	return {
 		type: AppActions.RECEIVE_MODULES,
 		modules
+	};
+}
+
+export function startUpdateModules() {
+	return {
+		type: AppActions.START_MODULE_UPDATE
+	};
+}
+
+export function endUpdateModules(result) {
+	return {
+		type: AppActions.END_MODULE_UPDATE,
+		result
+	};
+}
+
+export function requestDeleteModules() {
+	return {
+		type: AppActions.REQUEST_DELETE_MODULES
+	};
+}
+
+export function receiveDeleteModules() {
+	return {
+		type: AppActions.RECEIVE_DELETE_MODULES
 	};
 }
 

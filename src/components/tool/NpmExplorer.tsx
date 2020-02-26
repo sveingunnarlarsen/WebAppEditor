@@ -28,7 +28,7 @@ const styles = {
 };
 
 const mapState = state => {
-	return {modules: state.app.modules};
+	return {modules: state.modules};
 };
 
 function mapDispatch(dispatch) {

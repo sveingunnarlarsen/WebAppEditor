@@ -18,7 +18,7 @@ import {RECEIVE_WEBAPPS} from "../constants/action-types";
 
 import {AppEditorState, Tool} from "../types";
 import {AppActions} from "../types/app";
-import {DialogAction} from "../types/dialog"
+import {DialogAction} from "../types/dialog";
 
 import editor from "./editor";
 import app from "./app";
@@ -28,6 +28,7 @@ const initialState: AppEditorState = {
 	previewVisible: false,
 	commandLineVisible: false,
 	isCompiling: false,
+	modules: [],
 	isUpdatingNpm: false,
 	toolResized: 0,
 	editorResized: 0,
@@ -43,7 +44,7 @@ const initialState: AppEditorState = {
 	dialog: {
 		visible: false,
 		type: null,
-		data: null,
+		data: null
 	}
 };
 
@@ -96,10 +97,23 @@ function isCompiling(state = initialState.isCompiling, action) {
 	return state;
 }
 
-function isUpdatingNpm(state = initialState.isUpdatingNpm, action) {
+function modules(state = initialState.modules, action) {
 	if (action.type === AppActions.REQUEST_MODULES) {
-		return true;
+		return [];
 	} else if (action.type === AppActions.RECEIVE_MODULES) {
+		return action.modules;
+	} else if (AppActions.REQUEST_DELETE_MODULES) {
+	    
+	} else if (AppActions.RECEIVE_DELETE_MODULES) {
+	    return [];
+	}
+	return state;
+}
+
+function isUpdatingNpm(state = initialState.isUpdatingNpm, action) {
+	if (action.type === AppActions.START_MODULE_UPDATE) {
+		return true;
+	} else if (action.type === AppActions.END_MODULE_UPDATE) {
 		return false;
 	}
 	return state;
@@ -132,38 +146,38 @@ function dialog(state = initialState.dialog, action) {
 		return {
 			visible: true,
 			type: action.dialog,
-			data: action.data,
+			data: action.data
 		};
 	} else if (action.type === DialogAction.CLOSE) {
 		return {
 			visible: false,
 			type: null,
-			data: null,
+			data: null
 		};
 	}
 	return state;
 }
 
 function toolResized(state = initialState.toolResized, action) {
-    console.log(action.type);
-    if (action.type === "TOOL_RESIZED") {
-        return state + 1;
-    }
-    return state;
+	console.log(action.type);
+	if (action.type === "TOOL_RESIZED") {
+		return state + 1;
+	}
+	return state;
 }
 
 function editorResized(state = initialState.toolResized, action) {
-    if (action.type === "EDITOR_RESIZED") {
-        return state + 1;
-    }
-    return state;
+	if (action.type === "EDITOR_RESIZED") {
+		return state + 1;
+	}
+	return state;
 }
 
 function terminalResized(state = initialState.toolResized, action) {
-    if (action.type === "TERMINAL_RESIZED") {
-        return state + 1;
-    }
-    return state;
+	if (action.type === "TERMINAL_RESIZED") {
+		return state + 1;
+	}
+	return state;
 }
 
 const rootReducer = combineReducers({
@@ -175,6 +189,7 @@ const rootReducer = combineReducers({
 	editorResized,
 	terminalResized,
 	isCompiling,
+	modules,
 	isUpdatingNpm,
 	resources,
 	app,
