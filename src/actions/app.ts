@@ -14,7 +14,7 @@ export function saveAppData() {
 	return function(dispatch, getState) {
 		const app = getState().app;
 
-		return fetch("/api/webapp/" + getState().app.id, {
+		return fetch(`/api/webapp/${app.id}`, {
 			method: "PATCH",
 			headers,
 			body: JSON.stringify({
@@ -37,7 +37,7 @@ export function fetchNpmModules() {
 	return function(dispatch, getState) {
 		dispatch(requestModules());
 
-		return fetch("/api/webapp/" + getState().app.id + "/npm")
+		return fetch(`/api/webapp/${getState().app.id}/npm`)
 			.then(throwError)
 			.then(response => response.json())
 			.then(json => dispatch(receiveModules(json)))
@@ -49,9 +49,8 @@ export function installNpmModules() {
 	return function(dispatch, getState) {
 		dispatch(startUpdateModules());
 
-		return fetch("/api/webapp/" + getState().app.id + "/npm", {
+		return fetch(`/api/webapp/${getState().app.id}/npm`, {
 			method: "PUT",
-			headers
 		})
 			.then(throwError)
 			.then(response => response.json())
@@ -65,9 +64,8 @@ export function deleteNpmModules() {
 	return function(dispatch, getState) {
 		dispatch(requestDeleteModules());
 
-		return fetch("/api/webapp/" + getState().app.id + "/npm", {
+		return fetch(`/api/webapp/${getState().app.id}/npm`, {
 			method: "DELETE",
-			headers
 		})
 			.then(throwError)
 			.then(response => response.json())
@@ -83,7 +81,7 @@ export function fetchWebApp(id: string) {
 		}
 		dispatch(requestWebApp(id));
 
-		return fetch("/api/webapp/" + id)
+		return fetch(`/api/webapp/${id}`)
 			.then(throwError)
 			.then(response => response.json())
 			.then(json => convertApiWebAppData(json))
@@ -96,7 +94,7 @@ export function fetchWebApp(id: string) {
 export function createProject(opts) {
 	return function(dispatch, getState) {
 		if (opts.remote) {
-			return fetch("/api/webapp?fetch=true", {
+			return fetch(`/api/webapp?fetch=true`, {
 				method: "POST",
 				headers,
 				body: JSON.stringify({
@@ -125,7 +123,7 @@ export function createProject(opts) {
 				.then(() => cloneGitRepo(opts.remote))
 				.catch(error => handleAjaxError(error, dispatch));
 		} else {
-			return fetch("/api/webapp?fetch=true", {
+			return fetch(`/api/webapp?fetch=true`, {
 				method: "POST",
 				headers,
 				body: JSON.stringify({
@@ -152,7 +150,7 @@ export function createProject(opts) {
 				.then(response => response.json())
 				.then(json => convertApiWebAppData(json))
 				.then(app => dispatch(receiveWebApp(app)))
-				.catch(error => handleAjaxError);
+				.catch(error => handleAjaxError(error, dispatch));
 		}
 	};
 }
@@ -165,7 +163,7 @@ export function save() {
 		const filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);
 		if (filesToSave.length < 1) return;
 
-		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
+		return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
 			method: "PATCH",
 			headers,
 			body: JSON.stringify({
@@ -184,7 +182,7 @@ export function create(fsos) {
 	return function(dispatch, getState) {
 		const app = getState().app;
 
-		return fetch("/api/webapp/" + app.id + "/fso?fetch=true", {
+		return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
 			method: "POST",
 			headers,
 			body: JSON.stringify({
@@ -210,7 +208,7 @@ export function saveFile(fso) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
 
-		return fetch("/api/webapp/" + fso.webAppId + "/fso/" + fso.id + "?fetch=true", {
+		return fetch(`/api/webapp/${fso.webAppId}/fso/${fso.id}?fetch=true`, {
 			method: "PATCH",
 			headers,
 			body: JSON.stringify({
@@ -233,11 +231,11 @@ export function createFile(fileName, type: string = "file") {
 
 		const fso = {
 			content: "",
-			path: folderPath + "/" + fileName,
+			path: `${folderPath}/${fileName}`,
 			type
 		};
 
-		return fetch("/api/webapp/" + getState().app.id + "/fso?fetch=true", {
+		return fetch(`/api/webapp/${getState().app.id}/fso?fetch=true`, {
 			method: "POST",
 			headers,
 			body: JSON.stringify({
@@ -326,10 +324,10 @@ export function requestSave() {
 }
 
 export function receiveSave(files) {
-    // If we receive only one file it was probably renmaed and must be synced with git.
-    if (files.length === 1) {
-        syncFile(files[0]);
-    }
+	// If we receive only one file it was probably renmaed and must be synced with git.
+	if (files.length === 1) {
+		syncFile(files[0]);
+	}
 	return {
 		type: AppActions.RECEIVE_SAVE,
 		files

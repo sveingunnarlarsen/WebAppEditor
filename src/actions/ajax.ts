@@ -10,7 +10,7 @@ export function throwError(response) {
 
 export async function handleAjaxError(error, dispatch) {
 	const status = error.status;
-	const json = status ? await error.json() : {status: "Request failed"}
+	const json = status ? await error.json() : {status: "Request failed. No connection to server."};
 	return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json}));
 }
 
@@ -32,8 +32,8 @@ export function compileProject() {
 			method: "POST"
 		})
 			.then(throwError)
-			.then(response => dispatch(endCompile()))
-			.catch(error => handleCompileError(error, dispatch));
+			.catch(error => handleCompileError(error, dispatch))
+			.finally(() => dispatch(endCompile()));
 	};
 }
 
@@ -41,8 +41,8 @@ export function fetchEditorData() {
 	return function(dispatch) {
 		dispatch(requestEditorData());
 
-		return fetch("/api/editor/data")
-		    .then(throwError)
+		return fetch(`/api/editor/data`)
+			.then(throwError)
 			.then(response => response.json())
 			.then(json => dispatch(receiveEditorData(json)))
 			.catch(error => handleAjaxError(error, dispatch));
@@ -53,8 +53,8 @@ export function fetchWebApps() {
 	return function(dispatch) {
 		dispatch(requestWebApps());
 
-		return fetch("/api/webapp")
-		    .then(throwError)
+		return fetch(`/api/webapp`)
+			.then(throwError)
 			.then(response => response.json())
 			.then(json => dispatch(receiveWebApps(json.apps)))
 			.catch(error => handleAjaxError(error, dispatch));
