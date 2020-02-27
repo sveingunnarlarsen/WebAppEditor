@@ -44,15 +44,25 @@ export function fetchNpmModules() {
 	};
 }
 
-export function installNpmModules() {
+function updatePackageJson(value, getState, dispatch) {
+    const packageJson = getState().app.fileSystemObjects.find(f => f.path === '/package.json');
+    packageJson.content = value;
+    dispatch(saveFile(packageJson));
+}
+
+export function installNpmModules(runUpgrade: boolean) {
 	return function(dispatch, getState) {
 		dispatch(startUpdateModules());
 
-		return fetch(`/api/webapp/${getState().app.id}/npm`, {
+		return fetch(`/api/webapp/${getState().app.id}/npm${runUpgrade ? '?upgrade=true' : ''}`, {
 			method: "PUT",
 		})
 			.then(throwError)
 			.then(response => response.json())
+			.then(json => {
+                updatePackageJson(json.packageJson, getState, dispatch);
+                return json;
+			})
 			.then(json => dispatch(openDialog(DialogType.SERVER_MESSAGE, {type: "npm", json})))
 			.then(() => dispatch(fetchNpmModules()))
 			.catch(error => handleAjaxError(error, dispatch))

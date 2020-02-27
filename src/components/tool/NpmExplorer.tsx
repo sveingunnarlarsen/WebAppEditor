@@ -8,6 +8,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Input from "@material-ui/core/Input";
 import IconButton from "@material-ui/core/IconButton";
 import UpdateOutlinedIcon from "@material-ui/icons/UpdateOutlined";
+import RefreshOutlinedIcon from '@material-ui/icons/RefreshOutlined';
+import ArrowUpwardOutlinedIcon from '@material-ui/icons/ArrowUpwardOutlined';
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 
 import {installNpmModules, deleteNpmModules} from "../../actions/app";
@@ -36,6 +38,7 @@ const mapState = state => {
 function mapDispatch(dispatch) {
 	return {
 		update: () => dispatch(installNpmModules()),
+		upgrade: () => dispatch(installNpmModules(true)),
 		delete: () => dispatch(deleteNpmModules())
 	};
 }
@@ -44,7 +47,7 @@ class NpmExplorer extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	
+
 	createList = modules => {
 		return modules.map(module => (
 			<li key={module.name} value={module.name} style={{color: module.package?.exists ? "wheat" : "white"}}>
@@ -84,7 +87,12 @@ class NpmExplorer extends React.Component {
 				<Toolbar className={classes.toolbar}>
 					<Tooltip title="Install npm modules">
 						<IconButton onClick={() => this.props.update()} color="inherit" size="small">
-							<UpdateOutlinedIcon fontSize="small" />
+							<RefreshOutlinedIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title="Upgrade npm modules">
+						<IconButton onClick={() => this.props.upgrade()} color="inherit" size="small">
+							<ArrowUpwardOutlinedIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip title="Delete npm modules">

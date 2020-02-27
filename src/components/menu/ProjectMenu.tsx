@@ -70,6 +70,7 @@ class ProjectMenu extends React.Component {
 					Import folder
 					<input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{display: "none"}} onChange={e => importFolderZip(e, "folder")} value="" />
 				</MenuItem>
+				<Divider />
 			</Menu>
 		);
 	}
