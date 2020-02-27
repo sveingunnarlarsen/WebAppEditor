@@ -1,15 +1,38 @@
 import store from "../store";
 import {openDialog} from "../actions";
-import {DialogType} from "../types/dialog"
+import {DialogType} from "../types/dialog";
 import {showSignatureHelp, closeSignatureHelp} from "../actions/editor";
 import "ace-builds/src-noconflict/ext-language_tools";
 const tool = ace.require("ace/ext/language_tools");
 
 const client = new LanguageClient();
+let activeEditor = null;
+
+client.on("publishDiagnostics", result => {
+	if (activeEditor) {
+	    /*
+		activeEditor.getSession().setAnnotations([]);
+		const annotations = [];
+		if (result.diagnostics.length > 0) {
+			for (let i = 0; i < result.diagnostics.length; i++) {
+				const annotation = result.diagnostics[i];
+				annotations.push({
+				    row: annotation.range.start.line,
+				    column: annotation.range.start.character,
+				    text: annotation.message,
+				    type: "error",
+				});
+			}
+			activeEditor.getSession().setAnnotations(annotations);
+		}
+		*/
+	}
+});
 
 const aceCompleter = {
 	getCompletions: async function(editor, session, pos, prefix, cb) {
 		if (await isConnected()) {
+			activeEditor = editor;
 			const {row, column} = pos;
 			const file = editor.file;
 
@@ -77,31 +100,20 @@ export async function findReferences(editor) {
 
 export async function signatureHelp(editor) {
 	if (await isConnected()) {
-        
-        const cursorSelector = `#${editor.container.id} div.ace_cursor`;
-        const cursorDom = document.querySelector(cursorSelector);
-        const rect = cursorDom.getBoundingClientRect();
-        
+		const cursorSelector = `#${editor.container.id} div.ace_cursor`;
+		const cursorDom = document.querySelector(cursorSelector);
+		const rect = cursorDom.getBoundingClientRect();
+
 		const file = editor.file;
 		const {row, column} = editor.getCursorPosition();
 		client.textDocumentChanged(file.path, editor.getValue());
 		const response = await client.getSignatureHelp(file.path, row, column);
 		if (response.result) {
-	        store.dispatch(showSignatureHelp({result: response.result, rect}));   
+			store.dispatch(showSignatureHelp({result: response.result, rect}));
 		} else {
-		    store.dispatch(closeSignatureHelp());
+			store.dispatch(closeSignatureHelp());
 		}
 	}
-	
 }
 
 window.languageClient = client;
-
-
-
-
-
-
-
-
-

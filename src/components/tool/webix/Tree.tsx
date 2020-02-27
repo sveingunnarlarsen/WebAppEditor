@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
+import Tooltip from "@material-ui/core/Tooltip";
 import Input from "@material-ui/core/Input";
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -61,9 +62,9 @@ class WebixTree extends React.Component {
 		this.ui.closeAll();
 		this.ui.open("1");
 	}
-	
+
 	resize() {
-	    this.ui.resize();
+		this.ui.resize();
 	}
 
 	getTreeData() {
@@ -95,29 +96,37 @@ class WebixTree extends React.Component {
 	}
 
 	handleFilterChange = e => {
-	    this.ui.filter("#value", e.target.value);
+		this.ui.filter("#value", e.target.value);
 	};
-	
+
 	render() {
-	    console.log("Rendering tree: ", this.props.toolResized);
+		console.log("Rendering tree: ", this.props.toolResized);
 		const {classes} = this.props;
 
 		return (
 			<React.Fragment>
 				<Toolbar className={classes.toolbar}>
 					<Input defaultValue="" placeholder="Filter" className={classes.input} onChange={this.handleFilterChange} />
-					<IconButton onClick={() => this.ui.openAll()} color="inherit" size="small">
-						<ExpandMoreIcon fontSize="small" />
-					</IconButton>
-					<IconButton onClick={() => this.collapseAll()} color="inherit" size="small">
-						<ExpandLessIcon fontSize="small" />
-					</IconButton>
-					<IconButton onClick={() => this.props.newFile()} color="inherit" size="small">
-						<NoteAddOutlinedIcon fontSize="small" />
-					</IconButton>
-					<IconButton onClick={() => this.props.newFolder()} color="inherit" size="small">
-						<CreateNewFolderOutlinedIcon fontSize="small" />
-					</IconButton>
+					<Tooltip title="Expand all">
+						<IconButton onClick={() => this.ui.openAll()} color="inherit" size="small">
+							<ExpandMoreIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title="Collapse all">
+						<IconButton onClick={() => this.collapseAll()} color="inherit" size="small">
+							<ExpandLessIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title="New file">
+						<IconButton onClick={() => this.props.newFile()} color="inherit" size="small">
+							<NoteAddOutlinedIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title="New folder">
+						<IconButton onClick={() => this.props.newFolder()} color="inherit" size="small">
+							<CreateNewFolderOutlinedIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
 				</Toolbar>
 				<div ref="root" style={{height: "calc(100% - 4.3rem)", width: "100%"}} />
 				<TreeContextMenu container={this} />

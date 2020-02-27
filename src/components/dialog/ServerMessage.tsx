@@ -25,13 +25,25 @@ class ServerMessage extends React.Component {
 	render() {
 		const {close} = this.props;
 		const {value} = this.state;
-		
-		const html = typeof value === "string" ? value : JSON.stringify(value);
+		const {type, json} = value;
+
+		let html = "";
+		switch (type) {
+			case "npm":
+			    html += `STDOUT:<br><br>${json.result.stdout.replace(/\n/g , "<br>")}`;
+			    html += `STDERR:<br><br>${json.result.stderr.replace(/\n/g , "<br>")}`;
+				break;
+			default:
+		        html = typeof json === "string" ? json : JSON.stringify(json);
+				break;
+		}
 		
 		return (
 			<React.Fragment>
 				<DialogTitle>Message</DialogTitle>
-				<DialogContent><div className="content" dangerouslySetInnerHTML={{__html: html}}></div></DialogContent>
+				<DialogContent>
+					<div className="content" dangerouslySetInnerHTML={{__html: html}} />
+				</DialogContent>
 				<DialogActions>
 					<Button onClick={close}>Close</Button>
 				</DialogActions>

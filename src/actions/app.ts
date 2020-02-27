@@ -28,7 +28,6 @@ export function saveAppData() {
 			})
 		})
 			.then(throwError)
-			.then(response => response.json())
 			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
@@ -54,6 +53,7 @@ export function installNpmModules() {
 		})
 			.then(throwError)
 			.then(response => response.json())
+			.then(json => dispatch(openDialog(DialogType.SERVER_MESSAGE, {type: "npm", json})))
 			.then(() => dispatch(fetchNpmModules()))
 			.catch(error => handleAjaxError(error, dispatch))
 			.finally(() => dispatch(endUpdateModules()));

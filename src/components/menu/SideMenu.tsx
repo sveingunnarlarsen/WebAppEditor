@@ -3,13 +3,14 @@ import PropTypes from "prop-types";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import SearchOutlinedIcon from "@material-ui/icons/SearchOutlined";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import VerticalSplitOutlinedIcon from "@material-ui/icons/VerticalSplitOutlined";
-import ViewModuleOutlinedIcon from '@material-ui/icons/ViewModuleOutlined';
+import ViewModuleOutlinedIcon from "@material-ui/icons/ViewModuleOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CallToActionIcon from "@material-ui/icons/CallToActionOutlined";
 
@@ -56,39 +57,53 @@ class SideMenu extends React.Component {
 			<Drawer variant="permanent" classes={{paper: classes.drawer}}>
 				<List style={{width, top: width}}>
 					<ListItem button onClick={() => this.props.switchTool(Tool.EXPLORER)}>
-						<ListItemIcon className={classes.icon}>
-							<DescriptionOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="File explorer">
+							<ListItemIcon className={classes.icon}>
+								<DescriptionOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
-						<ListItemIcon className={classes.icon}>
-							<SettingsOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="App settings">
+							<ListItemIcon className={classes.icon}>
+								<SettingsOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
-						<ListItemIcon className={classes.icon}>
-							<ViewModuleOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="App modules">
+							<ListItemIcon className={classes.icon}>
+								<ViewModuleOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.openSearch()}>
-						<ListItemIcon className={classes.icon}>
-							<SearchOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="Search">
+							<ListItemIcon className={classes.icon}>
+								<SearchOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.togglePreview()}>
-						<ListItemIcon className={classes.icon}>
-							<VerticalSplitOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="Preview">
+							<ListItemIcon className={classes.icon}>
+								<VerticalSplitOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.closeAllTabs()}>
-						<ListItemIcon className={classes.icon}>
-							<CloseOutlinedIcon />
-						</ListItemIcon>
+						<Tooltip title="Close all tabs">
+							<ListItemIcon className={classes.icon}>
+								<CloseOutlinedIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 					<ListItem button onClick={() => this.props.toggleCommandLine()}>
-						<ListItemIcon className={classes.icon}>
-							<CallToActionIcon />
-						</ListItemIcon>
+						<Tooltip title="Terminal">
+							<ListItemIcon className={classes.icon}>
+								<CallToActionIcon />
+							</ListItemIcon>
+						</Tooltip>
 					</ListItem>
 				</List>
 			</Drawer>
