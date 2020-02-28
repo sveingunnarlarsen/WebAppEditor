@@ -2,7 +2,7 @@ import store from "../store";
 import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
-import {updateFileState, create} from "../actions/app";
+import {updateFileState, create, deleteFile} from "../actions/app";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 let options: any = {enabled: true, level: 2};
@@ -56,6 +56,133 @@ async function handleChange() {
 
 store.subscribe(handleChange);
 
+/*
+ * Sync all files in fileSystemObjects to FS
+ * and delete the files in fs that does not exist
+ * in fileSystemObjects
+ */
+async function syncAppFilesWithGit() {
+	const appFsos = store.getState().app.fileSystemObjects;
+	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
+
+	const appFolders = appFsos.filter(f => f.type === "folder");
+	const appFiles = appFolders.filter(f => f.type === "file");
+
+	const appFoldersSorted = appFolders.sort((a, b) => {
+		const aParts = a.path.split("/");
+		const bParts = b.path.split("/");
+		return aParts.length > bParts.length ? 1 : -1;
+	});
+
+	// Create folders that doesn't exist in fs.
+	let fsContent;
+	for (let i = 0; i < foldersSorted.length; i++) {
+		const folder = foldersSorted[i];
+		const parts = folder.path.split("/");
+		for (let y = 1; y < parts.length; y++) {
+			const path = parts.slice(0, y).join("/");
+			fsContent = await pfs.readdir(`${currentGitDir}${path}`);
+			if (fsContent.indexOf(parts[y]) < 0) {
+				await pfs.mkdir(`${currentGitDir}${path}/${parts[y]}`);
+			}
+		}
+	}
+
+	// Update all files in git
+	for (let i = 0; i < appFsos.length; i++) {
+		await pfs.writeFile(`${currentGitDir}${files[i].path}`, files[i].content, "utf8");
+	}
+
+	// Check if there are any files in git that does not exist in app.
+	for (let i = 0; i < gitFsos.length; i++) {
+		const gitFile = gitFsos[i];
+		const appFile = appFsos.find(f => f.path === `/${gitFile}`);
+		if (!appFile) {
+			// File does not exist in app. Delete from git.
+			await pfs.unlink(`${currentGitDir}/${gitFile}`);
+			await git.remove({fs, dir: currentGitDir, filepath: `/${gitFile}`});
+		}
+	}
+}
+
+/*
+ * Sync all files in fs to App
+ * and delete the files in app that does not exist
+ * in fs
+ */
+async function syncGitFilesWithApp() {
+	const appFsos = store.getState().app.fileSystemObjects;
+	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
+
+	const createdFolders = [];
+	const createFsos = [];
+
+	for (let i = 0; i < gitFsos.length; i++) {
+		const filePath = gitFsos[i];
+		const appFile = appFsos.find(f => f.path === `/${filePath}`);
+		if (!appFile) {
+		    
+		    const parts = filePath.split("/");
+			// Create app file and maybe folder(s)
+			for (let y = 1; y < parts.length; y++) {
+				const folderPath = parts.slice(0, y).join("/");
+
+				if (createdFolders.indexOf(folderPath) < 0 && !appFsos.find(f => f.path === `/${folderPath}`)) {
+					createdFolders.push(folderPath);
+					createFsos.push({
+						path: "/" + folderPath,
+						type: "folder"
+					});
+				}
+			}
+
+			const fileContent = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
+
+			createFsos.push({
+				type: "file",
+				path: "/" + filePath,
+				content: fileContent
+			});
+			
+		} else {
+			// Sync the file with app.
+			const content = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
+			store.dispatch(updateFileState({path: `/${filePath}`, content}));
+		}
+	}
+
+	for (let i = 0; i < appFsos.length; i++) {
+		const appFile = appFsos[i];
+		const gitFile = gitFsos.find(f => `/${gitFile}` === appFile.path);
+		if (!gitFile) {
+			// File does not exist in git. Delete from app.
+			store.dispatch(deleteFile(appFile.id));
+		}
+	}
+	store.dispatch(create(createFsos));
+}
+
+async function syncFilesFromFS(pattern) {
+	let files = await git.listFiles({fs, dir: currentGitDir});
+	if (pattern) {
+		files = files.filter(f => new RegExp(pattern, "g").test(f));
+		if (files.length < 1) {
+			throw Error(`error: pathspec '${pattern} did not match any files(s) know to git'`);
+		}
+	}
+
+	for (let i = 0; i < files.length; i++) {
+		try {
+			const filepath = files[i];
+			const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
+			// Remove git directory before updating file in project
+			store.dispatch(updateFileState({path: "/" + filepath, content: fileContent}));
+		} catch (e) {
+			console.log("Error reading file: ", e.message, files[i]);
+		}
+	}
+}
+
 async function syncFilesToFS() {
 	console.log("Syncing all files to fs");
 	const fsos = store.getState().app.fileSystemObjects;
@@ -81,6 +208,7 @@ async function syncFilesToFS() {
 				}
 			}
 		}
+
 		for (let i = 0; i < files.length; i++) {
 			await pfs.writeFile(`${currentGitDir}${files[i].path}`, files[i].content, "utf8");
 		}
@@ -120,27 +248,6 @@ async function createFilesFromFS() {
 		});
 	}
 	store.dispatch(create(fsos));
-}
-
-async function syncFilesFromFS(pattern) {
-	let files = await git.listFiles({fs, dir: currentGitDir});
-	if (pattern) {
-		files = files.filter(f => new RegExp(pattern, "g").test(f));
-		if (files.length < 1) {
-			throw Error(`error: pathspec '${pattern} did not match any files(s) know to git'`);
-		}
-	}
-
-	for (let i = 0; i < files.length; i++) {
-		try {
-			const filepath = files[i];
-			const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
-			// Remove git directory before updating file in project
-			store.dispatch(updateFileState({path: "/" + filepath, content: fileContent}));
-		} catch (e) {
-			console.log("Error reading file: ", e.message, files[i]);
-		}
-	}
 }
 
 async function appendFileStatus(filepath) {
@@ -372,20 +479,24 @@ class GitCommand {
 	}
 
 	static async pull(args, opts) {
-	    const ref = args[0];
-	    
+		const ref = args[0];
+
 		const result = await git.pull({
-		    fs,
-		    http,
-		    dir: currentGitDir,
-		    corsProxy,
-		    ref,
-		    singleBranch: true,
-		    fastForwardOnly: true,
+			fs,
+			http,
+			dir: currentGitDir,
+			corsProxy,
+			ref,
+			singleBranch: true,
+			fastForwardOnly: true,
+			author: {
+				name: "Svein Gunnar Larsen",
+				email: "sveingunnarlarsen@gmail.com"
+			}
 		});
-		
+
 		syncFilesFromFS();
-		
+
 		return result;
 	}
 
@@ -460,7 +571,8 @@ async function clone(url) {
 	});
 	gitEmitter.removeEventListener("initEnd", clone);
 	console.log("Clone done");
-	await createFilesFromFS();
+	await syncGitFilesWithApp();
+	//await createFilesFromFS();
 }
 
 export async function cloneGitRepo(repo) {
@@ -475,14 +587,14 @@ export async function cloneGitRepo(repo) {
 
 export async function syncFile({id, path, content}: {id: string; path: string; content: string}) {
 	try {
-	    console.log("ID: ", id);
-	    console.log("Path: ", path);
+		console.log("ID: ", id);
+		console.log("Path: ", path);
 		if (id) {
 			const originalFile = getFileById(id);
 			if (originalFile.path !== path) {
-			    console.log("Original file should be removed from git and fs");
-			    await pfs.unlink(`${currentGitDir}${originalFile.path}`)
-			    await git.remove({fs, dir: currentGitDir, filepath: originalFile.path})
+				console.log("Original file should be removed from git and fs");
+				await pfs.unlink(`${currentGitDir}${originalFile.path}`);
+				await git.remove({fs, dir: currentGitDir, filepath: originalFile.path});
 			}
 		}
 		await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
