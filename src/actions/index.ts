@@ -16,22 +16,35 @@ import {EDITOR_RESIZED} from "../constants/action-types";
 import {TERMINAL_RESIZED} from "../constants/action-types";
 
 import {DialogAction, DialogType} from "../types/dialog";
+import {AppActions} from "../types/app";
+
+export function startClone() {
+	return {
+		type: AppActions.START_CLONING
+	};
+}
+
+export function endClone() {
+	return {
+		type: AppActions.END_CLONING
+	};
+}
 
 export function resizeTool() {
 	return {
-		type: TOOL_RESIZED,
+		type: TOOL_RESIZED
 	};
 }
 
 export function resizeEditor() {
 	return {
-	    type: EDITOR_RESIZED,
+		type: EDITOR_RESIZED
 	};
 }
 
 export function resizeTerminal() {
 	return {
-	    type: TERMINAL_RESIZED,
+		type: TERMINAL_RESIZED
 	};
 }
 

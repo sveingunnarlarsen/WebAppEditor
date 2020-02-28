@@ -5,6 +5,7 @@ import {syncFile, removeFile, cloneGitRepo} from "../git";
 import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
 import {throwError, handleAjaxError} from "./ajax";
+import {startClone, endClone} from "./"
 
 const headers = {
 	"Content-Type": "application/json"
@@ -104,6 +105,7 @@ export function fetchWebApp(id: string) {
 export function createProject(opts) {
 	return function(dispatch, getState) {
 		if (opts.remote) {
+		    dispatch(startClone());
 			return fetch(`/api/webapp?fetch=true`, {
 				method: "POST",
 				headers,
@@ -210,7 +212,8 @@ export function create(fsos) {
 				})
 			)
 			.then(app => dispatch(receiveWebApp(app)))
-			.catch(error => handleAjaxError(error, dispatch));
+			.catch(error => handleAjaxError(error, dispatch))
+			.finally(() => dispatch(endClone()));
 	};
 }
 

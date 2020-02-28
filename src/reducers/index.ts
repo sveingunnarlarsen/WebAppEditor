@@ -30,6 +30,7 @@ const initialState: AppEditorState = {
 	isCompiling: false,
 	modules: [],
 	isUpdatingNpm: false,
+	isCloning: false,
 	toolResized: 0,
 	editorResized: 0,
 	terminalResized: 0,
@@ -119,6 +120,15 @@ function isUpdatingNpm(state = initialState.isUpdatingNpm, action) {
 	return state;
 }
 
+function isCloning(state = initialState.isCloning, action) {
+	if (action.type === AppActions.START_CLONING) {
+		return true;
+	} else if (action.type === AppActions.END_CLONING) {
+		return false;
+	}
+	return state;
+}
+
 function resources(state = initialState.resources, action) {
 	switch (action.type) {
 		case REQUEST_EDITOR_DATA:
@@ -191,6 +201,7 @@ const rootReducer = combineReducers({
 	isCompiling,
 	modules,
 	isUpdatingNpm,
+	isCloning,
 	resources,
 	app,
 	apps,

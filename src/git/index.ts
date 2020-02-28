@@ -119,7 +119,6 @@ async function createFilesFromFS() {
 			content: fileContent
 		});
 	}
-
 	store.dispatch(create(fsos));
 }
 
@@ -373,7 +372,21 @@ class GitCommand {
 	}
 
 	static async pull(args, opts) {
-		throw "Not implemented";
+	    const ref = args[0];
+	    
+		const result = await git.pull({
+		    fs,
+		    http,
+		    dir: currentGitDir,
+		    corsProxy,
+		    ref,
+		    singleBranch: true,
+		    fastForwardOnly: true,
+		});
+		
+		syncFilesFromFS();
+		
+		return result;
 	}
 
 	static async stash(args, opts) {
