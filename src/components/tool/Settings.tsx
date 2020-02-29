@@ -42,7 +42,7 @@ const styles = {
 function mapDispatch(dispatch) {
 	return {
 		updateAppData: data => dispatch(updateAppData(data)),
-		saveAppData: () => dispatch(saveAppData()),
+		saveAppData: () => dispatch(saveAppData())
 	};
 }
 
@@ -50,7 +50,7 @@ class Settings extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	
+
 	updateName = e => {
 		this.props.updateAppData({
 			...this.props,
@@ -110,12 +110,12 @@ class Settings extends React.Component {
 			}
 		});
 	};
-	
+
 	handleSubmit = e => {
-	    if (e.keyCode === 13) {
-	        this.props.saveAppData();
-	    }
-	}
+		if (e.keyCode === 13) {
+			this.props.saveAppData();
+		}
+	};
 
 	render() {
 		const {name, description, type, settings} = this.props;
@@ -123,6 +123,11 @@ class Settings extends React.Component {
 		const display = this.props.show ? "" : "none";
 		return (
 			<div style={{display}} className={classes.container}>
+				<InputLabel shrink>Type</InputLabel>
+				<Select fullWidth value={type} onChange={this.updateType}>
+					<MenuItem value={"react"}>React</MenuItem>
+					<MenuItem value={"vue"}>Vue</MenuItem>
+				</Select>
 				<TextField
 					value={name}
 					onChange={this.updateName}
@@ -147,11 +152,6 @@ class Settings extends React.Component {
 						shrink: true
 					}}
 				/>
-				<InputLabel shrink>Type</InputLabel>
-				<Select fullWidth value={type} onChange={this.updateType}>
-					<MenuItem value={"react"}>React</MenuItem>
-					<MenuItem value={"vue"}>Vue</MenuItem>
-				</Select>
 				<TextField
 					value={settings.entryPoint.javascript}
 					onChange={this.updateEntryPointJs}

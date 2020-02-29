@@ -7,6 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import ClearIcon from "@material-ui/icons/Clear";
 import AceEditorContainer from "./AceEditorContainer";
 import {showFile, closeTab} from "../../actions/editor";
+import {getFileById} from "../../store/utils";
 
 const styles = {
 	tabs: {
@@ -79,12 +80,24 @@ class EditorTabs extends React.Component {
 	render() {
 		const {classes, editor, files} = this.props;
 		const {activeTab, tabs} = editor;
+		
+		console.log("Active Tab: ", activeTab);
+		
+		const file = getFileById(activeTab);
+		let content;
+		if (file.content.indexOf("data:image") === 0) {
+		    console.log("File is image");
+		    content = <img src={file.content} />;
+		} else {
+		    content = <AceEditorContainer container={this} fileId={activeTab} />;
+		}
+		
 		return (
 			<React.Fragment>
 				<Tabs variant="scrollable" scrollButtons="auto" classes={{indicator: classes.indicator}} className={classes.tabs} value={activeTab} onChange={this.handleChange.bind(this)}>
 					{this.createTabs(tabs)}
 				</Tabs>
-				<AceEditorContainer container={this} fileId={activeTab} />
+				{content}
 			</React.Fragment>
 		);
 	}

@@ -63,13 +63,13 @@ class AceEditorContainer extends React.Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-	    console.log("Checking if component should update");
-		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized/* || this.ace.current.editor.getValue() !== this.props.fso.content*/) {
+		console.log("Checking if component should update");
+		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized /* || this.ace.current.editor.getValue() !== this.props.fso.content*/) {
 			this.updateAceSessions(nextProps.fso);
 			console.log("component updating");
 			return true;
 		} else {
-		    console.log("component not updating");
+			console.log("component not updating");
 			return false;
 		}
 	}
@@ -85,7 +85,7 @@ class AceEditorContainer extends React.Component {
 	componentDidMount() {
 		this.updateAceSessions(this.props.fso);
 		if (this.props.handle) {
-		    this.props.handle(this.ace);
+			this.props.handle(this.ace);
 		}
 	}
 
@@ -151,9 +151,9 @@ class AceEditorContainer extends React.Component {
 	};
 
 	onFocus = () => {
-	    if (this.props.editor) {
-            this.props.setActiveEditor(this.props.editor.id);   
-	    }
+		if (this.props.editor) {
+			this.props.setActiveEditor(this.props.editor.id);
+		}
 	};
 
 	onCursorChange = () => {
@@ -205,7 +205,7 @@ class AceEditorContainer extends React.Component {
 					ref={this.ace}
 					name={`ace_editor_id_${editor.id}`}
 					width="100%"
-                    height="calc(100% - 32px)"
+					height="calc(100% - 32px)"
 					theme="tomorrow_night"
 					onChange={this.onChange}
 					onBlur={this.onBlur}

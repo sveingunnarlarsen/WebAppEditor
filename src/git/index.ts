@@ -2,7 +2,8 @@ import store from "../store";
 import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
-import {updateFileState, create, deleteFile} from "../actions/app";
+import {saveFile, create, deleteFile} from "../actions/app";
+import {getFileContent} from "./utils";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 let options: any = {enabled: true, level: 2};
@@ -38,13 +39,13 @@ async function handleChange() {
 
 		try {
 			await pfs.readdir(`${currentGitDir}/.git`);
-			await syncFilesToFS();
+			await syncAppFilesWithGit();
 		} catch (e) {
 			if (e.message.indexOf("ENOENT") > -1) {
 				console.log("Initializing git");
 				pfs.mkdir(currentGitDir);
 				await git.init({fs, dir: currentGitDir});
-				await syncFilesToFS();
+				await syncAppFilesWithGit();
 				console.log("Git initialized");
 			} else {
 				console.log("Failed to initialize git", e.message);
@@ -76,8 +77,8 @@ async function syncAppFilesWithGit() {
 
 	// Create folders that doesn't exist in fs.
 	let fsContent;
-	for (let i = 0; i < foldersSorted.length; i++) {
-		const folder = foldersSorted[i];
+	for (let i = 0; i < appFoldersSorted.length; i++) {
+		const folder = appFoldersSorted[i];
 		const parts = folder.path.split("/");
 		for (let y = 1; y < parts.length; y++) {
 			const path = parts.slice(0, y).join("/");
@@ -110,7 +111,7 @@ async function syncAppFilesWithGit() {
  * and delete the files in app that does not exist
  * in fs
  */
-async function syncGitFilesWithApp() {
+async function syncGitFilesWithApp(pattern) {
 	const appFsos = store.getState().app.fileSystemObjects;
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 
@@ -121,8 +122,7 @@ async function syncGitFilesWithApp() {
 		const filePath = gitFsos[i];
 		const appFile = appFsos.find(f => f.path === `/${filePath}`);
 		if (!appFile) {
-		    
-		    const parts = filePath.split("/");
+			const parts = filePath.split("/");
 			// Create app file and maybe folder(s)
 			for (let y = 1; y < parts.length; y++) {
 				const folderPath = parts.slice(0, y).join("/");
@@ -135,19 +135,18 @@ async function syncGitFilesWithApp() {
 					});
 				}
 			}
-
-			const fileContent = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
+			const fileContent = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
+			console.log(fileContent);
 
 			createFsos.push({
 				type: "file",
 				path: "/" + filePath,
 				content: fileContent
 			});
-			
 		} else {
 			// Sync the file with app.
 			const content = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
-			store.dispatch(updateFileState({path: `/${filePath}`, content}));
+			store.dispatch(saveFile({...appFile, content}));
 		}
 	}
 
@@ -161,7 +160,7 @@ async function syncGitFilesWithApp() {
 	}
 	store.dispatch(create(createFsos));
 }
-
+/*
 async function syncFilesFromFS(pattern) {
 	let files = await git.listFiles({fs, dir: currentGitDir});
 	if (pattern) {
@@ -249,6 +248,7 @@ async function createFilesFromFS() {
 	}
 	store.dispatch(create(fsos));
 }
+*/
 
 async function appendFileStatus(filepath) {
 	const status = await git.status({fs, dir: currentGitDir, filepath});
@@ -398,7 +398,7 @@ class GitCommand {
 			return;
 		} else if (args.length === 1 && args[0] === ".") {
 			await git.checkout({fs, dir: currentGitDir, ref: currentBranch});
-			await syncFilesFromFS();
+			await syncGitFilesWithApp();
 		} else if (args.length === 1) {
 			// Is this a branch or a file path.
 			const arg = args[0];
@@ -411,8 +411,8 @@ class GitCommand {
 				//await git.checkout({dir: currentGitDir, ref: arg});
 			} else {
 				// TODO: Check that the filepath is actually a file path.
-				await git.fastCheckout({fs, dir: currentGitDir, force: true, filepaths: [arg]});
-				await syncFilesFromFS(arg);
+				// await git.fastCheckout({fs, dir: currentGitDir, force: true, filepaths: [arg]});
+				// await syncFilesFromFS(arg);
 			}
 		}
 	}
@@ -429,7 +429,7 @@ class GitCommand {
 	static async push(args, opts) {
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
 		console.log("Git push: ", branch, args, opts);
-		let result, remote;
+		let remote;
 
 		if (!args[0]) {
 			const remotes = await git.listRemotes({fs, dir: currentGitDir});
@@ -445,28 +445,16 @@ class GitCommand {
 			remote = args[0];
 		}
 
-		if (opts.force) {
-			result = await git.push({
-				fs,
-				http,
-				dir: currentGitDir,
-				corsProxy,
-				ref: branch,
-				remote,
-				onAuth: () => ({username: opts.username, password: opts.password}),
-				force: true
-			});
-		} else {
-			result = await git.push({
-				fs,
-				http,
-				dir: currentGitDir,
-				corsProxy,
-				ref: branch,
-				remote,
-				onAuth: () => ({username: opts.username, password: opts.password})
-			});
-		}
+		const result = await git.push({
+			fs,
+			http,
+			dir: currentGitDir,
+			corsProxy,
+			ref: branch,
+			remote,
+			onAuth: () => ({username: opts.username, password: opts.password}),
+			force: opts.force ? true : false
+		});
 
 		let message = ``;
 		if (result.ok && result.ok.length > 0) {
@@ -495,7 +483,7 @@ class GitCommand {
 			}
 		});
 
-		syncFilesFromFS();
+		await syncGitFilesWithApp();
 
 		return result;
 	}
@@ -572,7 +560,6 @@ async function clone(url) {
 	gitEmitter.removeEventListener("initEnd", clone);
 	console.log("Clone done");
 	await syncGitFilesWithApp();
-	//await createFilesFromFS();
 }
 
 export async function cloneGitRepo(repo) {
