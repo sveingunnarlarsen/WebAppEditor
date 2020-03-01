@@ -36,6 +36,8 @@ async function handleChange() {
 		gitEmitter.start();
 		currentAppName = store.getState().app.name;
 		currentGitDir = `/${currentAppName}`;
+		console.log(currentAppName);
+		console.log("fsos: ", store.getState().app.fileSystemObjects);
 
 		try {
 			await pfs.readdir(`${currentGitDir}/.git`);
@@ -63,11 +65,12 @@ store.subscribe(handleChange);
  * in fileSystemObjects
  */
 async function syncAppFilesWithGit() {
+    console.log("Starting app sync, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 
 	const appFolders = appFsos.filter(f => f.type === "folder");
-	const appFiles = appFolders.filter(f => f.type === "file");
+	const appFiles = appFsos.filter(f => f.type === "file");
 
 	const appFoldersSorted = appFolders.sort((a, b) => {
 		const aParts = a.path.split("/");
@@ -90,8 +93,9 @@ async function syncAppFilesWithGit() {
 	}
 
 	// Update all files in git
-	for (let i = 0; i < appFsos.length; i++) {
-		await pfs.writeFile(`${currentGitDir}${files[i].path}`, files[i].content, "utf8");
+	console.log("Updating all files in git", appFiles);
+	for (let i = 0; i < appFiles.length; i++) {
+		await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");
 	}
 
 	// Check if there are any files in git that does not exist in app.
@@ -270,7 +274,7 @@ class GitCommand {
 	}
 
 	private static async getStagedChanges() {
-		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[STAGE] && (row[STAGE] === 2 || row[STAGE] === 3)).map(row => row[FILE]);
+		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[STAGE] && (row[STAGE] === 2 || row[STAGE] === 3 || row[STAGE] === 0)).map(row => row[FILE]);
 	}
 
 	private static async getModifiedFiles() {
@@ -574,12 +578,9 @@ export async function cloneGitRepo(repo) {
 
 export async function syncFile({id, path, content}: {id: string; path: string; content: string}) {
 	try {
-		console.log("ID: ", id);
-		console.log("Path: ", path);
 		if (id) {
 			const originalFile = getFileById(id);
-			if (originalFile.path !== path) {
-				console.log("Original file should be removed from git and fs");
+			if (originalFile && originalFile.path !== path) {
 				await pfs.unlink(`${currentGitDir}${originalFile.path}`);
 				await git.remove({fs, dir: currentGitDir, filepath: originalFile.path});
 			}
