@@ -59,12 +59,16 @@ class WebixTree extends React.Component {
 	}
 
 	collapseAll() {
-		this.ui.closeAll();
-		this.ui.open("1");
+		if (this.props.app.id) {
+			this.ui.closeAll();
+			this.ui.open("1");
+		}
 	}
 
 	resize() {
-		this.ui.resize();
+		if (this.props.app.id) {
+			this.ui.resize();
+		}
 	}
 
 	getTreeData() {
@@ -150,7 +154,9 @@ class WebixTree extends React.Component {
 		if (state) {
 			this.ui.setState(state);
 		} else {
-			this.ui.open("1");
+		    if (this.props.app.id) {
+ 		        this.ui.open("1");   
+		    }
 		}
 		this.appId = prevProps.app.id;
 	}
@@ -173,7 +179,7 @@ class WebixTree extends React.Component {
 	}
 
 	shouldComponentUpdate(nextProps) {
-		if (nextProps.app.fileSystemObjects.length > 0) {
+		if (nextProps.app.fileSystemObjects.length > 0 || nextProps.app.id === "") {
 			return true;
 		}
 		return false;

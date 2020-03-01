@@ -99,7 +99,7 @@ function isCompiling(state = initialState.isCompiling, action) {
 }
 
 function modules(state = initialState.modules, action) {
-	if (action.type === AppActions.REQUEST_MODULES) {
+	if (action.type === AppActions.REQUEST_MODULES || action.type === "RESET") {
 		return [];
 	} else if (action.type === AppActions.RECEIVE_MODULES) {
 		return action.modules;

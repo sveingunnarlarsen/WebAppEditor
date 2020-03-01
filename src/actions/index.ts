@@ -18,6 +18,8 @@ import {TERMINAL_RESIZED} from "../constants/action-types";
 import {DialogAction, DialogType} from "../types/dialog";
 import {AppActions} from "../types/app";
 
+import {fetchWebApps} from "./ajax";
+
 export function startClone() {
 	return {
 		type: AppActions.START_CLONING
@@ -61,6 +63,15 @@ export function endCompile() {
 }
 
 export function openDialog(dialog: DialogType, data) {
+	return function(dispatch, getState) {
+	    if (dialog === DialogType.PROJECT_LIST) {
+	        dispatch(fetchWebApps());   
+	    }
+        return dispatch(openDialogAction(dialog, data));
+	};
+}
+
+export function openDialogAction(dialog: DialogType, data) {
 	return {
 		type: DialogAction.OPEN,
 		dialog,

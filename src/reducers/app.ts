@@ -29,7 +29,7 @@ const initState: AppState = {
 };
 
 const reset = produce((draft) => {
-    draft = initState;
+    return {...initState};
 });
 
 const requestWebApp = produce((draft, appId) => {

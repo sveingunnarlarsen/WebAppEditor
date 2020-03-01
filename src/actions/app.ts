@@ -287,12 +287,12 @@ export function deleteProject() {
 		})
 			.then(throwError)
 			.then(() => deleteGitRepo())
-			.then(() => dispatch(resetEditor()))
+			.then(() => dispatch(reset()))
 			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
 
-export function resetEditor() {
+export function reset() {
 	return {
 		type: "RESET"
 	};

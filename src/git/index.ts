@@ -487,7 +487,7 @@ export async function cloneGitRepo(repo) {
 	}
 }
 
-export async function deleteGitRepo(folder) {
+export async function deleteGitRepo(folder = currentAppName) {
 	const dir = "/" + folder;
 	try {
 		const folderContents = await pfs.readdir(dir);
