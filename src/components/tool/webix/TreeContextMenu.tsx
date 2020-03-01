@@ -14,18 +14,20 @@ import InboxIcon from "@material-ui/icons/Inbox";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 import {makeStyles} from "@material-ui/core/styles";
 
 import {openDialog} from "../../../actions";
 import {DialogType} from "../../../types/dialog";
+import {importFiles} from "../../../helpers/import";
 
 import "./TreeContextMenu.css";
 
 function mapDispatch(dispatch) {
 	return {
 		deleteFile: () => dispatch(openDialog(DialogType.DELETE_FILE)),
-		renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE))
+		renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE)),
 	};
 }
 
@@ -38,6 +40,11 @@ const styles = theme => ({
 		zIndex: 2000
 	}
 });
+
+window.importFileInTree = async function(e) {
+    console.log(e);
+    console.log(await importFiles(e));
+}
 
 class TreeContextMenu extends React.Component {
 	constructor(props) {
@@ -107,7 +114,7 @@ class TreeContextMenu extends React.Component {
 
 		if (wasOutside && visible) this.setState({visible: false});
 	};
-
+	
 	render() {
 		const {visible} = this.state;
 		const {classes, renameFile, deleteFile} = this.props;
@@ -144,6 +151,18 @@ class TreeContextMenu extends React.Component {
 								<DeleteIcon />
 							</ListItemIcon>
 							<ListItemText primary="Delete" />
+						</ListItem>
+						<ListItem
+							button
+							dense
+							onClick={() => {
+								document.getElementById("importFileInTree").click();
+							}}
+						>
+							<ListItemIcon>
+								<ArrowDownwardIcon />
+							</ListItemIcon>
+							<ListItemText primary="Import" />
 						</ListItem>
 					</List>
 				</div>
