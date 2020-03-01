@@ -1,6 +1,5 @@
 
 import * as imageType from "image-type";
-window.imageType = imageType;
 
 const decoder = new TextDecoder('utf8');
 
@@ -12,8 +11,4 @@ export async function getFileContent(pfs, filePath: string) {
     } else {
         return decoder.decode(buffer);
     }
-}
-
-export async function checkIfImage(base64) {
-    
 }

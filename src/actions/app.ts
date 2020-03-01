@@ -238,16 +238,21 @@ export function saveFile(fso) {
 
 export function createFile(fileName, type: string = "file") {
 	return function(dispatch, getState) {
+	    const webAppId = getState().app.id;
 		dispatch(requestCreate());
-
+		
 		const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
-
 		const fso = {
 			content: "",
-			path: `${folderPath}/${fileName}`,
+			path: `${folderPath ? folderPath : ``}/${fileName}`,
 			type
 		};
-
+		
+		if (!webAppId) {
+		    return dispatch(openDialog(DialogType.MESSAGE, {message: "Please open or create a project"}));
+		}
+		
+		// TODO(MAYBE) = If there is no app id, create temp app?
 		return fetch(`/api/webapp/${getState().app.id}/fso?fetch=true`, {
 			method: "POST",
 			headers,

@@ -60,7 +60,7 @@ export function getFolderPath(id, fsos) {
 	const item = fsos.find(f => f.id === id);
 	if (item && item.type === "folder") {
 		return item.path;
-	} else if (item.type === "file") {
+	} else if (item && item.type === "file") {
 		const parts = item.path.split("/");
 		parts.shift();
 		parts.pop();

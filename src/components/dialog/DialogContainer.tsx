@@ -18,6 +18,7 @@ import RenameFile from "./RenameFile";
 import DeleteFile from "./DeleteFile";
 import SearchApp from "./SearchApp";
 import ShowReferences from "./ShowReferences";
+import Message from "./Message";
 import ServerMessage from "./ServerMessage";
 import AjaxError from "./AjaxError";
 import DeleteProject from "./DeleteProject";
@@ -143,6 +144,12 @@ class DialogContainer extends React.Component {
 				return (
 					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.refPaper}} open={dialog.visible}>
 						<ShowReferences close={close} />
+					</Dialog>
+				);
+			case DialogType.MESSAGE:
+				return (
+					<Dialog maxWidth="sm" PaperComponent={PaperComponent} open={dialog.visible}>
+						<Message close={close} />
 					</Dialog>
 				);
 			case DialogType.SERVER_MESSAGE:

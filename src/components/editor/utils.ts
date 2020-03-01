@@ -1,3 +1,4 @@
+import * as imageType from "image-type";
 import store from "../../store";
 import {openDialog} from "../../actions";
 import {DialogType} from "../../types/dialog";
@@ -79,3 +80,23 @@ export function calculatePos({x, y}, root) {
 		root.style.top = `${y - rootH - 5}px`;
 	}
 }
+
+export async function checkIfImage(base64) {
+    
+}
+/*
+
+import * as imageType from "image-type";
+
+const decoder = new TextDecoder('utf8');
+
+export async function getFileContent(pfs, filePath: string) {
+    const buffer = await pfs.readFile(filePath);
+    const imageMeta = imageType(buffer);
+    if (imageMeta) {
+        return btoa(String.fromCharCode.apply(null, buffer));
+    } else {
+        return decoder.decode(buffer);
+    }
+}
+*/
