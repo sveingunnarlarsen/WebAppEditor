@@ -20,6 +20,7 @@ import SearchApp from "./SearchApp";
 import ShowReferences from "./ShowReferences";
 import ServerMessage from "./ServerMessage";
 import AjaxError from "./AjaxError";
+import DeleteProject from "./DeleteProject";
 
 import {DialogType} from "../../types/dialog";
 import {closeDialog} from "../../actions";
@@ -106,6 +107,12 @@ class DialogContainer extends React.Component {
 				return (
 					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
 						<DeleteFile close={close} />
+					</Dialog>
+				);
+			case DialogType.DELETE_PROJECT:
+				return (
+					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+						<DeleteProject close={close} />
 					</Dialog>
 				);
 			case DialogType.DELETE_FOLDER:

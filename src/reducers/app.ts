@@ -28,6 +28,10 @@ const initState: AppState = {
 	isSaving: false,
 };
 
+const reset = produce((draft) => {
+    draft = initState;
+});
+
 const requestWebApp = produce((draft, appId) => {
 	draft.id = appId;
 	draft.isFetching = true;
@@ -101,6 +105,8 @@ const updateAppData = produce((draft, data) => {
 
 export default function app(state = initState, action) {
 	switch (action.type) {
+	    case "RESET":
+	        return reset(state);
 		case AppActions.REQUEST_WEBAPP:
 			return requestWebApp(state, action.id);
 		case AppActions.RECEIVE_WEBAPP:

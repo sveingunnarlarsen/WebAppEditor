@@ -65,7 +65,7 @@ store.subscribe(handleChange);
  * in fileSystemObjects
  */
 async function syncAppFilesWithGit() {
-    console.log("Starting app sync, using git dir: ", currentGitDir);
+	console.log("Starting app sync, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 
@@ -164,95 +164,6 @@ async function syncGitFilesWithApp(pattern) {
 	}
 	store.dispatch(create(createFsos));
 }
-/*
-async function syncFilesFromFS(pattern) {
-	let files = await git.listFiles({fs, dir: currentGitDir});
-	if (pattern) {
-		files = files.filter(f => new RegExp(pattern, "g").test(f));
-		if (files.length < 1) {
-			throw Error(`error: pathspec '${pattern} did not match any files(s) know to git'`);
-		}
-	}
-
-	for (let i = 0; i < files.length; i++) {
-		try {
-			const filepath = files[i];
-			const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
-			// Remove git directory before updating file in project
-			store.dispatch(updateFileState({path: "/" + filepath, content: fileContent}));
-		} catch (e) {
-			console.log("Error reading file: ", e.message, files[i]);
-		}
-	}
-}
-
-async function syncFilesToFS() {
-	console.log("Syncing all files to fs");
-	const fsos = store.getState().app.fileSystemObjects;
-	try {
-		const folders = fsos.filter(f => f.type === "folder");
-		const files = fsos.filter(f => f.type === "file");
-
-		const foldersSorted = folders.sort((a, b) => {
-			const aParts = a.path.split("/");
-			const bParts = b.path.split("/");
-			return aParts.length > bParts.length ? 1 : -1;
-		});
-
-		let fsContent;
-		for (let i = 0; i < foldersSorted.length; i++) {
-			const folder = foldersSorted[i];
-			const parts = folder.path.split("/");
-			for (let y = 1; y < parts.length; y++) {
-				const path = parts.slice(0, y).join("/");
-				fsContent = await pfs.readdir(`${currentGitDir}${path}`);
-				if (fsContent.indexOf(parts[y]) < 0) {
-					await pfs.mkdir(`${currentGitDir}${path}/${parts[y]}`);
-				}
-			}
-		}
-
-		for (let i = 0; i < files.length; i++) {
-			await pfs.writeFile(`${currentGitDir}${files[i].path}`, files[i].content, "utf8");
-		}
-	} catch (e) {
-		console.log("Error syncing files to fs: ", e.message);
-	}
-}
-
-async function createFilesFromFS() {
-	const files = await git.listFiles({fs, dir: currentGitDir});
-	const createdFolders = [];
-	const fsos = [];
-
-	for (let i = 0; i < files.length; i++) {
-		const filepath = files[i];
-
-		const parts = filepath.split("/");
-
-		for (let y = 1; y < parts.length; y++) {
-			const folderPath = parts.slice(0, y).join("/");
-
-			if (createdFolders.indexOf(folderPath) < 0) {
-				createdFolders.push(folderPath);
-				fsos.push({
-					path: "/" + folderPath,
-					type: "folder"
-				});
-			}
-		}
-
-		const fileContent = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
-
-		fsos.push({
-			type: "file",
-			path: "/" + filepath,
-			content: fileContent
-		});
-	}
-	store.dispatch(create(fsos));
-}
-*/
 
 async function appendFileStatus(filepath) {
 	const status = await git.status({fs, dir: currentGitDir, filepath});
@@ -573,6 +484,25 @@ export async function cloneGitRepo(repo) {
 		});
 	} else {
 		await clone(repo);
+	}
+}
+
+export async function deleteGitRepo(folder) {
+	const dir = "/" + folder;
+	try {
+		const folderContents = await pfs.readdir(dir);
+		for (let i = 0; i < folderContents.length; i++) {
+			const item = "/" + folderContents[i];
+			const stat = await pfs.stat(dir + item);
+			if (stat.type === "dir") {
+				await deleteGitRepo(dir + item);
+			} else {
+				await pfs.unlink(dir + item);
+			}
+		}
+		await pfs.rmdir(dir);
+	} catch (e) {
+		console.log("Error deleting repository: ", e.message);
 	}
 }
 
