@@ -54,9 +54,10 @@ async function handleChange() {
 			}
 		}
 		gitEmitter.end();
-	} else {
-	    currentAppName = "";
-	    currentGitDir = "";
+	} else if (!store.getState().app.name) {
+		console.log("Setting: ", store.getState().app.name);
+		currentAppName = "";
+		currentGitDir = "";
 	}
 }
 
@@ -119,15 +120,15 @@ async function syncAppFilesWithGit() {
  * in fs
  */
 async function syncGitFilesWithApp(pattern) {
-    console.log("starting git sync, using git dir: ", currentGitDir);
+	console.log("starting git sync, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
 	console.log("appFsos: ", appFsos);
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 	console.log("gitFsos: ", gitFsos);
-	
+
 	const appFolders = appFsos.filter(f => f.type === "folder");
 	const appFiles = appFsos.filter(f => f.type === "file");
-	
+
 	const createdFolders = [];
 	const createFsos = [];
 	const saveFsos = [];
@@ -160,31 +161,31 @@ async function syncGitFilesWithApp(pattern) {
 			// Sync the file with app.
 			const content = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
 			if (filePath.indexOf(".prettierrc.json") > -1) {
-			    console.log("Content: ", content);
+				console.log("Content: ", content);
 			}
 			saveFsos.push({
-			    ...appFile,
-			    content,
+				...appFile,
+				content
 			});
 			//store.dispatch(saveFile({...appFile, content}));
 		}
 	}
 
-    // Should probably only do this on a checkout.
+	// Should probably only do this on a checkout.
 	for (let i = 0; i < appFiles.length; i++) {
 		const appFile = appFiles[i];
 		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
 		if (!gitFile) {
-		    console.log("Could not find git file: ", appFile, gitFile);
+			console.log("Could not find git file: ", appFile, gitFile);
 			// File does not exist in git. Delete from app.
 			store.dispatch(deleteFile(appFile.id));
 		}
 	}
 	if (createFsos.length > 0) {
- 	    store.dispatch(create(createFsos));   
+		store.dispatch(create(createFsos));
 	}
 	if (saveFsos.length > 0) {
-	    store.dispatch(save(saveFsos));   
+		store.dispatch(save(saveFsos));
 	}
 }
 
@@ -406,7 +407,7 @@ class GitCommand {
 
 	static async pull(args, opts) {
 		const ref = args[0];
-		
+
 		const result = await git.pull({
 			fs,
 			http,
@@ -420,7 +421,7 @@ class GitCommand {
 				email: "sveingunnarlarsen@gmail.com"
 			}
 		});
-		
+
 		console.log("Result from pull: ", result);
 
 		await syncGitFilesWithApp();
@@ -484,34 +485,31 @@ export async function runCommand(command) {
 	}
 }
 
-async function clone(url) {
-	console.log("Start clone");
-	await git.clone({
-		fs,
-		http,
-		dir: currentGitDir,
-		corsProxy,
-		url,
-		singleBranch: false,
-		noCheckout: false,
-		noTags: true,
-		depth: 100
-	});
-	gitEmitter.removeEventListener("initEnd", clone);
-	console.log("Clone done");
-	await syncGitFilesWithApp();
-}
-
 export async function cloneGitRepo(repo) {
-    console.log("Starting git clone");
-	if (gitEmitter.isInitializing) {
-	    console.log("Git is initializing, waiting...");
-		gitEmitter.addEventListener("initEnd", () => {
-		    console.log("Running git clone1");
-			clone(repo);
+	async function clone(url) {
+		console.log("Start clone");
+		await git.clone({
+			fs,
+			http,
+			dir: currentGitDir,
+			corsProxy,
+			url,
+			singleBranch: false,
+			noCheckout: false,
+			noTags: true,
+			depth: 100
 		});
+		gitEmitter.removeEventListener("initEnd", clone);
+		console.log("Clone done");
+		await syncGitFilesWithApp();
+	}
+
+	console.log("Starting git clone");
+	if (gitEmitter.isInitializing) {
+		console.log("Git is initializing, waiting...");
+		gitEmitter.addEventListener("initEnd", clone);
 	} else {
-	    console.log("Running git clone2");
+		console.log("Running git clone2");
 		await clone(repo);
 	}
 }

@@ -188,7 +188,7 @@ export function save(filesToSave?) {
 			.then(response => response.json())
 			.then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects)))
 			.then(files => dispatch(receiveSave(files)))
-			.catch(error => handleAjaxError(error, dispatch));
+			.catch(error => handleAjaxError(error, dispatch))
 	};
 }
 
@@ -215,7 +215,6 @@ export function create(fsos) {
 			)
 			.then(app => dispatch(receiveWebApp(app)))
 			.catch(error => handleAjaxError(error, dispatch))
-			.finally(() => dispatch(endClone()));
 	};
 }
 
