@@ -18,7 +18,7 @@ class GitEmitter extends EventTarget {
 	}
 
 	end() {
-		this.isInitializing = true;
+		this.isInitializing = false;
 		this.dispatchEvent(new Event("initEnd"));
 	}
 }
@@ -388,10 +388,9 @@ class GitCommand {
 	}
 
 	static async pull(args, opts) {
-	    debugger;
 		const ref = args[0];
 		
-		console.log("Adding something2");
+		console.log("Adding something more");
 
 		const result = await git.pull({
 			fs,
@@ -487,11 +486,15 @@ async function clone(url) {
 }
 
 export async function cloneGitRepo(repo) {
+    console.log("Starting git clone");
 	if (gitEmitter.isInitializing) {
+	    console.log("Git is initializing, waiting...");
 		gitEmitter.addEventListener("initEnd", () => {
+		    console.log("Running git clone1");
 			clone(repo);
 		});
 	} else {
+	    console.log("Running git clone2");
 		await clone(repo);
 	}
 }
