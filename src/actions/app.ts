@@ -167,8 +167,9 @@ export function createProject(opts) {
 	};
 }
 
-export function save(filesToSave?) {
+export function save(filesToSave? = []) {
 	return function(dispatch, getState) {
+	    console.log("In save");
 		dispatch(requestSave());
 
 		const app = getState().app;
