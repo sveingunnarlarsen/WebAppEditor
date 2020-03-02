@@ -116,8 +116,12 @@ async function syncAppFilesWithGit() {
  * in fs
  */
 async function syncGitFilesWithApp(pattern) {
+    console.log("starting git sync, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
+	console.log("appFsos: ", appFsos);
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
+	console.log("gitFsos: ", gitFsos);
+	
 
 	const createdFolders = [];
 	const createFsos = [];
@@ -157,6 +161,7 @@ async function syncGitFilesWithApp(pattern) {
 		const appFile = appFsos[i];
 		const gitFile = gitFsos.find(f => `/${gitFile}` === appFile.path);
 		if (!gitFile) {
+		    console.log("Could not find git file: ", appFile, gitFile);
 			// File does not exist in git. Delete from app.
 			store.dispatch(deleteFile(appFile.id));
 		}
