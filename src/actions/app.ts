@@ -285,7 +285,7 @@ export function deleteFile(id?: string) {
 
 		return fetch("/api/webapp/" + webAppId + "/fso/" + id, {
 			method: "DELETE"
-		}).then(response => dispatch(receiveDelete(fileId)), error => handleAjaxError(error, dispatch));
+		}).then(response => dispatch(receiveDelete(id)), error => handleAjaxError(error, dispatch));
 	};
 }
 

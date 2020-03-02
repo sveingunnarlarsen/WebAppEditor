@@ -554,6 +554,7 @@ export async function syncFile({id, path, content}: {id: string; path: string; c
 export async function removeFile(fileId: string) {
 	const file = getFileById(fileId);
 	try {
+	    console.log("Removing file from git", file.path);
 		await pfs.unlink(`${currentGitDir}${file.path}`);
 		await git.remove({fs, dir: currentGitDir, filepath: file.path});
 	} catch (e) {
