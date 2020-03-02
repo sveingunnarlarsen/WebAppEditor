@@ -67,6 +67,7 @@ export function openDialog(dialog: DialogType, data) {
 	    if (dialog === DialogType.PROJECT_LIST) {
 	        dispatch(fetchWebApps());   
 	    }
+	    console.log("Dispatch", dialog)
         return dispatch(openDialogAction(dialog, data));
 	};
 }

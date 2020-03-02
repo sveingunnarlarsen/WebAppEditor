@@ -140,7 +140,6 @@ async function syncGitFilesWithApp(pattern) {
 				}
 			}
 			const fileContent = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
-			console.log(fileContent);
 
 			createFsos.push({
 				type: "file",
