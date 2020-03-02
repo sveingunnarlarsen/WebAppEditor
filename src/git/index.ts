@@ -382,6 +382,8 @@ class GitCommand {
 
 	static async pull(args, opts) {
 		const ref = args[0];
+		
+		console.log("Adding something");
 
 		const result = await git.pull({
 			fs,
