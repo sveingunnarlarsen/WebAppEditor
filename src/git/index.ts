@@ -3,6 +3,7 @@ import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
 import {saveFile, create, save, deleteFile} from "../actions/app";
+import {endClone} from "../actions";
 import {getFileContent} from "./utils";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
@@ -187,6 +188,8 @@ async function syncGitFilesWithApp(pattern) {
 	if (saveFsos.length > 0) {
 		store.dispatch(save(saveFsos));
 	}
+	// End cloning snackbar if we are cloning.
+	store.dispatch(endClone());
 }
 
 async function appendFileStatus(filepath) {
@@ -485,8 +488,8 @@ export async function runCommand(command) {
 	}
 }
 
-export async function cloneGitRepo(repo) {
-	async function clone(url) {
+export async function cloneGitRepo(url: string) {
+	async function clone() {
 		console.log("Start clone");
 		await git.clone({
 			fs,
@@ -510,7 +513,7 @@ export async function cloneGitRepo(repo) {
 		gitEmitter.addEventListener("initEnd", clone);
 	} else {
 		console.log("Running git clone2");
-		await clone(repo);
+		await clone();
 	}
 }
 
