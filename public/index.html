@@ -12,10 +12,10 @@
 		<script src="/public/ace/prettier/parser-postcss.js"></script>
 		<script src="/public/ace/prettier/parser-babylon.js"></script>
 		<script src="/public/language-server-client/language-server-client.js" type="text/javascript"></script>
-		<script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
-		<script src="https://unpkg.com/isomorphic-git@beta"></script>
+		<script src="/public/lightning-fs.js"></script>
+		<script src="/public/isomorphic-git.js"></script>
 		<script type="module">
-			import http from "https://unpkg.com/isomorphic-git@beta/http/web/index.js";
+			import http from "https://p9:8081/public/http-isomorphic-git.js";
 			window.http = http;
 			window.fs = new LightningFS("fs");
 			window.pfs = window.fs.promises;
@@ -29,3 +29,4 @@
 		<div id="root"></div>
 	</body>
 </html>
+
