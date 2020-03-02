@@ -268,13 +268,15 @@ export function createFile(fileName, type: string = "file") {
 	};
 }
 
-export function deleteFile() {
+export function deleteFile(id?: string) {
 	return function(dispatch, getState) {
 		dispatch(requestDelete());
 
 		const webAppId = getState().app.id;
-		const fileId = getState().selectedNode;
-		dispatch(closeFile(fileId));
+		if (!id) {
+		    id = getState().selectedNode
+		} 
+		dispatch(closeFile(id));
 
 		return fetch("/api/webapp/" + webAppId + "/fso/" + fileId, {
 			method: "DELETE"

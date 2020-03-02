@@ -161,7 +161,7 @@ async function syncGitFilesWithApp(pattern) {
 
 	for (let i = 0; i < appFiles.length; i++) {
 		const appFile = appFiles[i];
-		const gitFile = gitFsos.find(f => `/${gitFile}` === appFile.path);
+		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
 		if (!gitFile) {
 		    console.log("Could not find git file: ", appFile, gitFile);
 			// File does not exist in git. Delete from app.
