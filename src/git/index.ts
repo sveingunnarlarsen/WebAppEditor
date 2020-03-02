@@ -122,20 +122,22 @@ async function syncGitFilesWithApp(pattern) {
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 	console.log("gitFsos: ", gitFsos);
 	
-
+	const appFolders = appFsos.filter(f => f.type === "folder");
+	const appFiles = appFsos.filter(f => f.type === "file");
+	
 	const createdFolders = [];
 	const createFsos = [];
 
 	for (let i = 0; i < gitFsos.length; i++) {
 		const filePath = gitFsos[i];
-		const appFile = appFsos.find(f => f.path === `/${filePath}`);
+		const appFile = appFiles.find(f => f.path === `/${filePath}`);
 		if (!appFile) {
 			const parts = filePath.split("/");
 			// Create app file and maybe folder(s)
 			for (let y = 1; y < parts.length; y++) {
 				const folderPath = parts.slice(0, y).join("/");
 
-				if (createdFolders.indexOf(folderPath) < 0 && !appFsos.find(f => f.path === `/${folderPath}`)) {
+				if (createdFolders.indexOf(folderPath) < 0 && !appFolders.find(f => f.path === `/${folderPath}`)) {
 					createdFolders.push(folderPath);
 					createFsos.push({
 						path: "/" + folderPath,
@@ -157,8 +159,8 @@ async function syncGitFilesWithApp(pattern) {
 		}
 	}
 
-	for (let i = 0; i < appFsos.length; i++) {
-		const appFile = appFsos[i];
+	for (let i = 0; i < appFiles.length; i++) {
+		const appFile = appFiles[i];
 		const gitFile = gitFsos.find(f => `/${gitFile}` === appFile.path);
 		if (!gitFile) {
 		    console.log("Could not find git file: ", appFile, gitFile);
