@@ -2,7 +2,7 @@ import store from "../store";
 import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
-import {saveFile, create, deleteFile} from "../actions/app";
+import {saveFile, create, save, deleteFile} from "../actions/app";
 import {getFileContent} from "./utils";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
@@ -54,6 +54,9 @@ async function handleChange() {
 			}
 		}
 		gitEmitter.end();
+	} else {
+	    currentAppName = "";
+	    currentGitDir = "";
 	}
 }
 
@@ -127,6 +130,7 @@ async function syncGitFilesWithApp(pattern) {
 	
 	const createdFolders = [];
 	const createFsos = [];
+	const saveFsos = [];
 
 	for (let i = 0; i < gitFsos.length; i++) {
 		const filePath = gitFsos[i];
@@ -155,10 +159,18 @@ async function syncGitFilesWithApp(pattern) {
 		} else {
 			// Sync the file with app.
 			const content = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
-			store.dispatch(saveFile({...appFile, content}));
+			if (filePath.indexOf(".prettierrc.json") > -1) {
+			    console.log("Content: ", content);
+			}
+			saveFsos.push({
+			    ...appFile,
+			    content,
+			});
+			//store.dispatch(saveFile({...appFile, content}));
 		}
 	}
 
+    // Should probably only do this on a checkout.
 	for (let i = 0; i < appFiles.length; i++) {
 		const appFile = appFiles[i];
 		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
@@ -170,6 +182,9 @@ async function syncGitFilesWithApp(pattern) {
 	}
 	if (createFsos.length > 0) {
  	    store.dispatch(create(createFsos));   
+	}
+	if (saveFsos.length > 0) {
+	    store.dispatch(save(saveFsos));   
 	}
 }
 
@@ -392,8 +407,6 @@ class GitCommand {
 	static async pull(args, opts) {
 		const ref = args[0];
 		
-		console.log("Adding something more");
-
 		const result = await git.pull({
 			fs,
 			http,
@@ -407,6 +420,8 @@ class GitCommand {
 				email: "sveingunnarlarsen@gmail.com"
 			}
 		});
+		
+		console.log("Result from pull: ", result);
 
 		await syncGitFilesWithApp();
 

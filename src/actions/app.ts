@@ -167,12 +167,14 @@ export function createProject(opts) {
 	};
 }
 
-export function save() {
+export function save(filesToSave?) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
 
 		const app = getState().app;
-		const filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);
+		if (filesToSave.length < 1) {
+		    filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);    
+		}
 		if (filesToSave.length < 1) return;
 
 		return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
@@ -369,9 +371,9 @@ export function requestSave() {
 }
 
 export function receiveSave(files) {
-	// If we receive only one file it was probably renmaed and must be synced with git.
-	if (files.length === 1) {
-		syncFile(files[0]);
+	for (let i = 0; i < files.length; i++) {
+	    console.log("Syncing file", files[i].path);
+	    syncFile(files[i]);
 	}
 	return {
 		type: AppActions.RECEIVE_SAVE,
