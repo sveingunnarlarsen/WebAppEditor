@@ -168,7 +168,9 @@ async function syncGitFilesWithApp(pattern) {
 			store.dispatch(deleteFile(appFile.id));
 		}
 	}
-	store.dispatch(create(createFsos));
+	if (createFsos.length > 0) {
+ 	    store.dispatch(create(createFsos));   
+	}
 }
 
 async function appendFileStatus(filepath) {
