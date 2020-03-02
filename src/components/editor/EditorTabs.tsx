@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import * as imageType from "image-type";
 import {connect} from "react-redux";
 import {withStyles, styled} from "@material-ui/styles";
 import Tabs from "@material-ui/core/Tabs";
@@ -9,7 +8,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import AceEditorContainer from "./AceEditorContainer";
 import {showFile, closeTab} from "../../actions/editor";
 import {getFileById} from "../../store/utils";
-import {base64ToArrayBuffer} from "../../helpers/utils";
+import {base64ToArrayBuffer, isImage, getMimeType} from "../../helpers/utils";
 
 const styles = {
 	tabs: {
@@ -90,10 +89,11 @@ class EditorTabs extends React.Component {
 
 		const file = getFileById(activeTab);
 		let content;
-		if (file.path.toLowerCase().match(/.(jpg|jpeg|png|gif|ico)$/i)) {
+		if (isImage(file.path)) {
 		    var buffer = base64ToArrayBuffer(file.content);  
-		    const imageMeta = imageType(buffer);
-		    const link = `data:${imageMeta.mime};base64,${file.content}`
+		    // const imageMeta = imageType(buffer);
+		    // console.log("imageMeta: ", imageMeta);
+		    const link = `data:${getMimeType(file.path)};base64,${file.content}`
 			content = <img src={link} />;
 		} else {
 			content = <AceEditorContainer container={this} fileId={activeTab} />;

@@ -1,4 +1,5 @@
 import imageData from "../data/images.json";
+import mime from "mime-types";
 
 export function convertFlatToNested(n, r, t) {
 	for (var e, h, u, a = [], c = {}, o = 0, f = n.length; f > o; o++) (e = n[o]), (h = e[r]), (u = e[t] || 0), (c[h] = c[h] || []), (e.data = c[h]), 0 != u ? ((c[u] = c[u] || []), c[u].push(e)) : a.push(e);
@@ -26,8 +27,6 @@ export function getLineAndContentByChar(text, char) {
 	};
 }
 
-export function folderExists(path, fsos) {}
-
 export function base64ToArrayBuffer(base64) {
 	var binary_string = atob(base64);
 	var len = binary_string.length;
@@ -44,4 +43,12 @@ export function arrayBufferToBase64(buffer) {
 			return data + String.fromCharCode(byte);
 		}, "")
 	);
+}
+
+export function isImage(filepath) {
+    return filepath.toLowerCase().match(/.(bmp|cod|gif|ief|jpe|jpeg|jpg|jfif|svg|tif|tiff|ras|cmx|ico|pnm|pbm|pgm|ppm|rgb|xbm|xpm|xwd)$/i);
+}
+
+export function getMimeType(filepath) {
+    return mime.lookup(filepath);
 }

@@ -236,22 +236,26 @@ export function saveFile(fso) {
 	};
 }
 
-export function createFile(fileName, type: string = "file") {
+export function createFile(fileName, {type = "file", content, path}: {type?: string; content?: string; path?: string}) {
 	return function(dispatch, getState) {
-	    const webAppId = getState().app.id;
+		const webAppId = getState().app.id;
 		dispatch(requestCreate());
-		
-		const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
+
+		if (!path) {
+			const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
+			path = `${folderPath ? folderPath : ``}/${fileName}`;
+		}
+
 		const fso = {
-			content: "",
-			path: `${folderPath ? folderPath : ``}/${fileName}`,
+			content: content ? content : "",
+			path,
 			type
 		};
-		
+
 		if (!webAppId) {
-		    return dispatch(openDialog(DialogType.MESSAGE, {message: "Please open or create a project"}));
+			return dispatch(openDialog(DialogType.MESSAGE, {message: "Please open or create a project"}));
 		}
-		
+
 		// TODO(MAYBE) = If there is no app id, create temp app?
 		return fetch(`/api/webapp/${getState().app.id}/fso?fetch=true`, {
 			method: "POST",
@@ -274,8 +278,8 @@ export function deleteFile(id?: string) {
 
 		const webAppId = getState().app.id;
 		if (!id) {
-		    id = getState().selectedNode
-		} 
+			id = getState().selectedNode;
+		}
 		dispatch(closeFile(id));
 
 		return fetch("/api/webapp/" + webAppId + "/fso/" + fileId, {

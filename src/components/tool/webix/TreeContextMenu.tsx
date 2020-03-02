@@ -18,7 +18,9 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 import {makeStyles} from "@material-ui/core/styles";
 
+import store from "../../../store";
 import {openDialog} from "../../../actions";
+import {createFile} from "../../../actions/app";
 import {DialogType} from "../../../types/dialog";
 import {importFiles} from "../../../helpers/import";
 
@@ -43,7 +45,12 @@ const styles = theme => ({
 
 window.importFileInTree = async function(e) {
     console.log(e);
-    console.log(await importFiles(e));
+    const files = await importFiles(e);
+    console.log("Files to import: ", files);
+    for (let i = 0; i < files.length; i++) {
+        store.dispatch(createFile(files[i].name, {content: files[i].content}));
+    }
+    document.getElementById("importFileInTree").value = "";
 }
 
 class TreeContextMenu extends React.Component {
