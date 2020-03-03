@@ -160,15 +160,11 @@ async function syncGitFilesWithApp(pattern) {
 			});
 		} else {
 			// Sync the file with app.
-			const content = await pfs.readFile(`${currentGitDir}/${filePath}`, "utf8");
-			if (filePath.indexOf(".prettierrc.json") > -1) {
-				console.log("Content: ", content);
-			}
+			const content = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
 			saveFsos.push({
 				...appFile,
 				content
 			});
-			//store.dispatch(saveFile({...appFile, content}));
 		}
 	}
 
@@ -339,7 +335,7 @@ class GitCommand {
 		if (!args.length) {
 			return;
 		} else if (args.length === 1 && args[0] === ".") {
-			await git.checkout({fs, dir: currentGitDir, ref: currentBranch});
+			await git.checkout({fs, dir: currentGitDir, ref: currentBranch, force: true});
 			await syncGitFilesWithApp();
 		} else if (args.length === 1) {
 			// Is this a branch or a file path.
