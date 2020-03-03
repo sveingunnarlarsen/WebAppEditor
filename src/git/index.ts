@@ -399,6 +399,8 @@ class GitCommand {
 		} else {
 			remote = args[0];
 		}
+		
+		const token = configUser.token;
 
 		const result = await git.push({
 			fs,
@@ -407,7 +409,7 @@ class GitCommand {
 			corsProxy,
 			ref: branch,
 			remote,
-			onAuth: () => ({username: opts.username, password: opts.password}),
+			onAuth: () => ({username: token}),
 			force: opts.force ? true : false
 		});
 
