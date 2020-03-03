@@ -26,10 +26,21 @@ class GitEmitter extends EventTarget {
 
 const gitEmitter = new GitEmitter();
 const corsProxy = "https://cors.isomorphic-git.org";
+let gitConfig = {};
 window.git = git;
 
 let currentAppName: string;
 let currentGitDir: string;
+let configUser = {};
+
+export function getConfigUser() {
+    return configUser;
+}
+
+export async function setConfigUser(prop, value) {
+    configUser[prop] = value;
+    await git.setConfig({fs, dir: currentGitDir, path: "user." + prop, value});
+}
 
 async function handleChange() {
 	//Switch to new project.
@@ -54,6 +65,12 @@ async function handleChange() {
 				console.log("Failed to initialize git", e.message);
 			}
 		}
+		configUser = {
+	        name: await git.getConfig({fs, dir: currentGitDir, path: "user.name"}),
+	        email: await git.getConfig({fs, dir: currentGitDir, path: "user.email"}),
+	        token: await git.getConfig({fs, dir: currentGitDir, path: "user.token"}),
+		}
+		console.log("Config: ", configUser);
 		gitEmitter.end();
 	} else if (!store.getState().app.name) {
 		console.log("Setting: ", store.getState().app.name);

@@ -11,12 +11,15 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import FormLabel from "@material-ui/core/FormLabel";
 
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
+
+import {getConfigUser, setConfigUser} from "../../git";
 
 import keydown, {Keys} from "react-keydown";
 const {ENTER} = Keys;
@@ -26,10 +29,12 @@ import {updateAppData, saveAppData} from "../../actions/app";
 const mapState = state => {
 	const {name, description, type, settings} = state.app;
 	return {
-		name,
-		description,
-		type,
-		settings
+		data: {
+			name,
+			description,
+			type,
+			settings
+		}
 	};
 };
 
@@ -49,67 +54,24 @@ function mapDispatch(dispatch) {
 class Settings extends React.Component {
 	constructor(props) {
 		super(props);
+		const git = getConfigUser();
+		this.state = {
+		    git,
+		}
 	}
 
-	updateName = e => {
-		this.props.updateAppData({
-			...this.props,
-			name: e.target.value
-		});
+	updateData = (e, prop, ...path) => {
+		const data = $.extend(true, {}, this.props.data);
+		const toUpdate = path ? path.reduce((a, c) => a[c], data) : data;
+		toUpdate[prop] = e.target.value;
+		this.props.updateAppData(data);
 	};
-
-	updateDescription = e => {
-		this.props.updateAppData({
-			...this.props,
-			description: e.target.value
-		});
-	};
-
-	updateType = e => {
-		this.props.updateAppData({
-			...this.props,
-			type: e.target.value
-		});
-	};
-
-	updateEntryPointJs = e => {
-		this.props.updateAppData({
-			...this.props,
-			settings: {
-				...this.props.settings,
-				entryPoint: {
-					...this.props.settings.entryPoint,
-					javascript: e.target.value
-				}
-			}
-		});
-	};
-
-	updateEntryPointHtml = e => {
-		this.props.updateAppData({
-			...this.props,
-			settings: {
-				...this.props.settings,
-				entryPoint: {
-					...this.props.settings.entryPoint,
-					html: e.target.value
-				}
-			}
-		});
-	};
-
-	updateRepo = e => {
-		this.props.updateAppData({
-			...this.props,
-			settings: {
-				...this.props.settings,
-				git: {
-					...this.props.settings.git,
-					repo: e.target.value
-				}
-			}
-		});
-	};
+	
+	updateConfig = e => {
+	    console.log("Updating config", e);
+	    setConfigUser(e.target.name, e.target.value);
+        this.setState({git: {[e.target.name]: e.target.value}});
+	}
 
 	handleSubmit = e => {
 		if (e.keyCode === 13) {
@@ -118,19 +80,22 @@ class Settings extends React.Component {
 	};
 
 	render() {
-		const {name, description, type, settings} = this.props;
+		const {name, description, type, settings} = this.props.data;
+        const gitConfig = getConfigUser();
+        console.log(gitConfig);
+		console.log(name, description, type, settings);
 		const {classes} = this.props;
 		const display = this.props.show ? "" : "none";
 		return (
 			<div style={{display}} className={classes.container}>
 				<InputLabel shrink>Type</InputLabel>
-				<Select fullWidth value={type} onChange={this.updateType}>
+				<Select fullWidth value={type} onChange={e => this.updateDate(e, "type")}>
 					<MenuItem value={"react"}>React</MenuItem>
 					<MenuItem value={"vue"}>Vue</MenuItem>
 				</Select>
 				<TextField
-					value={name}
-					onChange={this.updateName}
+					value={name || ""}
+					onChange={e => this.updateData(e, "name")}
 					label="Application Name"
 					fullWidth
 					margin="normal"
@@ -141,8 +106,8 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-					value={description}
-					onChange={this.updateDescription}
+					value={description || ""}
+					onChange={e => this.updateData(e, "description")}
 					label="Description"
 					fullWidth
 					margin="normal"
@@ -153,8 +118,8 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-					value={settings.entryPoint.javascript}
-					onChange={this.updateEntryPointJs}
+					value={settings.entryPoint.javascript || ""}
+					onChange={e => this.updateData(e, "javascript", "settings", "entryPoint")}
 					label="Entrypoint JS"
 					fullWidth
 					margin="normal"
@@ -165,8 +130,8 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-					value={settings.entryPoint.html}
-					onChange={this.updateEntryPointHtml}
+					value={settings.entryPoint.html || ""}
+					onChange={e => this.updateData(e, "html", "settings", "entryPoint")}
 					label="Entrypoint HTML"
 					fullWidth
 					margin="normal"
@@ -176,14 +141,51 @@ class Settings extends React.Component {
 						shrink: true
 					}}
 				/>
+				<FormLabel>GIT</FormLabel>
 				<TextField
-					value={settings.git.repo}
-					onChange={this.updateRepo}
+					value={settings.git.repo || ""}
+					onChange={e => this.updateData(e, "repo", "settings", "git")}
 					label="Git repository"
 					fullWidth
 					margin="normal"
 					variant="outlined"
 					onKeyDown={this.handleSubmit}
+					InputLabelProps={{
+						shrink: true
+					}}
+				/>
+				<TextField
+				    name="name"
+					value={gitConfig.name || ""}
+					onChange={this.updateConfig}
+					label="Name"
+					fullWidth
+					margin="normal"
+					variant="outlined"
+					InputLabelProps={{
+						shrink: true
+					}}
+				/>
+				<TextField
+				    name="email"
+					value={gitConfig.email || ""}
+					onChange={this.updateConfig}
+					label="Email"
+					fullWidth
+					margin="normal"
+					variant="outlined"
+					InputLabelProps={{
+						shrink: true
+					}}
+				/>
+				<TextField
+				    name="token"
+					value={gitConfig.token || ""}
+					onChange={this.updateConfig}
+					label="Token"
+					fullWidth
+					margin="normal"
+					variant="outlined"
 					InputLabelProps={{
 						shrink: true
 					}}
