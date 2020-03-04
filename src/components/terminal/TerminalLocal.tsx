@@ -43,7 +43,7 @@ class TerminalLocal extends React.Component {
 
 	handleLineFeed = async input => {
 		try {
-			const result = await runCommand(input, this.localEcho.println);
+			const result = await runCommand(input, this.localEcho.println.bind(this));
 			if (result) {
 				this.localEcho.println(result);
 			}
