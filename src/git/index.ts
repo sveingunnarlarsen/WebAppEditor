@@ -48,15 +48,14 @@ async function handleChange() {
 		gitEmitter.start();
 		currentAppName = store.getState().app.name;
 		currentGitDir = `/${currentAppName}`;
-		console.log(currentAppName);
-		console.log("fsos: ", store.getState().app.fileSystemObjects);
 
 		try {
+		    console.log("Initializing git: ", currentGitDir);
 			await pfs.readdir(`${currentGitDir}/.git`);
 			await syncAppFilesWithGit();
 		} catch (e) {
 			if (e.message.indexOf("ENOENT") > -1) {
-				console.log("Initializing git");
+			    console.log("Git dir does not exist");
 				pfs.mkdir(currentGitDir);
 				await git.init({fs, dir: currentGitDir});
 				await syncAppFilesWithGit();
@@ -70,10 +69,8 @@ async function handleChange() {
 	        email: await git.getConfig({fs, dir: currentGitDir, path: "user.email"}),
 	        token: await git.getConfig({fs, dir: currentGitDir, path: "user.token"}),
 		}
-		console.log("Config: ", configUser);
 		gitEmitter.end();
 	} else if (!store.getState().app.name) {
-		console.log("Setting: ", store.getState().app.name);
 		currentAppName = "";
 		currentGitDir = "";
 	}
@@ -232,7 +229,7 @@ class GitCommand {
 		return (await git.statusMatrix({fs, dir: currentGitDir})).filter(row => row[HEAD] !== row[WORKDIR]).map(row => row[FILE]);
 	}
 
-	static async status(args, opts) {
+	static async status(args, opts, print) {
 		let ret: string = `On branch ${await git.currentBranch({fs, dir: currentGitDir})}\n`;
 
 		const statusMatrix = await git.statusMatrix({fs, dir: currentGitDir});
@@ -262,7 +259,7 @@ class GitCommand {
 		return ret;
 	}
 
-	static async diff(args, opts) {
+	static async diff(args, opts, print) {
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
 		const sha = await git.resolveRef({fs, dir: currentGitDir, ref: branch});
 		let diffFiles;
@@ -306,7 +303,7 @@ class GitCommand {
 		return ret;
 	}
 
-	static async log(args, opts) {
+	static async log(args, opts, print) {
 		let depth = args[0] ? Math.abs(args[0]) : 10;
 		const commits = await git.log({fs, dir: currentGitDir, depth});
 
@@ -325,7 +322,7 @@ class GitCommand {
 		return ret;
 	}
 
-	static async add(args, opts) {
+	static async add(args, opts, print) {
 		if (!args.length) {
 			return `Nothing specified, nothing added.\nMaybe you wanted to say 'git add .'?`;
 		} else if (args.length === 1 && args[0] === ".") {
@@ -346,7 +343,7 @@ class GitCommand {
 		}
 	}
 
-	static async checkout(args, opts) {
+	static async checkout(args, opts, print) {
 		const currentBranch = await git.currentBranch({fs, dir: currentGitDir});
 
 		if (!args.length) {
@@ -372,16 +369,15 @@ class GitCommand {
 		}
 	}
 
-	static async commit(args, opts) {
+	static async commit(args, opts, print) {
 		if (opts.m) {
-			// TODO: Git config, user.name and user.email must be set.
-			return await git.commit({fs, dir: currentGitDir, author: {name: "Svein Gunnar Larsen", email: "svein.gunnar.larsen@gmail.com"}, message: opts.m});
+			return await git.commit({fs, dir: currentGitDir, author: {name: configUser.name, email: configUser.email}, message: opts.m});
 		} else {
 			return `Aborting commit due to empty commit message`;
 		}
 	}
 
-	static async push(args, opts) {
+	static async push(args, opts, print) {
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
 		console.log("Git push: ", branch, args, opts);
 		let remote;
@@ -410,6 +406,7 @@ class GitCommand {
 			ref: branch,
 			remote,
 			onAuth: () => ({username: token}),
+			onMessage: print,
 			force: opts.force ? true : false
 		});
 
@@ -423,7 +420,7 @@ class GitCommand {
 		return message;
 	}
 
-	static async pull(args, opts) {
+	static async pull(args, opts, print) {
 		const ref = args[0];
 
 		const result = await git.pull({
@@ -435,9 +432,10 @@ class GitCommand {
 			singleBranch: true,
 			fastForwardOnly: true,
 			author: {
-				name: "Svein Gunnar Larsen",
-				email: "sveingunnarlarsen@gmail.com"
-			}
+				name: configUser.name,
+				email: configUser.email,
+			},
+			onAuth: () => ({username: token}),
 		});
 
 		console.log("Result from pull: ", result);
@@ -447,11 +445,11 @@ class GitCommand {
 		return result;
 	}
 
-	static async stash(args, opts) {
+	static async stash(args, opts, print) {
 		throw "Not implemented";
 	}
 
-	static async remote(args, opts) {
+	static async remote(args, opts, print) {
 		const subCommand = args[0];
 		if (subCommand === "add") {
 			if (!args[1] || !args[2]) return `usage: git remote add <name> <url>`;
@@ -471,12 +469,12 @@ class GitCommand {
 		}
 	}
 
-	static async clone(args, opts) {
+	static async clone(args, opts, print) {
 		return `If you want to clone a git repository please create a new project`;
 	}
 }
 
-export async function runCommand(command) {
+export async function runCommand(command, terminalPrintLine) {
 	if (!command) return "";
 	if (!currentGitDir) return "Not a git repository";
 
@@ -490,7 +488,7 @@ export async function runCommand(command) {
 
 	try {
 		if (typeof GitCommand[_[1]] === "function") {
-			return await GitCommand[_[1]](_.slice(2), parsedCommand);
+			return await GitCommand[_[1]](_.slice(2), parsedCommand, terminalPrintLine);
 		} else {
 			return `git: '${_[1]}' is not a git command. See 'git --help'`;
 		}
