@@ -25,7 +25,7 @@ const styles = {
 		color: "white"
 	},
 	list: {
-		height: "95%",
+		height: "93%",
 		overflowY: "auto",
 		overflowX: "hidden"
 	}

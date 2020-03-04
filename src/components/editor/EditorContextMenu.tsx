@@ -23,8 +23,6 @@ import {prettyPrint, calculatePos} from "./utils";
 import {findReferences} from "../../completer";
 import {SplitDirection} from "../../types/editor";
 
-//import "./EditorContextMenu.css";
-
 function mapDispatch(dispatch) {
 	return {
 		splitEditor: (direction, editorId, fileId) => dispatch(splitEditor(direction, editorId, fileId))
@@ -158,12 +156,6 @@ class EditorContextMenu extends React.Component {
 								<DraftsIcon />
 							</ListItemIcon>
 							<ListItemText primary="Api Browser" />
-						</ListItem>
-						<ListItem button onClick={event => null}>
-							<ListItemIcon>
-								<DraftsIcon />
-							</ListItemIcon>
-							<ListItemText primary="Npm Browser" />
 						</ListItem>
 					</List>
 				</div>

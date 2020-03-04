@@ -12,7 +12,7 @@ import {createFile} from "../../actions/app";
 
 function mapDispatch(dispatch) {
 	return {
-		createFile: value => dispatch(createFile(value))
+		createFile: value => dispatch(createFile(value, {type:"file"}))
 	};
 }
 
