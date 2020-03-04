@@ -104,6 +104,7 @@ export function fetchWebApp(id: string) {
 
 export function createProject(opts) {
 	return function(dispatch, getState) {
+        dispatch(closeAllTabs());
 		if (opts.remote) {
 			dispatch(startClone());
 			return fetch(`/api/webapp?fetch=true`, {
