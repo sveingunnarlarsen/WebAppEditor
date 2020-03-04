@@ -1,4 +1,4 @@
-import {arrayBufferToBase64, isImage} from "../helpers/utils";
+import {base64ToArrayBuffer, arrayBufferToBase64, isImage} from "../helpers/utils";
 const decoder = new TextDecoder('utf8');
 
 export async function getFileContent(pfs, filePath: string) {
@@ -9,3 +9,11 @@ export async function getFileContent(pfs, filePath: string) {
         return decoder.decode(buffer);
     }
 }
+
+export async function writeFileContent(pfs, filePath: string, content: string) {
+    if (isImage(filePath)) {
+        await pfs.writeFile(filePath, base64ToArrayBuffer(content));
+    } else {
+        await pfs.writeFile(filePath, content, "utf8");
+    }
+} 

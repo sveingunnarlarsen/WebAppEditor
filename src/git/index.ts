@@ -4,7 +4,7 @@ import yargs from "yargs-parser";
 import globby from "globby";
 import {saveFile, create, save, deleteFile} from "../actions/app";
 import {endClone} from "../actions";
-import {getFileContent} from "./utils";
+import {getFileContent, writeFileContent} from "./utils";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 let options: any = {enabled: true, level: 2};
@@ -115,7 +115,8 @@ async function syncAppFilesWithGit() {
 	console.log("Updating all files in git", appFiles);
 	for (let i = 0; i < appFiles.length; i++) {
 	    try {
-            await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");   
+	        await writeFileContent(pfs, `${currentGitDir}${appFiles[i].path}`, appFiles[i].content);
+            //await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");   
 	    } catch (e) {
 	        console.log("Error updating file: ", appFiles[i]);
 	        console.log("Message: ", e.message);
@@ -181,7 +182,7 @@ async function syncGitFilesWithApp(pattern) {
 				}
 			}
 			const fileContent = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
-
+			
 			createFsos.push({
 				type: "file",
 				path: "/" + filePath,
@@ -574,7 +575,14 @@ export async function syncFile({id, path, content}: {id: string; path: string; c
 				await git.remove({fs, dir: currentGitDir, filepath: originalFile.path});
 			}
 		}
-		await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
+		console.log("Syncing file with git", path);
+		if (path === "/src/logo.svg") {
+		    console.log("Something is wrong with this sync (app file content): ", content);
+		    const gitContent = await getFileContent(pfs, `${currentGitDir}${path}`);
+		    console.log("Git content: ", gitContent);
+		}
+		await writeFileContent(pfs, `${currentGitDir}${path}`, content);
+		//await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
 	} catch (e) {
 		console.log("Error syncing file to fs: ", e.message);
 	}

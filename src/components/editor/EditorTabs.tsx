@@ -90,9 +90,6 @@ class EditorTabs extends React.Component {
 		const file = getFileById(activeTab);
 		let content;
 		if (isImage(file.path)) {
-		    var buffer = base64ToArrayBuffer(file.content);  
-		    // const imageMeta = imageType(buffer);
-		    // console.log("imageMeta: ", imageMeta);
 		    const link = `data:${getMimeType(file.path)};base64,${file.content}`
 			content = <img src={link} />;
 		} else {
