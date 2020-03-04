@@ -378,8 +378,9 @@ class GitCommand {
 	}
 
 	static async push(args, opts, print) {
+	    console.log("Terminal print function: ", print);
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
-		print(`On branch: `, branch);
+		print(`On branch: ${branch}`);
 		console.log("Git push: ", branch, args, opts);
 		let remote;
 
