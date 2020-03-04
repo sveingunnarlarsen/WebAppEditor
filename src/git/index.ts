@@ -34,12 +34,12 @@ let currentGitDir: string;
 let configUser = {};
 
 export function getConfigUser() {
-    return configUser;
+	return configUser;
 }
 
 export async function setConfigUser(prop, value) {
-    configUser[prop] = value;
-    await git.setConfig({fs, dir: currentGitDir, path: "user." + prop, value});
+	configUser[prop] = value;
+	await git.setConfig({fs, dir: currentGitDir, path: "user." + prop, value});
 }
 
 async function handleChange() {
@@ -50,12 +50,12 @@ async function handleChange() {
 		currentGitDir = `/${currentAppName}`;
 
 		try {
-		    console.log("Initializing git: ", currentGitDir);
+			console.log("Initializing git: ", currentGitDir);
 			await pfs.readdir(`${currentGitDir}/.git`);
 			await syncAppFilesWithGit();
 		} catch (e) {
 			if (e.message.indexOf("ENOENT") > -1) {
-			    console.log("Git dir does not exist");
+				console.log("Git dir does not exist");
 				pfs.mkdir(currentGitDir);
 				await git.init({fs, dir: currentGitDir});
 				await syncAppFilesWithGit();
@@ -65,10 +65,10 @@ async function handleChange() {
 			}
 		}
 		configUser = {
-	        name: await git.getConfig({fs, dir: currentGitDir, path: "user.name"}),
-	        email: await git.getConfig({fs, dir: currentGitDir, path: "user.email"}),
-	        token: await git.getConfig({fs, dir: currentGitDir, path: "user.token"}),
-		}
+			name: await git.getConfig({fs, dir: currentGitDir, path: "user.name"}),
+			email: await git.getConfig({fs, dir: currentGitDir, path: "user.email"}),
+			token: await git.getConfig({fs, dir: currentGitDir, path: "user.token"})
+		};
 		gitEmitter.end();
 	} else if (!store.getState().app.name) {
 		currentAppName = "";
@@ -378,9 +378,7 @@ class GitCommand {
 	}
 
 	static async push(args, opts, print) {
-	    console.log("Terminal print function: ", print);
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
-		print(`On branch: ${branch}`);
 		console.log("Git push: ", branch, args, opts);
 		let remote;
 
@@ -397,7 +395,7 @@ class GitCommand {
 		} else {
 			remote = args[0];
 		}
-		
+
 		const token = configUser.token;
 
 		const result = await git.push({
@@ -435,9 +433,10 @@ class GitCommand {
 			fastForwardOnly: true,
 			author: {
 				name: configUser.name,
-				email: configUser.email,
+				email: configUser.email
 			},
 			onAuth: () => ({username: token}),
+			onMessage: print
 		});
 
 		console.log("Result from pull: ", result);
@@ -477,7 +476,7 @@ class GitCommand {
 }
 
 export async function runCommand(command, terminalPrintLine) {
-    console.log("terminalPrintLine", terminalPrintLine);
+	console.log("terminalPrintLine", terminalPrintLine);
 	if (!command) return "";
 	if (!currentGitDir) return "Not a git repository";
 
@@ -570,7 +569,7 @@ export async function syncFile({id, path, content}: {id: string; path: string; c
 export async function removeFile(fileId: string) {
 	const file = getFileById(fileId);
 	try {
-	    console.log("Removing file from git", file.path);
+		console.log("Removing file from git", file.path);
 		await pfs.unlink(`${currentGitDir}${file.path}`);
 		await git.remove({fs, dir: currentGitDir, filepath: file.path});
 	} catch (e) {
