@@ -40,7 +40,12 @@ const mapState = state => {
 
 const styles = {
 	container: {
-		padding: "1rem"
+		padding: "1rem",
+		height: "100%",
+		overflowY: "auto",
+	},
+	form: {
+	    
 	}
 };
 
@@ -56,8 +61,8 @@ class Settings extends React.Component {
 		super(props);
 		const git = getConfigUser();
 		this.state = {
-		    git,
-		}
+			git
+		};
 	}
 
 	updateData = (e, prop, ...path) => {
@@ -66,12 +71,12 @@ class Settings extends React.Component {
 		toUpdate[prop] = e.target.value;
 		this.props.updateAppData(data);
 	};
-	
+
 	updateConfig = e => {
-	    console.log("Updating config", e);
-	    setConfigUser(e.target.name, e.target.value);
-        this.setState({git: {[e.target.name]: e.target.value}});
-	}
+		console.log("Updating config", e);
+		setConfigUser(e.target.name, e.target.value);
+		this.setState({git: {[e.target.name]: e.target.value}});
+	};
 
 	handleSubmit = e => {
 		if (e.keyCode === 13) {
@@ -81,8 +86,8 @@ class Settings extends React.Component {
 
 	render() {
 		const {name, description, type, settings} = this.props.data;
-        const gitConfig = getConfigUser();
-        console.log(gitConfig);
+		const gitConfig = getConfigUser();
+		console.log(gitConfig);
 		console.log(name, description, type, settings);
 		const {classes} = this.props;
 		const display = this.props.show ? "" : "none";
@@ -155,7 +160,7 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-				    name="name"
+					name="name"
 					value={gitConfig.name || ""}
 					onChange={this.updateConfig}
 					label="Name"
@@ -167,7 +172,7 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-				    name="email"
+					name="email"
 					value={gitConfig.email || ""}
 					onChange={this.updateConfig}
 					label="Email"
@@ -179,7 +184,7 @@ class Settings extends React.Component {
 					}}
 				/>
 				<TextField
-				    name="token"
+					name="token"
 					value={gitConfig.token || ""}
 					onChange={this.updateConfig}
 					label="Token"

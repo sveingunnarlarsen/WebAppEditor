@@ -114,17 +114,32 @@ async function syncAppFilesWithGit() {
 	// Update all files in git
 	console.log("Updating all files in git", appFiles);
 	for (let i = 0; i < appFiles.length; i++) {
-		await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");
+	    try {
+            await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");   
+	    } catch (e) {
+	        console.log("Error updating file: ", appFiles[i]);
+	        console.log("Message: ", e.message);
+	    }
 	}
+	console.log("Done updating all files in git");
 
 	// Check if there are any files in git that does not exist in app.
 	for (let i = 0; i < gitFsos.length; i++) {
 		const gitFile = gitFsos[i];
 		const appFile = appFsos.find(f => f.path === `/${gitFile}`);
 		if (!appFile) {
-			// File does not exist in app. Delete from git.
-			await pfs.unlink(`${currentGitDir}/${gitFile}`);
-			await git.remove({fs, dir: currentGitDir, filepath: `/${gitFile}`});
+		    try {
+		        console.log("File does not exist in app", gitFile);
+     			// File does not exist in app. Delete from git.
+     			const fileStatus = await git.status({fs, dir: currentGitDir, filepath: gitFile});
+     			// Don't unlink if it already is.
+     			if (fileStatus.indexOf("deleted") < 0) {
+ 	 			    await pfs.unlink(`${currentGitDir}/${gitFile}`);
+			        await git.remove({fs, dir: currentGitDir, filepath: `/${gitFile}`});      
+     			}
+		    } catch (e) {
+		        console.log("Error removing file from git", e.message);
+		    }
 		}
 	}
 }
@@ -329,8 +344,13 @@ class GitCommand {
 			const modifiedPaths = await this.getModifiedFiles();
 			for (let i = 0; i < modifiedPaths.length; i++) {
 				const filepath = modifiedPaths[i];
-				console.log("Running git add for filepath: ", filepath);
-				await git.add({fs, dir: currentGitDir, filepath});
+				const fileStatus = await git.status({fs, dir: currentGitDir, filepath});
+				console.log("Running git add for filepath: ", filepath, fileStatus);
+				if (fileStatus.indexOf("deleted") > -1) {
+				    await git.remove({fs, dir: currentGitDir, filepath});
+				} else {
+			        await git.add({fs, dir: currentGitDir, filepath});   
+				}
 			}
 		} else if (args.length === 1) {
 			let modifiedPaths = await this.getModifiedFiles();
@@ -381,13 +401,12 @@ class GitCommand {
 		const branch = await git.currentBranch({fs, dir: currentGitDir});
 		console.log("Git push: ", branch, args, opts);
 		let remote;
-
 		if (!args[0]) {
 			const remotes = await git.listRemotes({fs, dir: currentGitDir});
 			if (remotes[0]) {
 				remote = remotes[0].remote;
 			} else {
-				const error = `fatal: No configured push destination.\nEither specify the URL from the command-line or configure a remote repository using`;
+				let error = `fatal: No configured push destination.\nEither specify the URL from the command-line or configure a remote repository using`;
 				error += `\n \n\tgit remote add <name> <url>\n \n`;
 				error += `and then push the remote name\n \n\tgit push <name>`;
 				return error;
@@ -395,9 +414,8 @@ class GitCommand {
 		} else {
 			remote = args[0];
 		}
-
+        
 		const token = configUser.token;
-
 		const result = await git.push({
 			fs,
 			http,
@@ -438,9 +456,6 @@ class GitCommand {
 			onAuth: () => ({username: token}),
 			onMessage: print
 		});
-
-		console.log("Result from pull: ", result);
-
 		await syncGitFilesWithApp();
 
 		return result;
@@ -476,7 +491,6 @@ class GitCommand {
 }
 
 export async function runCommand(command, terminalPrintLine) {
-	console.log("terminalPrintLine", terminalPrintLine);
 	if (!command) return "";
 	if (!currentGitDir) return "Not a git repository";
 
