@@ -37,19 +37,50 @@ function mapDispatch(dispatch) {
 class Projects extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+		    value: "",
+		}
 	}
 
 	handleRowClick = id => {
 		this.props.close();
 		this.props.rowClick(id);
 	};
+	
+	updateValue = e => {
+	    this.setState({
+	        value: e.target.value,
+	    })
+	}
+	
+	handleTextFieldKeyDown = e => {
+	    
+	}
 
 	render() {
 		const {classes, apps, close} = this.props;
+		const {value} = this.state;
+		const searchResult = !value ? apps : apps.filter(app => Object.keys(app).find(key => app[key].toString().indexOf(value) > -1));
 		return (
 			<React.Fragment>
 				<DialogTitle>New File</DialogTitle>
 				<DialogContent>
+					<TextField
+						ref={ref => {
+							this.inputRef = ref;
+						}}
+						autoFocus={true}
+						value={value}
+						onChange={this.updateValue}
+						label="Search"
+						fullWidth
+						margin="normal"
+						variant="outlined"
+						InputLabelProps={{
+							shrink: true
+						}}
+						onKeyDown={this.handleTextFieldKeyDown}
+					/>
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead>
 							<TableRow>
@@ -61,7 +92,7 @@ class Projects extends React.Component {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{apps.map(row => {
+							{searchResult.map(row => {
 								return (
 									<TableRow className={classes.tableRow} hover tabIndex={-1} key={row.id} onClick={() => this.handleRowClick(row.id)}>
 										{columns.map(column => {
