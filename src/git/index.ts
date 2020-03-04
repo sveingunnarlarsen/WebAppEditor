@@ -476,6 +476,7 @@ class GitCommand {
 }
 
 export async function runCommand(command, terminalPrintLine) {
+    console.log("terminalPrintLine", terminalPrintLine);
 	if (!command) return "";
 	if (!currentGitDir) return "Not a git repository";
 
