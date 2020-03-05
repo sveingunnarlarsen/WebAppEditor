@@ -38,6 +38,10 @@ const styles = {
 	refPaper: {
 		minHeight: "80vh",
 		maxHeight: "80vh"
+	},
+	projectsPaper: {
+		minHeight: "80vh",
+		maxHeight: "80vh"
 	}
 };
 
@@ -80,7 +84,7 @@ class DialogContainer extends React.Component {
 				);
 			case DialogType.PROJECT_LIST:
 				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} classes={{paper: classes.projectsPaper}} open={dialog.visible}>
 						<Projects close={close} />
 					</Dialog>
 				);
@@ -119,8 +123,6 @@ class DialogContainer extends React.Component {
 			case DialogType.DELETE_FOLDER:
 				return null;
 			case DialogType.API_BROWSER:
-				return null;
-			case DialogType.NPM_BROWSER:
 				return null;
 			case DialogType.SEARCH_APP:
 				return (

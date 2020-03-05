@@ -26,7 +26,6 @@ class GitEmitter extends EventTarget {
 
 const gitEmitter = new GitEmitter();
 const corsProxy = "https://cors.isomorphic-git.org";
-let gitConfig = {};
 window.git = git;
 
 let currentAppName: string;
