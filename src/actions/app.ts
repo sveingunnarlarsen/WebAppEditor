@@ -1,7 +1,7 @@
 import {AppActions} from "../types/app";
 import {extractFileMeta, extractServerProps, getFolderPath, convertApiWebAppData} from "./utils";
 import {closeFile, closeAllTabs} from "./editor";
-import {syncFile, removeFile, cloneGitRepo, deleteGitRepo} from "../git";
+import {syncFile, removeFile, cloneGitRepo, deleteGitRepo, renameFolderGit} from "../git";
 import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
 import {throwError, handleAjaxError} from "./ajax";
@@ -21,13 +21,18 @@ export function deleteFolder() {
 
 export function renameFolder(newName) {
 	return function(dispatch, getState) {
+		
 		const selectedFolder = getFileById(getState().selectedNode);
 		const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path) === 0);
+		const newFolderPath = `${selectedFolder.path.split("/").slice(0, -1).join("/")}/${newName}`;
 		const updatedFsos = [];
+		
 		for (var i = 0; i < fsos.length; i++) {
-		    updatedFsos.push({...fsos[i], path: fsos[i].path.replace(selectedFolder.path, selectedFolder.path.split("/").slice(0, -1).join("/") + "/" + newName)});
+			updatedFsos.push({...fsos[i], path: fsos[i].path.replace(selectedFolder.path, newFolderPath)});
 		}
-		return dispatch(save(updatedFsos));
+		
+		renameFolderGit(selectedFolder.path, newFolderPath);
+		return dispatch(save(updatedFsos, false));
 	};
 }
 
@@ -188,7 +193,7 @@ export function createProject(opts) {
 	};
 }
 
-export function save(filesToSave? = []) {
+export function save(filesToSave? = [], sync = true) {
 	return function(dispatch, getState) {
 		console.log("In save");
 		dispatch(requestSave());
@@ -208,8 +213,8 @@ export function save(filesToSave? = []) {
 		})
 			.then(throwError)
 			.then(response => response.json())
-			.then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects)))
-			.then(files => dispatch(receiveSave(files)))
+			.then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects)))
+			.then(files => dispatch(receiveSave(files, sync)))
 			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
@@ -391,9 +396,13 @@ export function requestSave() {
 	};
 }
 
-export function receiveSave(files) {
-	for (let i = 0; i < files.length; i++) {
-        syncFile(files[i]);
+export function receiveSave(files, sync = true) {
+	if (sync) {
+		for (let i = 0; i < files.length; i++) {
+			if (files[i].type === "file") {
+				syncFile(files[i]);
+			}
+		}
 	}
 	return {
 		type: AppActions.RECEIVE_SAVE,

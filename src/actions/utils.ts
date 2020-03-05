@@ -10,7 +10,7 @@ export function convertApiWebAppData(json) {
 	return app;
 }
 
-export function extractFileMeta(item, fsos) {
+export function extractFileMeta(item, fsos, updatedFsos = []) {
 	let parentId;
 	try {
 		//Split path and remove first /, i.e. /folder/subFolder/file.txt
@@ -21,7 +21,12 @@ export function extractFileMeta(item, fsos) {
 		if (parentPath.length === 1) {
 			parentId = "1";
 		} else {
-			parentId = fsos.filter(f => f.path === parentPath)[0].id;
+		    const parent = updatedFsos.filter(f => f.path === parentPath)[0];
+		    if (parent) {
+		        parentId = parent.id
+		    } else {
+		        parentId = fsos.filter(f => f.path === parentPath)[0].id;
+		    }
 		}
 		if (item.type === "file") {
 			const splitFile = name.split(".");

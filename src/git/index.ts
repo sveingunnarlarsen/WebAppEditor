@@ -593,3 +593,7 @@ export async function removeFile(fileId: string) {
 		console.log("Error deleting file from fs or removing from git", e.message);
 	}
 }
+
+export async function renameFolderGit(oldPath, newPath) {
+    await pfs.rename(`${currentGitDir}${oldPath}`, `${currentGitDir}${newPath}`);
+}
