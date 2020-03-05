@@ -574,18 +574,13 @@ export async function syncFile({id, path, content, type}: {id: string; path: str
 				await pfs.unlink(`${currentGitDir}${originalFso.path}`);
 				await git.remove({fs, dir: currentGitDir, filepath: originalFso.path});
 			}
-			// Does the folder always exist?
-			console.log("git.syncFile", path);
+			console.log("Syncing file to git", path);
 			await writeFileContent(pfs, `${currentGitDir}${path}`, content);
 		} else {
-	        try {
-	            await pfs.mkdir(`${currentGitDir}${path}`);
-	        } catch (e) {
-	            console.log("Error creating directory", e.message);
-	        }
+		    await pfs.mkdir(`${currentGitDir}${path}`);
 		}
 	} catch (e) {
-		console.log("Error syncing file to fs: ", e.message);
+		console.log("Error syncing fso to fs: ", e.message);
 	}
 }
 
