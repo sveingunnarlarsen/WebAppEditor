@@ -14,11 +14,12 @@ import InboxIcon from "@material-ui/icons/Inbox";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 
 import {makeStyles} from "@material-ui/core/styles";
 
 import store from "../../../store";
+import {getFileById} from "../../../store/utils";
 import {openDialog} from "../../../actions";
 import {createFile} from "../../../actions/app";
 import {DialogType} from "../../../types/dialog";
@@ -26,10 +27,16 @@ import {importFiles} from "../../../helpers/import";
 
 import "./TreeContextMenu.css";
 
+const mapState = state => {
+	return {selectedId: state.selectedNode};
+};
+
 function mapDispatch(dispatch) {
 	return {
 		deleteFile: () => dispatch(openDialog(DialogType.DELETE_FILE)),
 		renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE)),
+		deleteFolder: () => dispatch(openDialog(DialogType.DELETE_FOLDER)),
+		renameFolder: () => dispatch(openDialog(DialogType.RENAME_FOLDER)),
 	};
 }
 
@@ -44,14 +51,14 @@ const styles = theme => ({
 });
 
 window.importFileInTree = async function(e) {
-    console.log(e);
-    const files = await importFiles(e);
-    console.log("Files to import: ", files);
-    for (let i = 0; i < files.length; i++) {
-        store.dispatch(createFile(files[i].name, {content: files[i].content}));
-    }
-    document.getElementById("importFileInTree").value = "";
-}
+	console.log(e);
+	const files = await importFiles(e);
+	console.log("Files to import: ", files);
+	for (let i = 0; i < files.length; i++) {
+		store.dispatch(createFile(files[i].name, {content: files[i].content}));
+	}
+	document.getElementById("importFileInTree").value = "";
+};
 
 class TreeContextMenu extends React.Component {
 	constructor(props) {
@@ -121,7 +128,27 @@ class TreeContextMenu extends React.Component {
 
 		if (wasOutside && visible) this.setState({visible: false});
 	};
-	
+
+	handleRename = e => {
+	    const fso = getFileById(this.props.selectedId);
+	    console.log(fso)
+	    if (fso.type === "folder") {
+            this.props.renameFolder();   
+	    } else {
+	        this.props.renameFile();   
+	    }
+	};
+
+	handleDelete = e => {
+	    const fso = getFileById(this.props.selectedId);
+	    console.log(fso);
+	    if (fso.type === "folder") {
+            this.props.deleteFolder();   
+	    } else {
+	        this.props.deleteFile();   
+	    }
+	};
+
 	render() {
 		const {visible} = this.state;
 		const {classes, renameFile, deleteFile} = this.props;
@@ -138,8 +165,8 @@ class TreeContextMenu extends React.Component {
 						<ListItem
 							button
 							dense
-							onClick={() => {
-								this.props.renameFile();
+							onClick={e => {
+								this.handleRename(e);
 							}}
 						>
 							<ListItemIcon>
@@ -150,8 +177,8 @@ class TreeContextMenu extends React.Component {
 						<ListItem
 							button
 							dense
-							onClick={() => {
-								this.props.deleteFile();
+							onClick={e => {
+								this.handleDelete(e);
 							}}
 						>
 							<ListItemIcon>
@@ -179,6 +206,6 @@ class TreeContextMenu extends React.Component {
 }
 
 export default connect(
-	null,
+	mapState,
 	mapDispatch
 )(withStyles(styles)(TreeContextMenu));

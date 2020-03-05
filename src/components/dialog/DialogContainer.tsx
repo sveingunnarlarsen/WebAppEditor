@@ -15,13 +15,16 @@ import Projects from "./Projects";
 import NewFile from "./NewFile";
 import NewFolder from "./NewFolder";
 import RenameFile from "./RenameFile";
+import RenameFolder from "./RenameFolder";
 import DeleteFile from "./DeleteFile";
+import DeleteFolder from "./DeleteFolder";
 import SearchApp from "./SearchApp";
 import ShowReferences from "./ShowReferences";
 import Message from "./Message";
 import ServerMessage from "./ServerMessage";
 import AjaxError from "./AjaxError";
 import DeleteProject from "./DeleteProject";
+import NpmInstall from "./NpmInstall";
 
 import {DialogType} from "../../types/dialog";
 import {closeDialog} from "../../actions";
@@ -107,11 +110,21 @@ class DialogContainer extends React.Component {
 					</Dialog>
 				);
 			case DialogType.RENAME_FOLDER:
-				return null;
+				return (
+					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+						<RenameFolder close={close} />
+					</Dialog>
+				);
 			case DialogType.DELETE_FILE:
 				return (
 					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
 						<DeleteFile close={close} />
+					</Dialog>
+				);
+			case DialogType.NPM_INSTALL:
+				return (
+					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+						<NpmInstall close={close} />
 					</Dialog>
 				);
 			case DialogType.DELETE_PROJECT:
@@ -121,9 +134,11 @@ class DialogContainer extends React.Component {
 					</Dialog>
 				);
 			case DialogType.DELETE_FOLDER:
-				return null;
-			case DialogType.API_BROWSER:
-				return null;
+				return (
+					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
+						<DeleteFolder close={close} />
+					</Dialog>
+				);
 			case DialogType.SEARCH_APP:
 				return (
 					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.searchPaper}} open={dialog.visible}>

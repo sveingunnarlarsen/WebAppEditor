@@ -11,8 +11,11 @@ import UpdateOutlinedIcon from "@material-ui/icons/UpdateOutlined";
 import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
 import ArrowUpwardOutlinedIcon from "@material-ui/icons/ArrowUpwardOutlined";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
+import AddOutlinedIcon from '@material-ui/icons/AddOutlined';
 
 import {installNpmModules, deleteNpmModules} from "../../actions/app";
+import {openDialog} from "../../actions";
+import {DialogType} from "../../types/dialog";
 
 const styles = {
 	container: {
@@ -41,9 +44,10 @@ const mapState = state => {
 
 function mapDispatch(dispatch) {
 	return {
-		update: () => dispatch(installNpmModules()),
-		upgrade: () => dispatch(installNpmModules(true)),
-		delete: () => dispatch(deleteNpmModules())
+		install: () => dispatch(installNpmModules()),
+		update: () => dispatch(installNpmModules(true)),
+		delete: () => dispatch(deleteNpmModules()),
+		add: () => dispatch(openDialog(DialogType.NPM_INSTALL)),
 	};
 }
 
@@ -90,12 +94,12 @@ class NpmExplorer extends React.Component {
 			<div style={{display}} className={classes.container}>
 				<Toolbar className={classes.toolbar}>
 					<Tooltip title="Install npm modules">
-						<IconButton onClick={() => this.props.update()} color="inherit" size="small">
+						<IconButton onClick={() => this.props.install()} color="inherit" size="small">
 							<RefreshOutlinedIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
-					<Tooltip title="Upgrade npm modules">
-						<IconButton onClick={() => this.props.upgrade()} color="inherit" size="small">
+					<Tooltip title="Update npm modules">
+						<IconButton onClick={() => this.props.update()} color="inherit" size="small">
 							<ArrowUpwardOutlinedIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
@@ -106,8 +110,8 @@ class NpmExplorer extends React.Component {
 					</Tooltip>
 					<section className={classes.rightTools}>
     					<Tooltip title="Add npm module">
-    						<IconButton onClick={() => consolle.log()} color="inherit" size="small">
-    							<DeleteForeverOutlinedIcon fontSize="small" />
+    						<IconButton onClick={() => this.props.add()} color="inherit" size="small">
+    							<AddOutlinedIcon fontSize="small" />
     						</IconButton>
     					</Tooltip>
 					</section>

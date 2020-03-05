@@ -281,9 +281,9 @@ class GitCommand {
 		if (opts.cached) {
 			diffFiles = await this.getStagedChanges();
 		} else {
-			diffFiles = (await this.getUntrackedFiles()).concat(await this.getUnstagedChanges());
+			diffFiles = await this.getUnstagedChanges();
 		}
-
+		
 		if (args[0]) {
 			diffFiles = diffFiles.filter(f => new RegExp(args[0], "g").test(f));
 		}
@@ -292,9 +292,10 @@ class GitCommand {
 		for (let i = 0; i < diffFiles.length; i++) {
 			const filepath = diffFiles[i];
 			let {object: fileHEAD} = await git.readObject({fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8"});
-			let fileWORKDIR = await pfs.readFile(`${currentGitDir}/${filepath}`, "utf8");
+			let fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
 
 			const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD, fileWORKDIR);
+			
 			ret += forcedChalk.yellow("diff --git a/" + filepath + " b/" + filepath);
 			ret +=
 				"\n" +
@@ -565,7 +566,7 @@ export async function deleteGitRepo(folder = currentAppName) {
 	}
 }
 
-export async function syncFile({id, path, content}: {id: string; path: string; content: string}) {
+export async function syncFile({id, path, content, type}: {id: string; path: string; content: string, type: "file" | "folder"}) {
 	try {
 		if (id) {
 			const originalFile = getFileById(id);
@@ -574,14 +575,9 @@ export async function syncFile({id, path, content}: {id: string; path: string; c
 				await git.remove({fs, dir: currentGitDir, filepath: originalFile.path});
 			}
 		}
+		
 		console.log("Syncing file with git", path);
-		if (path === "/src/logo.svg") {
-		    console.log("Something is wrong with this sync (app file content): ", content);
-		    const gitContent = await getFileContent(pfs, `${currentGitDir}${path}`);
-		    console.log("Git content: ", gitContent);
-		}
 		await writeFileContent(pfs, `${currentGitDir}${path}`, content);
-		//await pfs.writeFile(`${currentGitDir}${path}`, content, "utf8");
 	} catch (e) {
 		console.log("Error syncing file to fs: ", e.message);
 	}
