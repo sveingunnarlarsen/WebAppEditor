@@ -568,16 +568,22 @@ export async function deleteGitRepo(folder = currentAppName) {
 
 export async function syncFile({id, path, content, type}: {id: string; path: string; content: string, type: "file" | "folder"}) {
 	try {
-		if (id) {
-			const originalFile = getFileById(id);
-			if (originalFile && originalFile.path !== path) {
-				await pfs.unlink(`${currentGitDir}${originalFile.path}`);
-				await git.remove({fs, dir: currentGitDir, filepath: originalFile.path});
+	    const originalFso = getFileById(id);
+		if (type === "file") {
+			if (originalFso && originalFso.path !== path) {
+				await pfs.unlink(`${currentGitDir}${originalFso.path}`);
+				await git.remove({fs, dir: currentGitDir, filepath: originalFso.path});
 			}
+			// Does the folder always exist?
+			console.log("git.syncFile", path);
+			await writeFileContent(pfs, `${currentGitDir}${path}`, content);
+		} else {
+	        try {
+	            await pfs.mkdir(`${currentGitDir}${path}`);
+	        } catch (e) {
+	            console.log("Error creating directory", e.message);
+	        }
 		}
-		
-		console.log("Syncing file with git", path);
-		await writeFileContent(pfs, `${currentGitDir}${path}`, content);
 	} catch (e) {
 		console.log("Error syncing file to fs: ", e.message);
 	}

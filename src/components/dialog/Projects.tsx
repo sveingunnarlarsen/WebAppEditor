@@ -21,8 +21,8 @@ import {fetchWebApp} from "../../actions/app";
 
 const styles = {
 	container: {
-		maxHeight: "60vh",
-		minHeight: "60vh",
+		maxHeight: "50vh",
+		minHeight: "50vh",
 	},
 	tableRow: {
 		cursor: "pointer"
