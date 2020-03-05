@@ -31,6 +31,7 @@ export function renameFolder(newName) {
 			updatedFsos.push({...fsos[i], path: fsos[i].path.replace(selectedFolder.path, newFolderPath)});
 		}
 		
+		// TODO: Should be moved to after ajax.
 		renameFolderGit(selectedFolder.path, newFolderPath);
 		return dispatch(save(updatedFsos, false));
 	};
