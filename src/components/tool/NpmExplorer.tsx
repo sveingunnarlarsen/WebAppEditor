@@ -8,8 +8,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Input from "@material-ui/core/Input";
 import IconButton from "@material-ui/core/IconButton";
 import UpdateOutlinedIcon from "@material-ui/icons/UpdateOutlined";
-import RefreshOutlinedIcon from '@material-ui/icons/RefreshOutlined';
-import ArrowUpwardOutlinedIcon from '@material-ui/icons/ArrowUpwardOutlined';
+import RefreshOutlinedIcon from "@material-ui/icons/RefreshOutlined";
+import ArrowUpwardOutlinedIcon from "@material-ui/icons/ArrowUpwardOutlined";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 
 import {installNpmModules, deleteNpmModules} from "../../actions/app";
@@ -23,6 +23,10 @@ const styles = {
 		background: "#333333",
 		minHeight: "2rem",
 		color: "white"
+	},
+	rightTools: {
+		marginLeft: "auto",
+		marginRight: -12
 	},
 	list: {
 		height: "93%",
@@ -100,6 +104,13 @@ class NpmExplorer extends React.Component {
 							<DeleteForeverOutlinedIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
+					<section className={classes.rightTools}>
+    					<Tooltip title="Add npm module">
+    						<IconButton onClick={() => consolle.log()} color="inherit" size="small">
+    							<DeleteForeverOutlinedIcon fontSize="small" />
+    						</IconButton>
+    					</Tooltip>
+					</section>
 				</Toolbar>
 				<div className={classes.list}>
 					<ul>{this.createList(this.props.modules)}</ul>
