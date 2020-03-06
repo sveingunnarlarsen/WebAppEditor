@@ -43,6 +43,3 @@ module.exports = {
 		]
 	}
 };
-
-
-

@@ -16,6 +16,7 @@ export function deleteFolder() {
 	return function(dispatch, getState) {
 		const selectedFolder = getFileById(getState().selectedNode);
 		const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path) === 0);
+		return dispatch(deleteFsos(fsos));
 	};
 }
 
@@ -196,7 +197,6 @@ export function createProject(opts) {
 
 export function save(filesToSave? = [], sync = true) {
 	return function(dispatch, getState) {
-		console.log("In save");
 		dispatch(requestSave());
 
 		const app = getState().app;
@@ -244,6 +244,23 @@ export function create(fsos) {
 			.then(app => dispatch(receiveWebApp(app)))
 			.catch(error => handleAjaxError(error, dispatch));
 	};
+}
+
+export function deleteFsos(fsos) {
+    return function(dispatch, getState) {
+        const app = getState().app;
+        
+        return fetch(`/api/webapp/${app.id}/fso`, {
+            method: "DELETE",
+            headers,
+            body: JSON.stringify({
+                fileSystemObjects: fsos,
+            })
+        })
+        .then(throwError)
+        .then(() => dispatch(receiveDeletes(fsos)))
+        .catch(error => handleAjaxError(error, dispatch));
+    }
 }
 
 export function saveFile(fso) {
@@ -400,9 +417,7 @@ export function requestSave() {
 export function receiveSave(files, sync = true) {
 	if (sync) {
 		for (let i = 0; i < files.length; i++) {
-			if (files[i].type === "file") {
-				syncFile(files[i]);
-			}
+		    syncFile(files[i]);
 		}
 	}
 	return {
@@ -433,6 +448,16 @@ export function requestDelete() {
 
 export function receiveDelete(fileId) {
 	removeFile(fileId);
+	return {
+		type: AppActions.RECEIVE_DELETE,
+		fileId
+	};
+}
+
+export function receiveDeletes(fsos) {
+    for (let i = 0; i < fsos.length; i++) {
+        removeFile(fsos[i].id);   
+    }
 	return {
 		type: AppActions.RECEIVE_DELETE,
 		fileId

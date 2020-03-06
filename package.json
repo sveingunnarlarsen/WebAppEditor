@@ -25,7 +25,10 @@
     "xterm-addon-fit": "^0.3.0",
     "jszip": "^3.2.2",
     "file-saver": "^2.0.2",
-    "mime-types": "^2.1.26"
+    "mime-types": "^2.1.26",
+    "ts-loader": "^6.2.1",
+    "fork-ts-checker-webpack-plugin": "^4.0.5",
+    "tsconfig-paths-webpack-plugin": "^3.2.0"
   },
   "devDependencies": {},
   "author": "sveingunnarlarsen@gmail.com",

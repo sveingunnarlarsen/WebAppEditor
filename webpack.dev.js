@@ -3,8 +3,12 @@ const presetReact = require.resolve("@babel/preset-react");
 const classPropPlugin = require.resolve("@babel/plugin-proposal-class-properties");
 const tsPreset = require.resolve("@babel/preset-typescript");
 const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const webpack = require("webpack");
+const path = require("path");
 
-module.exports = {
+module.exports = settings => ({
 	mode: "development",
 	devtool: "eval-source-map",
 	resolve: {
@@ -13,15 +17,15 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.(js|ts|jsx|tsx)$/,
+				test: /\.(ts|tsx|js|jsx)$/,
 				exclude: /node_modules/,
-				use: {
+				use: [{
 					loader: "babel-loader",
 					options: {
 						presets: [presetEnv, tsPreset, presetReact],
 						plugins: [[porpDecorators, {legacy: true}], [classPropPlugin, {loose: true}]]
 					}
-				}
+				}]
 			},
 			{
 				test: /\.css$/,
@@ -34,7 +38,7 @@ module.exports = {
 						loader: "file-loader",
 						options: {
 							name(fileName) {
-								fileName = `preview/${fileName.slice(fileName.indexOf("/", 1) + 1)}`;
+								fileName = `resource/${fileName.slice(fileName.indexOf("/", 1) + 1)}`;
 								return fileName;
 							},
 							emitFile: false
@@ -43,5 +47,10 @@ module.exports = {
 				]
 			}
 		]
-	}
-};
+	},
+	plugins: [
+		new webpack.DefinePlugin({
+			BASENAME: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
+		}),
+	]
+});
