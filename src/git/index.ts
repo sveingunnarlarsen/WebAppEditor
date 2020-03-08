@@ -1,12 +1,13 @@
-import store from "../store";
-import {getFileById} from "../store/utils";
 import yargs from "yargs-parser";
 import globby from "globby";
-import {saveFile, create, save, deleteFile} from "../actions/app";
+import JsDiff from "diff";
+import chalk from "chalk";
+import store from "../store";
+import {getFileById} from "../store/utils";
 import {endClone} from "../actions";
+import {saveFile, create, save, deleteFile} from "../actions/app";
 import {getFileContent, writeFileContent} from "./utils";
-import * as JsDiff from "diff";
-import * as chalk from "chalk";
+
 let options: any = {enabled: true, level: 2};
 const forcedChalk = new chalk.constructor(options);
 
@@ -25,8 +26,8 @@ class GitEmitter extends EventTarget {
 }
 
 const gitEmitter = new GitEmitter();
+// TODO: Should use planet 9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
-window.git = git;
 
 let currentAppName: string;
 let currentGitDir: string;
@@ -83,7 +84,7 @@ store.subscribe(handleChange);
  * in fileSystemObjects
  */
 async function syncAppFilesWithGit() {
-	console.log("Starting app sync, using git dir: ", currentGitDir);
+	console.log("Starting app sync to git, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
 
@@ -115,7 +116,6 @@ async function syncAppFilesWithGit() {
 	for (let i = 0; i < appFiles.length; i++) {
 	    try {
 	        await writeFileContent(pfs, `${currentGitDir}${appFiles[i].path}`, appFiles[i].content);
-            //await pfs.writeFile(`${currentGitDir}${appFiles[i].path}`, appFiles[i].content, "utf8");   
 	    } catch (e) {
 	        console.log("Error updating file: ", appFiles[i]);
 	        console.log("Message: ", e.message);
@@ -150,11 +150,9 @@ async function syncAppFilesWithGit() {
  * in fs
  */
 async function syncGitFilesWithApp(pattern) {
-	console.log("starting git sync, using git dir: ", currentGitDir);
+	console.log("starting git sync to app, using git dir: ", currentGitDir);
 	const appFsos = store.getState().app.fileSystemObjects;
-	console.log("appFsos: ", appFsos);
 	const gitFsos = await git.listFiles({fs, dir: currentGitDir});
-	console.log("gitFsos: ", gitFsos);
 
 	const appFolders = appFsos.filter(f => f.type === "folder");
 	const appFiles = appFsos.filter(f => f.type === "file");
@@ -197,7 +195,7 @@ async function syncGitFilesWithApp(pattern) {
 		}
 	}
 
-	// Should probably only do this on a checkout.
+    // Remove or write to fs?
 	for (let i = 0; i < appFiles.length; i++) {
 		const appFile = appFiles[i];
 		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
@@ -329,12 +327,11 @@ class GitCommand {
 			console.log("Commit: ", commit);
 			ret += forcedChalk.yellow(`commit ${commit.oid}\n`);
 			ret += `Author: ${commit.commit.committer.name} <${commit.commit.committer.email}>\n`;
-			ret += `Date: ${new Date(commit.commit.committer.timestamp)}\n \n`;
+			ret += `Date: ${new Date(parseInt(commit.commit.committer.timestamp + '000'))}\n \n`;
 			ret += `\t ${commit.commit.message}\n \n`;
 		}
-
+		
 		console.log("Done", ret);
-
 		return ret;
 	}
 
@@ -574,7 +571,7 @@ export async function syncFile({id, path, content, type}: {id: string; path: str
 				await pfs.unlink(`${currentGitDir}${originalFso.path}`);
 				await git.remove({fs, dir: currentGitDir, filepath: originalFso.path});
 			}
-			console.log("Syncing file to git", path);
+			console.log("Syncing file to fs", path);
 			await writeFileContent(pfs, `${currentGitDir}${path}`, content);
 		} else {
 		    await pfs.mkdir(`${currentGitDir}${path}`);

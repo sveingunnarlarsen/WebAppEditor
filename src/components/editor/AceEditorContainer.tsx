@@ -136,7 +136,7 @@ class AceEditorContainer extends React.Component {
 				if (this.props.fso.orgContent === content) {
 					modified = false;
 				}
-				this.props.updateFileState({id: this.props.fso.id, path: this.props.fso.path, content, modified});
+				this.props.updateFileState({...this.props.fso, content, modified});
 			}
 		}, 200);
 	}
