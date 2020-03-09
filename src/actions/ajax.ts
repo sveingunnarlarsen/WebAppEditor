@@ -14,7 +14,7 @@ export async function handleAjaxError(error, dispatch) {
 	 	const json = status ? await error.json() : {status: "Request failed. No connection to server."};
 	    return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json}));   
 	} catch (e) {
-	    return dispatch(openDialog(DialogType.AJAX_ERROR, {status, `Error parsing error`}));   
+	    return dispatch(openDialog(DialogType.AJAX_ERROR, {status, json: `Error parsing error`}));   
 	}
 }
 

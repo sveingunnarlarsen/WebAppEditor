@@ -1,7 +1,7 @@
 import yargs from "yargs-parser";
 import globby from "globby";
-import JsDiff from "diff";
-import chalk from "chalk";
+import * as JsDiff from "diff";
+import * as chalk from "chalk";
 import store from "../store";
 import {getFileById} from "../store/utils";
 import {endClone} from "../actions";
