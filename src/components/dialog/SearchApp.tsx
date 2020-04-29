@@ -90,7 +90,7 @@ class SearchApp extends React.Component {
 			const plussOneSecond = new Date().getTime();
 			const diff = plussOneSecond - (this.lastUpdate + 200);
 			if (diff >= 0) {
-				this.props.updateSearchResult(content);
+				this.updateSearchResult(content);
 			}
 		}, 200);
 	}
