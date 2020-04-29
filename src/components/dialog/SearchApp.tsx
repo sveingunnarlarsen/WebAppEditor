@@ -85,15 +85,26 @@ class SearchApp extends React.Component {
 		}
 	}
 
+	waitForMoreChanges(content) {
+		setTimeout(() => {
+			const plussOneSecond = new Date().getTime();
+			const diff = plussOneSecond - (this.lastUpdate + 200);
+			if (diff >= 0) {
+				this.props.updateSearchResult(content);
+			}
+		}, 200);
+	}
+	
 	updateValue = e => {
-		e.preventDefault();
+	    e.preventDefault();
 		this.setState({
 			value: e.target.value
 		});
 		if (e.target.value.length > 1) {
-			this.updateSearchResult(e.target.value.trim());
+	        this.lastUpdate = new Date().getTime();
+	        this.waitForMoreChanges(e.target.value);
 		}
-	};
+	}
 
 	updateSearchResult = value => {
 		const appFiles = store.getState().app.fileSystemObjects;
