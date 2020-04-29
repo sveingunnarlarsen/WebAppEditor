@@ -8,7 +8,6 @@ import "ace-builds/src-noconflict/mode-asciidoc";
 import "ace-builds/src-noconflict/mode-assembly_x86";
 import "ace-builds/src-noconflict/mode-autohotkey";
 import "ace-builds/src-noconflict/mode-batchfile";
-import "ace-builds/src-noconflict/mode-bro";
 import "ace-builds/src-noconflict/mode-c9search";
 import "ace-builds/src-noconflict/mode-cirru";
 import "ace-builds/src-noconflict/mode-clojure";
