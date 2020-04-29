@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Terminal} from "xterm";
 import {FitAddon} from "xterm-addon-fit";
-import LocalEchoController from 'local-echo';
+import LocalEchoController from '../../local-echo/LocalEchoController';
 
 import "xterm/css/xterm.css";
 
