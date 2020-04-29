@@ -5,7 +5,7 @@ import * as chalk from "chalk";
 import store from "../store";
 import {getFileById} from "../store/utils";
 import {endClone} from "../actions";
-import {saveFile, create, save, deleteFile} from "../actions/app";
+import {saveFile, create, save, deleteFile, createFile} from "../actions/app";
 import {getFileContent, writeFileContent} from "./utils";
 
 let options: any = {enabled: true, level: 2};
@@ -205,14 +205,26 @@ async function syncGitFilesWithApp(pattern) {
 			store.dispatch(deleteFile(appFile.id));
 		}
 	}
-	if (createFsos.length > 0) {
+	
+	console.log("syncGitFilesWithApp done");
+	console.log("createFsos: ", createFsos);
+	console.log("saveFsos: ", saveFsos);
+	
+	if (saveFsos.length < 1 && createFsos.length > 0) {
+	    console.log("Using create:", createFsos);
 		store.dispatch(create(createFsos));
+		store.dispatch(endClone());
+	} else if (createFsos.length > 0) {
+        createFsos.forEach(fso => {
+            console.log("Calling create file: ", fso);
+            store.dispatch(createFile(null, fso));
+        });
 	}
+	
 	if (saveFsos.length > 0) {
+	    console.log("Calling save: ", saveFsos);
 		store.dispatch(save(saveFsos));
 	}
-	// End cloning snackbar if we are cloning.
-	store.dispatch(endClone());
 }
 
 async function appendFileStatus(filepath) {

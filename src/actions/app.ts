@@ -220,6 +220,8 @@ export function save(filesToSave? = [], sync = true) {
 	};
 }
 
+
+// Only used in clone
 export function create(fsos) {
 	return function(dispatch, getState) {
 		const app = getState().app;
