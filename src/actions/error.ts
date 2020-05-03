@@ -20,7 +20,6 @@ export async function handleAjaxError(error, dispatch) {
 }
 
 export async function handleCompileError(error, dispatch) {
-	dispatch(endCompile());
 	const reader = error.body.getReader();
 	const part = await reader.read();
 	const value = part.value;

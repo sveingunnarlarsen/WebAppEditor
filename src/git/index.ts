@@ -3,7 +3,8 @@ import * as chalk from "chalk";
 import yargs from "yargs-parser";
 import globby from "globby";
 
-import {createFsos, save} from "../actions/file";
+import {startGitCloneClone, endGitClone} from "../actions";
+import {createFsos, save, deleteFsos} from "../actions/file";
 import store from "../store";
 import {getFileById} from "../store/utils";
 import {getFileContent, writeFileContent, fsExists} from "./utils";
@@ -161,6 +162,7 @@ async function syncGitFilesWithApp(pattern) {
 	const createdFolders = [];
 	const fsosToCreate = [];
 	const fsosToSave = [];
+	const fsosToDelete = [];
 
 	for (let i = 0; i < gitFsos.length; i++) {
 		const filePath = gitFsos[i];
@@ -201,12 +203,17 @@ async function syncGitFilesWithApp(pattern) {
 		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
 		if (!gitFile) {
 			console.log("Could not find git file: ", appFile, gitFile);
-			// File does not exist in git. Delete from app.
-			store.dispatch(deleteFile(appFile.id));
+			fsosToDelete.push({
+			    id: appFile.id,
+			});
 		}
 	}
 	
 	console.log("syncGitFilesWithApp done");
+	
+	if (fsosToDelete.length > 0) {
+	    store.dispatch(deleteFsos(fsosToDelete));
+	}
 	
 	if (fsosToCreate.length > 0) {
 	    store.dispatch(createFsos(fsosToCreate));
@@ -214,7 +221,9 @@ async function syncGitFilesWithApp(pattern) {
 	
 	if (fsosToSave.length > 0) {
 		store.dispatch(save(fsosToSave));
-	}	
+	}
+	
+	store.dispatch(endGitClone());
 }
 
 async function appendFileStatus(filepath) {
@@ -518,6 +527,7 @@ export async function runCommand(command, terminalPrintLine) {
 }
 
 export async function cloneGitRepo(url: string) {
+    store.dispatch(startGitCloneClone());
 	async function clone() {
 		console.log("Start clone");
 		await git.clone({
@@ -548,6 +558,9 @@ export async function cloneGitRepo(url: string) {
 
 export async function deleteGitRepo(folder = currentAppName) {
 	const dir = "/" + folder;
+	if (folder === currentAppName) {
+	    console.log("Deleting git repo: ", folder);
+	}
 	try {
 		const folderContents = await pfs.readdir(dir);
 		for (let i = 0; i < folderContents.length; i++) {
@@ -560,8 +573,12 @@ export async function deleteGitRepo(folder = currentAppName) {
 			}
 		}
 		await pfs.rmdir(dir);
+	    const files = await git.listFiles({fs, dir: `/${currentAppName}`});
+	    for (let i = 0; i < files.length; i++) {
+	        await git.remove({fs, dir: `/${currentAppName}`, filepath: files[i]});
+	    }
 	} catch (e) {
-		console.log("Error deleting repository: ", e.message);
+		console.log("Error deleting repository: ", e.message, dir);
 	}
 }
 
@@ -578,7 +595,7 @@ export async function syncFile({id, path, content, type}: {id: string; path: str
 			
 	        const parts = path.split("/");
 	        for (let i = 1; i < parts.length; i++) {
-	            const path = parts.slice(0, i);
+	            const path = parts.slice(0, i).join("/");
 	            if (!await fsExists(pfs, `${currentGitDir}${path}`)) {
 	                console.log(id, "Creating folder: ", `${currentGitDir}${path}`);
 	                await pfs.mkdir(`${currentGitDir}${path}`);        

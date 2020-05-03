@@ -95,11 +95,11 @@ export function saveFso(fileSystemObject) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
 
-		return fetch(`/api/webapp/${fso.webAppId}/fso/${fso.id}?fetch=true`, {
+		return fetch(`/api/webapp/${getState().app.id}/fso/${fileSystemObject.id}?fetch=true`, {
 			method: "PATCH",
 			headers,
 			body: JSON.stringify({
-				fileSystemObject: destructFileServerProps(fso)
+				fileSystemObject: destructFileServerProps(fileSystemObject)
 			})
 		})
 			.then(throwError)

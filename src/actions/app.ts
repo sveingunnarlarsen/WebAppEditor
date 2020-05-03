@@ -3,7 +3,7 @@ import {DialogType} from "../types/dialog";
 import {cloneGitRepo, deleteGitRepo} from "../git";
 import {reset, openDialog} from "./";
 import {getNpmModules} from "./npm";
-import {throwError, handleAjaxError} from "./error";
+import {throwError, handleAjaxError, handleCompileError} from "./error";
 import {convertApiWebAppData, destructAppServerProps} from "./utils";
 
 const headers = {

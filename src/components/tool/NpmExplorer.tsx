@@ -13,7 +13,7 @@ import ArrowUpwardOutlinedIcon from "@material-ui/icons/ArrowUpwardOutlined";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import AddOutlinedIcon from '@material-ui/icons/AddOutlined';
 
-import {installNpmModules, deleteNpmModules} from "../../actions/app";
+import {installNpmModules, deleteNpmModules} from "../../actions/npm";
 import {openDialog} from "../../actions";
 import {DialogType} from "../../types/dialog";
 
