@@ -17,7 +17,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 import TablePagination from "@material-ui/core/TablePagination";
 
-import {fetchWebApp} from "../../actions/app";
+import {getProject} from "../../actions/app";
 
 const styles = {
 	container: {
@@ -37,7 +37,7 @@ const mapState = state => {
 
 function mapDispatch(dispatch) {
 	return {
-		rowClick: id => dispatch(fetchWebApp(id))
+		rowClick: id => dispatch(getProject(id))
 	};
 }
 

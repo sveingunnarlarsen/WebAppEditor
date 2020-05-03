@@ -1,6 +1,5 @@
 import produce from "immer";
-import {AppState} from "../types";
-import {AppActions} from "../types/app";
+import {Actions, AppsState} from "../types";
 
 const initState: AppState = {
 	id: "",
@@ -57,6 +56,14 @@ const receiveSave = produce((draft, files) => {
     });
 });
 
+const requestCreateFiles = produce((draft, files) => {
+    
+});
+
+const receiveCreateFiles = produce((draft, files) => {
+	draft.fileSystemObjects.push(...files);
+});
+
 const requestCreate = produce((draft, file) => {
     
 });
@@ -72,6 +79,17 @@ const requestDelete = produce((draft, file) => {
 const receiveDelete = produce((draft, id) => {
 	const index = draft.fileSystemObjects.findIndex(f => f.id === id);
 	draft.fileSystemObjects.splice(index, 1);
+});
+
+const requestDeleteFiles = produce((draft) => {
+    
+});
+
+const receiveDeleteFiles = produce((draft, files) => {
+    files.forEach(file => {
+	    const index = draft.fileSystemObjects.findIndex(f => f.id === file.id);
+	    draft.fileSystemObjects.splice(index, 1);        
+    })
 });
 
 const requestModules = produce((draft) => {
@@ -103,34 +121,62 @@ const updateAppData = produce((draft, data) => {
     draft.settings = data.settings;
 }); 
 
+
+
 export default function app(state = initState, action) {
+    
 	switch (action.type) {
-	    case "RESET":
+	    case Actions.RESET:
 	        return reset(state);
-		case AppActions.REQUEST_WEBAPP:
+	        
+		case Actions.REQUEST_WEBAPP:
 			return requestWebApp(state, action.id);
-		case AppActions.RECEIVE_WEBAPP:
+			
+		case Actions.RECEIVE_WEBAPP:
 			return receiveWebApp(state, action.data);
-		case AppActions.REQUEST_SAVE:
+			
+		case Actions.REQUEST_SAVE:
 			return requestSave(state);
-		case AppActions.RECEIVE_SAVE:
+			
+		case Actions.RECEIVE_SAVE:
 			return receiveSave(state, action.files);
-		case AppActions.REQUEST_CREATE:
+			
+		case Actions.REQUEST_CREATE_FILES:
+			return requestCreateFiles(state);
+			
+		case Actions.RECEIVE_CREATE_FILES:
+			return receiveCreateFiles(state, action.files);
+			
+		case Actions.REQUEST_CREATE_FILE:
 			return requestCreate(state);
-		case AppActions.RECEIVE_CREATE:
+			
+		case Actions.RECEIVE_CREATE_FILE:
 			return receiveCreate(state, action.file);
-		case AppActions.REQUEST_DELETE:
+			
+		case Actions.REQUEST_DELETE_FILE:
 			return requestDelete(state);
-		case AppActions.RECEIVE_DELETE:
+			
+		case Actions.RECEIVE_DELETE_FILE:
 			return receiveDelete(state, action.fileId);
-		case AppActions.UPDATE_FILE_STATE:
-			return updateFileState(state, action.file);
-		case AppActions.REQUEST_MODULES:
+			
+		case Actions.REQUEST_DELETE_FILES:
+			return requestDeleteFiles(state);
+			
+		case Actions.RECEIVE_DELETE_FILES:
+			return receiveDeleteFiles(state, action.files)
+			
+		case Actions.REQUEST_MODULES:
 			return requestModules(state);
-		case AppActions.RECEIVE_MODULES:
+			
+		case Actions.RECEIVE_MODULES:
 			return receiveModules(state, action.modules);
-		case AppActions.UPDATE_APP_DATA:
+			
+		case Actions.UPDATE_APP_DATA:
 		    return updateAppData(state, action.data);
+		    
+		case Actions.UPDATE_FILE_STATE:
+			return updateFileState(state, action.file);
+			
 		default:
 			return state;
 	}

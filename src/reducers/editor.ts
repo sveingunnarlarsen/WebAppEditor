@@ -101,7 +101,6 @@ const closeFile = produce((draft, fileId) => {
 		const editor = editors[i];
 		const index = editor.tabs.findIndex(t => t === fileId);
 		editor.tabs.splice(index, 1);
-		console.log("deleting file");
 
 		if (editor.activeTab === fileId) {
 			if (index >= editor.tabs.length) {

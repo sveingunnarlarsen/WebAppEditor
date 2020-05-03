@@ -7,11 +7,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {createFile} from "../../actions/app";
+import {createFso} from "../../actions/file";
 
 function mapDispatch(dispatch) {
 	return {
-		createFolder: value => dispatch(createFile(value, {type: "folder"}))
+		createFolder: name => dispatch(createFso({type: 'folder', name}))
 	};
 }
 

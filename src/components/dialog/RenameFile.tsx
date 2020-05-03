@@ -8,7 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {saveFile} from "../../actions/app";
+import {save} from "../../actions/file";
 import {replaceNameInPath} from "../../helpers/utils";
 
 const mapState = state => {
@@ -20,7 +20,7 @@ const mapState = state => {
 
 function mapDispatch(dispatch) {
 	return {
-		saveFile: file => dispatch(saveFile(file))
+		saveFile: file => dispatch(save([file]))
 	};
 }
 

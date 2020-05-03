@@ -41,7 +41,6 @@ class ShowReferences extends React.Component {
 	@keydown(UP)
 	handleUP(e) {
 		e.preventDefault();
-		console.log("Updating selected file");
 		this.updateSelectedFile(-1);
 	}
 
@@ -57,10 +56,7 @@ class ShowReferences extends React.Component {
 		} else {
 			this.selectedFile = this.state.selectedFile;
 		}
-		console.log("Selected file: ", this.selectedFile);
-		console.log("Files", this.files);
 		let index = this.files.indexOf(this.selectedFile);
-		console.log("index: ", index);
 		if (index < 0) {
 			index = 0;
 		}
@@ -97,7 +93,6 @@ class ShowReferences extends React.Component {
 		if (this.aceRef && this.aceRef.current) {
 			const editor = this.aceRef.current.editor;
 			editor.resize();
-			console.log("Editor resize has been called");
 		}
 	}
 
@@ -170,7 +165,6 @@ class ShowReferences extends React.Component {
 								{this.files.map((row, index) => {
 									let selected = false;
 									if (this.selectedFile.id === row.id && !alreadySelected) {
-									    console.log(row);
 										selected = true;
 										alreadySelected = true;
 									}

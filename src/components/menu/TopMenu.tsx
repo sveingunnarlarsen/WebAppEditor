@@ -11,7 +11,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 
-import {compileProject} from "../../actions/ajax";
+import {compileProject} from "../../actions/app";
 
 const styles = {
 	appBar: {

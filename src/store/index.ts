@@ -1,9 +1,9 @@
-import reduxLogger from 'redux-logger';
+//import reduxLogger from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import {createStore, applyMiddleware} from "redux";
 
 import rootReducer from "../reducers/index";
-import {fetchEditorData, fetchWebApps} from '../actions/ajax';
+import {getMasterData, getWebApps} from '../actions/app';
 
 const store = createStore(
     rootReducer,
@@ -11,9 +11,6 @@ const store = createStore(
         thunkMiddleware,
     )
 );
-
-store.dispatch(fetchEditorData());
-store.dispatch(fetchWebApps());
 
 window.store = store;
 export default store;

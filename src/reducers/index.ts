@@ -1,23 +1,6 @@
 import produce from "immer";
 import {combineReducers} from "redux";
-
-import {SWITCH_TOOL} from "../constants/action-types";
-import {TOGGLE_PREVIEW} from "../constants/action-types";
-import {TOGGLE_COMMAND_LINE} from "../constants/action-types";
-
-import {SET_SELECTED_NODE} from "../constants/action-types";
-
-import {START_COMPILE} from "../constants/action-types";
-import {END_COMPILE} from "../constants/action-types";
-
-import {REQUEST_EDITOR_DATA} from "../constants/action-types";
-import {RECEIVE_EDITOR_DATA} from "../constants/action-types";
-
-import {REQUEST_WEBAPPS} from "../constants/action-types";
-import {RECEIVE_WEBAPPS} from "../constants/action-types";
-
-import {AppEditorState, Tool} from "../types";
-import {AppActions} from "../types/app";
+import {AppEditorState, Tool, Actions} from "../types";
 import {DialogAction} from "../types/dialog";
 
 import editor from "./editor";
@@ -62,68 +45,68 @@ function doneFetching(state, data = {}) {
 }
 
 function selectedNode(state = initialState.selectedNode, action) {
-	if (action.type === SET_SELECTED_NODE) {
+	if (action.type === Actions.SET_SELECTED_NODE) {
 		return action.id;
 	}
 	return state;
 }
 
 function visibleTool(state = initialState.visibleTool, action) {
-	if (action.type == SWITCH_TOOL) {
+	if (action.type == Actions.SWITCH_TOOL) {
 		return action.tool;
 	}
 	return state;
 }
 
 function previewVisible(state = initialState.previewVisible, action) {
-	if (action.type === TOGGLE_PREVIEW) {
+	if (action.type === Actions.TOGGLE_PREVIEW) {
 		return !state;
 	}
 	return state;
 }
 
 function commandLineVisible(state = initialState.commandLineVisible, action) {
-	if (action.type === TOGGLE_COMMAND_LINE) {
+	if (action.type === Actions.TOGGLE_CLI) {
 		return !state;
 	}
 	return state;
 }
 
 function isCompiling(state = initialState.isCompiling, action) {
-	if (action.type === START_COMPILE) {
+	if (action.type === Actions.REQUEST_COMPILE) {
 		return true;
-	} else if (action.type === END_COMPILE) {
+	} else if (action.type === Actions.RECEIVE_COMPILE) {
 		return false;
 	}
 	return state;
 }
 
 function modules(state = initialState.modules, action) {
-	if (action.type === AppActions.REQUEST_MODULES || action.type === "RESET") {
+	if (action.type === Actions.REQUEST_MODULES || action.type === Actions.RESET) {
 		return [];
-	} else if (action.type === AppActions.RECEIVE_MODULES) {
+	} else if (action.type === Actions.RECEIVE_MODULES) {
 		return action.modules;
-	} else if (AppActions.REQUEST_DELETE_MODULES) {
+	} else if (Actions.REQUEST_DELETE_MODULES) {
 	    
-	} else if (AppActions.RECEIVE_DELETE_MODULES) {
+	} else if (Actions.RECEIVE_DELETE_MODULES) {
 	    return [];
 	}
 	return state;
 }
 
 function isUpdatingNpm(state = initialState.isUpdatingNpm, action) {
-	if (action.type === AppActions.START_MODULE_UPDATE) {
+	if (action.type === Actions.START_MODULE_UPDATE) {
 		return true;
-	} else if (action.type === AppActions.END_MODULE_UPDATE) {
+	} else if (action.type === Actions.END_MODULE_UPDATE) {
 		return false;
 	}
 	return state;
 }
 
 function isCloning(state = initialState.isCloning, action) {
-	if (action.type === AppActions.START_CLONING) {
+	if (action.type === Actions.START_GIT_CLONE) {
 		return true;
-	} else if (action.type === AppActions.END_CLONING) {
+	} else if (action.type === Actions.END_GIT_CLONE) {
 		return false;
 	}
 	return state;
@@ -131,9 +114,9 @@ function isCloning(state = initialState.isCloning, action) {
 
 function resources(state = initialState.resources, action) {
 	switch (action.type) {
-		case REQUEST_EDITOR_DATA:
+		case Actions.REQUEST_MASTERDATA:
 			return fetching(state);
-		case RECEIVE_EDITOR_DATA:
+		case Actions.RECEIVE_MASTERDATA:
 			return doneFetching(state, action.data);
 		default:
 			return state;
@@ -142,9 +125,9 @@ function resources(state = initialState.resources, action) {
 
 function apps(state = initialState.apps, action) {
 	switch (action.type) {
-		case REQUEST_WEBAPPS:
+		case Actions.REQUEST_WEBAPPS:
 			return fetching(state);
-		case RECEIVE_WEBAPPS:
+		case Actions.RECEIVE_WEBAPPS:
 			return doneFetching(state, {list: action.data});
 		default:
 			return state;
@@ -169,22 +152,21 @@ function dialog(state = initialState.dialog, action) {
 }
 
 function toolResized(state = initialState.toolResized, action) {
-	console.log(action.type);
-	if (action.type === "TOOL_RESIZED") {
+	if (action.type === Actions.RESIZE_TOOL) {
 		return state + 1;
 	}
 	return state;
 }
 
 function editorResized(state = initialState.toolResized, action) {
-	if (action.type === "EDITOR_RESIZED") {
+	if (action.type === Actions.RESIZE_EDITOR) {
 		return state + 1;
 	}
 	return state;
 }
 
 function terminalResized(state = initialState.toolResized, action) {
-	if (action.type === "TERMINAL_RESIZED") {
+	if (action.type === Actions.RESIZE_TERMINAL) {
 		return state + 1;
 	}
 	return state;

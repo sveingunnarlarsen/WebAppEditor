@@ -7,7 +7,6 @@ export async function importFolderZip(event, zipOrFolder) {
 }
 
 export async function importFiles(event) {
-    console.log("importing file");
 	const files = event.target.files;
 
     const filesMeta = [];

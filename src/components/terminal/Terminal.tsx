@@ -40,7 +40,7 @@ class XTerminal extends React.Component {
     }
     
     componentDidUpdate() {
-        console.log("Component did update");
+        
     }
     
     render() {

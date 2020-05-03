@@ -1,81 +1,68 @@
-import {SWITCH_TOOL} from "../constants/action-types";
-
-import {TOGGLE_PREVIEW, TOGGLE_COMMAND_LINE} from "../constants/action-types";
-import {SET_SELECTED_NODE} from "../constants/action-types";
-
-import {REQUEST_WEBAPPS} from "../constants/action-types";
-import {RECEIVE_WEBAPPS} from "../constants/action-types";
-import {REQUEST_EDITOR_DATA} from "../constants/action-types";
-import {RECEIVE_EDITOR_DATA} from "../constants/action-types";
-
-import {START_COMPILE} from "../constants/action-types";
-import {END_COMPILE} from "../constants/action-types";
-
-import {TOOL_RESIZED} from "../constants/action-types";
-import {EDITOR_RESIZED} from "../constants/action-types";
-import {TERMINAL_RESIZED} from "../constants/action-types";
-
+import {Actions} from "../types";
 import {DialogAction, DialogType} from "../types/dialog";
-import {AppActions} from "../types/app";
+import {getWebApps} from "./app";
 
-import {fetchWebApps} from "./ajax";
+export function reset() {
+    return {
+        type: Actions.RESET,
+    }
+}
 
-export function startClone() {
+export function switchTool(tool) {
 	return {
-		type: AppActions.START_CLONING
+		type: Actions.SWITCH_TOOL,
+		tool
 	};
 }
 
-export function endClone() {
+export function toggleCLI() {
 	return {
-		type: AppActions.END_CLONING
+		type: Actions.TOGGLE_CLI
+	};
+}
+
+export function togglePreview() {
+	return {
+		type: Actions.TOGGLE_PREVIEW
+	};
+}
+
+export function startGitCloneClone() {
+	return {
+		type: Actions.START_GIT_CLONE
+	};
+}
+
+export function endGitClone() {
+	return {
+		type: Actions.END_GIT_CLONE
 	};
 }
 
 export function resizeTool() {
 	return {
-		type: TOOL_RESIZED
+		type: Actions.RESIZE_TOOL,
 	};
 }
 
 export function resizeEditor() {
 	return {
-		type: EDITOR_RESIZED
+		type: Actions.RESIZE_EDITOR
 	};
 }
 
 export function resizeTerminal() {
 	return {
-		type: TERMINAL_RESIZED
-	};
-}
-
-export function startCompile() {
-	return {
-		type: START_COMPILE
-	};
-}
-
-export function endCompile() {
-	return {
-		type: END_COMPILE
+		type: Actions.RESIZE_TERMINAL
 	};
 }
 
 export function openDialog(dialog: DialogType, data) {
 	return function(dispatch, getState) {
 	    if (dialog === DialogType.PROJECT_LIST) {
-	        dispatch(fetchWebApps());   
+	        dispatch(getWebApps());   
 	    }
         return dispatch(openDialogAction(dialog, data));
-	};
-}
-
-export function openDialogAction(dialog: DialogType, data) {
-	return {
-		type: DialogAction.OPEN,
-		dialog,
-		data
 	};
 }
 
@@ -87,54 +74,15 @@ export function closeDialog() {
 
 export function setSelectedNode(id) {
 	return {
-		type: SET_SELECTED_NODE,
+		type: Actions.SET_SELECTED_NODE,
 		id
 	};
 }
 
-export function toggleCommandLine() {
+function openDialogAction(dialog: DialogType, data) {
 	return {
-		type: TOGGLE_COMMAND_LINE
-	};
-}
-
-export function togglePreview() {
-	return {
-		type: TOGGLE_PREVIEW
-	};
-}
-
-export function switchTool(tool) {
-	return {
-		type: SWITCH_TOOL,
-		tool
-	};
-}
-
-export function requestWebApps() {
-	return {
-		type: REQUEST_WEBAPPS
-	};
-}
-
-export function receiveWebApps(data) {
-	return {
-		type: RECEIVE_WEBAPPS,
-		receivedAt: Date.now(),
-		data
-	};
-}
-
-export function requestEditorData() {
-	return {
-		type: REQUEST_EDITOR_DATA
-	};
-}
-
-export function receiveEditorData(data) {
-	return {
-		type: RECEIVE_EDITOR_DATA,
-		receivedAt: Date.now(),
+		type: DialogAction.OPEN,
+		dialog,
 		data
 	};
 }

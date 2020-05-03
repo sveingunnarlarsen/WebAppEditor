@@ -19,7 +19,7 @@ import {connect} from "react-redux";
 
 import store from "../../store/index";
 
-import {togglePreview, openDialog, toggleCommandLine, switchTool} from "../../actions";
+import {togglePreview, openDialog, toggleCLI, switchTool} from "../../actions";
 import {closeAllTabs} from "../../actions/editor";
 
 import {Tool} from "../../types";
@@ -42,7 +42,7 @@ function mapDispatch(dispatch) {
 		openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
 		togglePreview: () => dispatch(togglePreview()),
 		closeAllTabs: () => dispatch(closeAllTabs()),
-		toggleCommandLine: () => dispatch(toggleCommandLine())
+		toggleCommandLine: () => dispatch(toggleCLI()),
 	};
 }
 

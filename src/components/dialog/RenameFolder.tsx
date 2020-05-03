@@ -8,7 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {renameFolder} from "../../actions/app";
+import {renameFolder} from "../../actions/file";
 
 const mapState = state => {
 	const file = state.app.fileSystemObjects.find(f => f.id === state.selectedNode);

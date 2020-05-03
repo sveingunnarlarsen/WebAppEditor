@@ -8,11 +8,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {createFile} from "../../actions/app";
+import {createFso} from "../../actions/file";
 
 function mapDispatch(dispatch) {
 	return {
-		createFile: value => dispatch(createFile(value, {type:"file"}))
+		createFile: name => dispatch(createFso({name}))
 	};
 }
 

@@ -6,11 +6,11 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 
-import {deleteFile} from "../../actions/app";
+import {deleteFso} from "../../actions/file";
 
 function mapDispatch(dispatch) {
 	return {
-		deleteFile: () => dispatch(deleteFile())
+		deleteFile: () => dispatch(deleteFso())
 	};
 }
 

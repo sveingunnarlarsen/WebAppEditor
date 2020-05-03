@@ -30,8 +30,6 @@ class AjaxError extends React.Component {
 		const title = `HTTP ${status ? status : 0}`;
 		let html;
 		
-		console.log("ERROR OBJECT", json);
-		
 		try {
 		    let value;
 		    if (json.status) {
@@ -43,7 +41,6 @@ class AjaxError extends React.Component {
             html = value.replace(/\n/g , "<br>");
 
 		} catch (e) {
-		    console.log(e);
 		    html = "Error parsing error: " + json;
 		}
 

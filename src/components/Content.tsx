@@ -55,7 +55,6 @@ class Content extends React.Component {
 		commandLineVisible ? (defaultContentSize = "60%") : ((defaultContentSize = "100%"), (splitPaneContentSize = "soloPane1"));
 
 		const useClass = this.state.isDragging ? classes.nonInteractive : classes.interactive;
-		console.log("Using class: ", useClass);
 
 		return (
 			<div style={{position: "absolute", top, left, width: `calc(100% - ${left})`, height: `calc(100% - ${top})`, background: "#252526"}}>
@@ -105,31 +104,6 @@ class Content extends React.Component {
 				</SplitPane>
 			</div>
 		);
-		/*
-		// Terminal does not resize.
-		return (
-			<div style={{position: "absolute", top, left, width: `calc(100% - ${left})`, height: `calc(100% - ${top})`, background: "#252526"}}>
-				<SplitPane split="horizontal" defaultSize={defaultContentSize} className={splitPaneContentSize} onDragStarted={() => {}} onDragFinished={() => {}}>
-					<SplitPane
-						split="vertical"
-						defaultSize={defaultPreviewSize}
-						className={splitPanePreviewClass}
-						onDragStarted={() => {}}
-						onDragFinished={() => {
-							// Should resize ace editor horizontally
-						}}
-					>
-						<SplitPane split="vertical" defaultSize={"15%"} onDragFinished={() => {}}>
-							<ToolContent />
-							<EditorTop containerId={topContainerId} />
-						</SplitPane>
-						<Preview top={top} isVisible={previewVisible} useClass={useClass} />
-					</SplitPane>
-					<TerminalContainer />
-				</SplitPane>
-			</div>
-		);
-		*/
 	}
 }
 

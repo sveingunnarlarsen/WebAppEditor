@@ -13,7 +13,7 @@ ace.config.set("basePath", "/public/ace");
 
 import EditorContextMenu from "./EditorContextMenu";
 import SignatureHelp from "./SignatureHelp";
-import {updateFileState, save} from "../../actions/app";
+import {updateFileState, save} from "../../actions/file"
 import {openDialog} from "../../actions";
 import {DialogType} from "../../types/dialog";
 import {setActiveEditor} from "../../actions/editor";
@@ -63,13 +63,10 @@ class AceEditorContainer extends React.Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		console.log("Checking if component should update");
 		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized /* || this.ace.current.editor.getValue() !== this.props.fso.content*/) {
 			this.updateAceSessions(nextProps.fso);
-			console.log("component updating");
 			return true;
 		} else {
-			console.log("component not updating");
 			return false;
 		}
 	}
@@ -142,12 +139,12 @@ class AceEditorContainer extends React.Component {
 	}
 
 	onChange = content => {
-		this.lastUpdate = new Date().getTime();
-		this.waitForMoreChanges(content);
+ 		this.lastUpdate = new Date().getTime();
+	    this.waitForMoreChanges(content);   
 	};
 
 	onBlur = event => {
-		console.log("Editor blur", "not implemented");
+		console.log("Editor blur event fired");
 	};
 
 	onFocus = () => {

@@ -58,7 +58,8 @@ const aceCompleter = {
 
 (async function() {
 	try {
-		await client.connect(`wss://${window.location.hostname}:8082`);
+	    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+		await client.connect(`${wsProtocol}://${window.location.hostname}:8082`);
 		tool.setCompleters([aceCompleter]);
 		console.log("Language client connected");
 	} catch (e) {

@@ -73,7 +73,6 @@ class Settings extends React.Component {
 	};
 
 	updateConfig = e => {
-		console.log("Updating config", e);
 		setConfigUser(e.target.name, e.target.value);
 		this.setState({git: {[e.target.name]: e.target.value}});
 	};
@@ -87,8 +86,6 @@ class Settings extends React.Component {
 	render() {
 		const {name, description, type, settings} = this.props.data;
 		const gitConfig = getConfigUser();
-		console.log(gitConfig);
-		console.log(name, description, type, settings);
 		const {classes} = this.props;
 		const display = this.props.show ? "" : "none";
 		return (

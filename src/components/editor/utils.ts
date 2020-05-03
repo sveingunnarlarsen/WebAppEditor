@@ -39,7 +39,6 @@ export function prettyPrint(editor) {
 		editor.setValue(formatted);
 	} catch (e) {
 		store.dispatch(openDialog(DialogType.SYNTAX_ERROR, e.message));
-		console.log(e.message);
 		return;
 	}
 

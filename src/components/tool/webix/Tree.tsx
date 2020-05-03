@@ -104,7 +104,6 @@ class WebixTree extends React.Component {
 	};
 
 	render() {
-		console.log("Rendering tree: ", this.props.toolResized);
 		const {classes} = this.props;
 
 		return (
@@ -173,7 +172,6 @@ class WebixTree extends React.Component {
 			})
 		);
 		this.ui.sort((a, b) => {
-			console.log("Sorting tree", a, b);
 			return a.value > b.value ? 1 : -1;
 		});
 	}

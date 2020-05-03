@@ -1,12 +1,12 @@
-import yargs from "yargs-parser";
-import globby from "globby";
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
+import yargs from "yargs-parser";
+import globby from "globby";
+
+import {createFsos, save} from "../actions/file";
 import store from "../store";
 import {getFileById} from "../store/utils";
-import {endClone} from "../actions";
-import {saveFile, create, save, deleteFile, createFile} from "../actions/app";
-import {getFileContent, writeFileContent} from "./utils";
+import {getFileContent, writeFileContent, fsExists} from "./utils";
 
 let options: any = {enabled: true, level: 2};
 const forcedChalk = new chalk.constructor(options);
@@ -76,6 +76,7 @@ async function handleChange() {
 	}
 }
 
+console.log("Store: ", store);
 store.subscribe(handleChange);
 
 /*
@@ -158,8 +159,8 @@ async function syncGitFilesWithApp(pattern) {
 	const appFiles = appFsos.filter(f => f.type === "file");
 
 	const createdFolders = [];
-	const createFsos = [];
-	const saveFsos = [];
+	const fsosToCreate = [];
+	const fsosToSave = [];
 
 	for (let i = 0; i < gitFsos.length; i++) {
 		const filePath = gitFsos[i];
@@ -172,7 +173,7 @@ async function syncGitFilesWithApp(pattern) {
 
 				if (createdFolders.indexOf(folderPath) < 0 && !appFolders.find(f => f.path === `/${folderPath}`)) {
 					createdFolders.push(folderPath);
-					createFsos.push({
+					fsosToCreate.push({
 						path: "/" + folderPath,
 						type: "folder"
 					});
@@ -180,7 +181,7 @@ async function syncGitFilesWithApp(pattern) {
 			}
 			const fileContent = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
 			
-			createFsos.push({
+			fsosToCreate.push({
 				type: "file",
 				path: "/" + filePath,
 				content: fileContent
@@ -188,14 +189,13 @@ async function syncGitFilesWithApp(pattern) {
 		} else {
 			// Sync the file with app.
 			const content = await getFileContent(pfs, `${currentGitDir}/${filePath}`);
-			saveFsos.push({
+			fsosToSave.push({
 				...appFile,
 				content
 			});
 		}
 	}
 
-    // Remove or write to fs?
 	for (let i = 0; i < appFiles.length; i++) {
 		const appFile = appFiles[i];
 		const gitFile = gitFsos.find(filePath => `/${filePath}` === appFile.path);
@@ -207,24 +207,14 @@ async function syncGitFilesWithApp(pattern) {
 	}
 	
 	console.log("syncGitFilesWithApp done");
-	console.log("createFsos: ", createFsos);
-	console.log("saveFsos: ", saveFsos);
 	
-	if (saveFsos.length < 1 && createFsos.length > 0) {
-	    console.log("Using create:", createFsos);
-		store.dispatch(create(createFsos));
-		store.dispatch(endClone());
-	} else if (createFsos.length > 0) {
-        createFsos.forEach(fso => {
-            console.log("Calling create file: ", fso);
-            store.dispatch(createFile(null, fso));
-        });
+	if (fsosToCreate.length > 0) {
+	    store.dispatch(createFsos(fsosToCreate));
 	}
 	
-	if (saveFsos.length > 0) {
-	    console.log("Calling save: ", saveFsos);
-		store.dispatch(save(saveFsos));
-	}
+	if (fsosToSave.length > 0) {
+		store.dispatch(save(fsosToSave));
+	}	
 }
 
 async function appendFileStatus(filepath) {
@@ -580,16 +570,28 @@ export async function syncFile({id, path, content, type}: {id: string; path: str
 	    const originalFso = getFileById(id);
 		if (type === "file") {
 			if (originalFso && originalFso.path !== path) {
+			    console.log(id, "Deleting from fs: ", originalFso.path, path);
 				await pfs.unlink(`${currentGitDir}${originalFso.path}`);
 				await git.remove({fs, dir: currentGitDir, filepath: originalFso.path});
 			}
-			console.log("Syncing file to fs", path);
+			console.log(id, "Syncing file to fs", path);
+			
+	        const parts = path.split("/");
+	        for (let i = 1; i < parts.length; i++) {
+	            const path = parts.slice(0, i);
+	            if (!await fsExists(pfs, `${currentGitDir}${path}`)) {
+	                console.log(id, "Creating folder: ", `${currentGitDir}${path}`);
+	                await pfs.mkdir(`${currentGitDir}${path}`);        
+	            }
+	        }
+			
 			await writeFileContent(pfs, `${currentGitDir}${path}`, content);
 		} else {
+		    console.log(id, "Making dir", path);
 		    await pfs.mkdir(`${currentGitDir}${path}`);
 		}
 	} catch (e) {
-		console.log("Error syncing fso to fs: ", e.message);
+		console.log(id, "Error syncing fso to fs: ", e.message);
 	}
 }
 

@@ -87,8 +87,6 @@ class EditorTabs extends React.Component {
 		const {classes, editor, files} = this.props;
 		const {activeTab, tabs} = editor;
 
-		console.log("Active Tab: ", activeTab);
-
 		const file = getFileById(activeTab);
 		let content;
 		if (isImage(file.path)) {

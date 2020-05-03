@@ -54,7 +54,7 @@ export function extractFileMeta(item, fsos, updatedFsos = []) {
 	} catch (e) {
 		return Object.assign(item, {
 			value: "Error",
-			parentId: parentId ? parentId : "1",
+			parentId: parentId > 0 ? parentId : "1",
 			name: "Error extracting file meta",
 			error: e.message
 		});
@@ -73,7 +73,7 @@ export function getFolderPath(id, fsos) {
 	}
 }
 
-export function extractServerProps({id, path, type, webAppId, content, createdAt, updatedAt, createdBy, changedBy}) {
+export function destructFileServerProps({id, path, type, webAppId, content, createdAt, updatedAt, createdBy, changedBy}) {
 	return {
 		id,
 		path,
@@ -81,4 +81,14 @@ export function extractServerProps({id, path, type, webAppId, content, createdAt
 		webAppId,
 		content,
 	};
+}
+
+export function destructAppServerProps({id, name, type, description, settings}) {
+    return {
+        id,
+        name,
+        type,
+        description,
+        settings,
+    }
 }

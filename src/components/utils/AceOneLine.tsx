@@ -15,8 +15,6 @@ class AceOneLine extends React.Component {
 		const {classes, value, path} = this.props;
 		const mode = modelist.getModeForPath(path);
 	    
-	    console.log(mode);
-	    
 		return (
 			<React.Fragment>
 				<AceEditor 
