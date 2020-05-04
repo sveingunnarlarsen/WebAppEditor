@@ -73,6 +73,8 @@ export enum Actions {
     SET_SELECTED_NODE = "SET_SELECTED_NODE",
     
     UPDATE_FILE_STATE = "UPDATE_FILE_STATE",
+    
+    UPDATE_APP_DATA = "UPDATE_APP_DATA",
 }
 
 

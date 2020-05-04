@@ -84,7 +84,7 @@ export function deleteProject() {
     }
 }
 
-export function saveProjectData() {
+export function saveAppData() {
     return function(dispatch, getState) {
         return fetch(`/api/webapp/${getState().app.id}/npm`, {
             method: "PATCH",
@@ -109,6 +109,13 @@ export function compileProject() {
 			.catch(error => handleCompileError(error, dispatch))
 			.finally(() => dispatch(receiveCompile()));
 	};
+}
+
+export function updateAppData(data) {
+    return {
+        type: Actions.UPDATE_APP_DATA,
+        data,
+    }
 }
 
 function requestMasterData() {
