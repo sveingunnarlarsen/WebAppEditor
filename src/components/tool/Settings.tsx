@@ -98,6 +98,7 @@ class Settings extends React.Component {
 				<TextField
 					value={name || ""}
 					onChange={e => this.updateData(e, "name")}
+					onBlur={this.props.saveAppData}
 					label="Application Name"
 					fullWidth
 					margin="normal"
@@ -110,6 +111,7 @@ class Settings extends React.Component {
 				<TextField
 					value={description || ""}
 					onChange={e => this.updateData(e, "description")}
+					onBlur={this.props.saveAppData}
 					label="Description"
 					fullWidth
 					margin="normal"
@@ -122,6 +124,7 @@ class Settings extends React.Component {
 				<TextField
 					value={settings.entryPoint.javascript || ""}
 					onChange={e => this.updateData(e, "javascript", "settings", "entryPoint")}
+					onBlur={this.props.saveAppData}
 					label="Entrypoint JS"
 					fullWidth
 					margin="normal"
@@ -134,6 +137,7 @@ class Settings extends React.Component {
 				<TextField
 					value={settings.entryPoint.html || ""}
 					onChange={e => this.updateData(e, "html", "settings", "entryPoint")}
+					onBlur={this.props.saveAppData}
 					label="Entrypoint HTML"
 					fullWidth
 					margin="normal"
@@ -147,6 +151,7 @@ class Settings extends React.Component {
 				<TextField
 					value={settings.git.repo || ""}
 					onChange={e => this.updateData(e, "repo", "settings", "git")}
+					onBlur={this.props.saveAppData}
 					label="Git repository"
 					fullWidth
 					margin="normal"

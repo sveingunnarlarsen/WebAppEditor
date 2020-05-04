@@ -86,7 +86,7 @@ export function deleteProject() {
 
 export function saveAppData() {
     return function(dispatch, getState) {
-        return fetch(`/api/webapp/${getState().app.id}/npm`, {
+		return fetch(`/api/webapp/${getState().app.id}`, {
             method: "PATCH",
             headers,
             body: JSON.stringify({
