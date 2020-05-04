@@ -124,23 +124,25 @@ class AceEditorContainer extends React.Component {
 		this.ace.current.editor.resize();
 	}
 
-	waitForMoreChanges(content) {
+	waitForMoreChanges() {
 		setTimeout(() => {
-			const plussOneSecond = new Date().getTime();
-			const diff = plussOneSecond - (this.lastUpdate + 200);
+			const newTime = new Date().getTime();
+			const diff = newTime - (this.lastUpdate + 400);
 			if (diff >= 0) {
+			    console.log("Running file update");
 				let modified = true;
-				if (this.props.fso.orgContent === content) {
+				if (this.props.fso.orgContent === this.updatedContent) {
 					modified = false;
 				}
-				this.props.updateFileState({...this.props.fso, content, modified});
+				this.props.updateFileState({...this.props.fso, content: this.updatedContent, modified});
 			}
-		}, 200);
+		}, 400);
 	}
 
 	onChange = content => {
  		this.lastUpdate = new Date().getTime();
-	    this.waitForMoreChanges(content);   
+ 		this.updatedContent = content;
+	    this.waitForMoreChanges();   
 	};
 
 	onBlur = event => {
@@ -195,7 +197,7 @@ class AceEditorContainer extends React.Component {
 
 	render() {
 		const {classes, fso, editor} = this.props;
-
+		
 		return (
 			<React.Fragment>
 				<AceEditor
