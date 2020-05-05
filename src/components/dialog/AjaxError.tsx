@@ -1,6 +1,5 @@
 import React from "react";
 import {connect} from "react-redux";
-import AceEditor from "react-ace-builds";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";

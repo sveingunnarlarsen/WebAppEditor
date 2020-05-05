@@ -6,6 +6,7 @@ import {closeFile} from "./editor";
 import {throwError, handleAjaxError} from "./error";
 import {extractFileMeta, destructFileServerProps, getFolderPath} from "./utils";
 import {getFileById} from "../store/utils";
+import {fileCreated, fileDeleted} from "../completer";
 
 const headers = {
 	"Content-Type": "application/json"
@@ -59,7 +60,10 @@ export function createFsos(fileSystemObjects) {
             .then(response => response.json())
             .then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects)))
             .then(files => {
-                files.forEach(file => syncFile(file));
+                files.forEach(file => {
+                    syncFile(file);
+                    fileCreated(file.path, file.type, file.content);
+                });
                 return files;
             })
             .then(files => dispatch(receiveCreateFiles(files)))
@@ -84,7 +88,10 @@ export function deleteFsos(fileSystemObjects) {
         })
             .then(throwError)
             .then(() => {
-                return fileSystemObjects.forEach(file => removeFile(file.id));
+                return fileSystemObjects.forEach(file => {
+                    removeFile(file.id);
+                    fileDeleted(getFileById(file.id));
+                });
             })
             .then(() => dispatch(receiveDeleteFiles(fileSystemObjects)))
             .catch(error => handleAjaxError(error, dispatch));
@@ -147,6 +154,7 @@ export function createFso({type = 'file', content, path, name}: {type: 'file' | 
 			.then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
 			.then(file => {
 			    syncFile(file);
+			    fileCreated(file.path, file.type, file.content)
 			    return file;
 			})
 			.then(file => dispatch(receiveCreateFile(file)))
@@ -167,9 +175,8 @@ export function deleteFso(id?: string) {
             method: "DELETE"
         })
             .then(throwError)
-            .then(() => {
-                return removeFile(id);
-            })
+            .then(() => removeFile(id))
+            .then(() => fileDeleted(getFileById(id).path))
             .then(() => dispatch(receiveDeleteFile(id)))
             .catch(error => handleAjaxError(error, dispatch));
     }

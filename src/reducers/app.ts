@@ -1,7 +1,7 @@
 import produce from "immer";
 import {Actions, AppsState} from "../types";
 
-const initState: AppState = {
+export const initState: AppState = {
 	id: "",
 	name: "",
 	description: "",
@@ -123,7 +123,7 @@ const updateAppData = produce((draft, data) => {
 
 
 
-export default function app(state = initState, action) {
+export function app(state = initState, action) {
     
 	switch (action.type) {
 	    case Actions.RESET:

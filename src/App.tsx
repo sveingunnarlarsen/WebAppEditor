@@ -1,4 +1,3 @@
-import "babel-polyfill";
 import React from "react";
 
 import {MuiThemeProvider, createMuiTheme} from "@material-ui/core/styles";
@@ -10,9 +9,6 @@ import Content from "./components/Content";
 import DialogContainer from "./components/dialog/DialogContainer";
 import SnackbarContainer from "./components/snackbar/SnackbarContainer";
 
-import "./terminal";
-import "./completer";
-import "./git";
 import "./App.css"; //TODO: Clean up css
 
 const menuWidth = "3.5rem";

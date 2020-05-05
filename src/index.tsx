@@ -1,3 +1,9 @@
+import "react-ace-builds";
+import "babel-polyfill";
+import "./terminal";
+import "./completer";
+import "./git";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from "react-redux";

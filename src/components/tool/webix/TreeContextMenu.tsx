@@ -135,7 +135,7 @@ class TreeContextMenu extends React.Component {
 	    if (fso.type === "folder") {
             this.props.renameFolder();   
 	    } else {
-	        this.props.renameFile();   
+	        this.props.renameFile();
 	    }
 	};
 

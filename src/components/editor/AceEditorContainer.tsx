@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import AceEditor from "react-ace-builds";
+import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-modelist";
 import "ace-builds/src-noconflict/ext-searchbox";
 import "./aceModes";

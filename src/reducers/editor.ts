@@ -1,8 +1,9 @@
 import produce from "immer";
 import uuid from "uuid/v4";
+import {Actions} from "../types"
 import {EditorActions, EditorState, Editor, SplitDirection} from "../types/editor";
 
-const initState: EditorState = {
+export const initState: EditorState = {
 	activeEditor: "",
 	activeContainer: "",
 	editors: [],
@@ -35,6 +36,10 @@ function initEditor(draft, fileId) {
 		}
 	});
 }
+
+const reset = produce((draft) => {
+    return {...initState};
+});
 
 const showFile = produce((draft, fileId, editorId) => {
 	if (!draft.activeEditor) {
@@ -180,8 +185,10 @@ const closeSignatureHelp = produce(draft => {
 	draft.signatureHelpData = null;
 });
 
-export default function editor(state = initState, action) {
+export function editor(state = initState, action) {
 	switch (action.type) {
+	    case Actions.RESET:
+	        return reset(state);
 		case EditorActions.SHOW_FILE:
 			return showFile(state, action.fileId, action.editorId);
 		case EditorActions.CLOSE_TAB:

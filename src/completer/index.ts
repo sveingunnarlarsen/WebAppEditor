@@ -2,7 +2,7 @@ import store from "../store";
 import {openDialog} from "../actions";
 import {DialogType} from "../types/dialog";
 import {showSignatureHelp, closeSignatureHelp} from "../actions/editor";
-import "ace-builds/src-noconflict/ext-language_tools";
+
 const tool = ace.require("ace/ext/language_tools");
 
 const client = new LanguageClient();
@@ -32,6 +32,7 @@ client.on("publishDiagnostics", result => {
 const aceCompleter = {
 	getCompletions: async function(editor, session, pos, prefix, cb) {
 		if (await isConnected()) {
+            console.log("getCompletions called");
 			activeEditor = editor;
 			const {row, column} = pos;
 			const file = editor.file;
@@ -87,6 +88,26 @@ async function isConnected() {
 		client.initialize(appId);
 	}
 	return connected;
+}
+
+export async function fileDeleted(path: string) {
+    if (await isConnected()) {
+        try {
+            await client.textDocumentDeleted(path);   
+        } catch (e) {
+            console.log("Language client error", e);
+        }
+    }
+}
+
+export async function fileCreated(path: string, type: 'file' | 'foler' = 'file', content: string = "") {
+    if (await isConnected()) {
+        try {
+            await client.textDocumentCreated(path, type, content);   
+        } catch (e) {
+            console.log("Language client error", e);
+        }
+    }
 }
 
 export async function findReferences(editor) {
