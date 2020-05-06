@@ -1,3 +1,12 @@
+import {monaco} from "@monaco-editor/react";
+
+monaco.init().then(monaco => {
+    console.log(monaco, "is init")
+})
+
+
+
+/*
 import store from "../store";
 import {openDialog} from "../actions";
 import {DialogType} from "../types/dialog";
@@ -10,7 +19,6 @@ let activeEditor = null;
 
 client.on("publishDiagnostics", result => {
 	if (activeEditor) {
-	    /*
 		activeEditor.getSession().setAnnotations([]);
 		const annotations = [];
 		if (result.diagnostics.length > 0) {
@@ -25,7 +33,6 @@ client.on("publishDiagnostics", result => {
 			}
 			activeEditor.getSession().setAnnotations(annotations);
 		}
-		*/
 	}
 });
 
@@ -139,3 +146,4 @@ export async function signatureHelp(editor) {
 }
 
 window.languageClient = client;
+*/

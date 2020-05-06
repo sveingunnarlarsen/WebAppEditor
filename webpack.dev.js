@@ -3,8 +3,6 @@ const presetReact = require.resolve("@babel/preset-react");
 const classPropPlugin = require.resolve("@babel/plugin-proposal-class-properties");
 const tsPreset = require.resolve("@babel/preset-typescript");
 const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require("webpack");
 const path = require("path");
 
@@ -27,10 +25,10 @@ module.exports = settings => ({
 					}
 				}]
 			},
-			{
-				test: /\.css$/,
-				use: ["style-loader", "css-loader"]
-			},
+            {
+              test: /\.css$/,
+              use: ["style-loader", "css-loader"],
+            },
 			{
 				test: /\.(png|jpe?g|svg)$/,
 				use: [

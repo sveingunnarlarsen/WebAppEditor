@@ -57,9 +57,6 @@ class EditorTabs extends React.Component {
 	handleClose(e, id) {
 		e.stopPropagation();
 		this.props.closeTab(id, this.props.editor.id);
-		if (this.destroyAceSession) {
-	        this.destroyAceSession(id);
-		}
 	}
 
 	getTabLabel(file) {

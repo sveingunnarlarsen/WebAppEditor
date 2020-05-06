@@ -1,8 +1,8 @@
-import "react-ace-builds";
 import "babel-polyfill";
 import "./terminal";
-import "./completer";
 import "./git";
+
+//import "./completer";
 
 import React from "react";
 import ReactDOM from "react-dom";
