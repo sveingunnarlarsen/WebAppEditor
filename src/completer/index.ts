@@ -1,8 +1,14 @@
 import {monaco} from "@monaco-editor/react";
 
+let monacoInstance;
+
 monaco.init().then(monaco => {
-    console.log(monaco, "is init")
-})
+    monacoInstance = monaco;
+});
+
+export function getMonacoInstance() {
+    return monacoInstance;
+}
 
 
 

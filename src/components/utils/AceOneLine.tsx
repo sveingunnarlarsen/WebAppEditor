@@ -1,10 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-import {connect} from "react-redux";
-import AceEditor from "react-ace-builds";
-
-const modelist = ace.require("ace/ext/modelist");
+import Editor from "@monaco-editor/react";
 
 class AceOneLine extends React.Component {
 	constructor(props) {
@@ -17,16 +13,7 @@ class AceOneLine extends React.Component {
 	    
 		return (
 			<React.Fragment>
-				<AceEditor 
-				    value={value}
-				    theme="tomorrow_night"
-				    maxLines={1} 
-				    autoScrollEditorIntoView={true} 
-				    highlightActiveLine={false}
-				    printMargin={false}
-				    showGutter={false}
-				    mode={mode.name}
-			    />
+			    <Editor height="100%" language="javascript" theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
 			</React.Fragment>
 		);
 	}

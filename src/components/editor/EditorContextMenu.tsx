@@ -19,9 +19,11 @@ import VerticalSplitIcon from "@material-ui/icons/VerticalSplit";
 import HorizontalSplitIcon from "@material-ui/icons/HorizontalSplit";
 
 import {splitEditor} from "../../actions/editor";
+import {SplitDirection} from "../../types/editor";
+
 import {prettyPrint, calculatePos} from "./utils";
 import {findReferences} from "../../completer";
-import {SplitDirection} from "../../types/editor";
+
 
 function mapDispatch(dispatch) {
 	return {
