@@ -49,6 +49,21 @@ export function isImage(filepath) {
     return filepath.toLowerCase().match(/.(bmp|cod|gif|ief|jpe|jpeg|jpg|jfif|svg|tif|tiff|ras|cmx|ico|pnm|png|pbm|pgm|ppm|rgb|xbm|xpm|xwd)$/i);
 }
 
+export function getFileLanguage(filepath: string) {    
+    const fileExtension = filepath.split(".")[filepath.split(".").length-1];
+
+    switch (fileExtension) {        
+        case 'js':
+        case 'jsx':        
+            return 'javascript';
+        case 'ts':
+        case 'tsx':
+            return 'typescript';
+        default:
+            return fileExtension;
+    }
+}
+
 export function getMimeType(filepath) {
     return mime.lookup(filepath);
 }

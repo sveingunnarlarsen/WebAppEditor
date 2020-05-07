@@ -18,7 +18,3 @@ export async function exportProjectToZip() {
 		saveAs(blob, `${app.name}.zip`);
 	});
 }
-
-
-
-

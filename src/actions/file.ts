@@ -12,7 +12,7 @@ const headers = {
 	"Content-Type": "application/json"
 };
 
-export function save(filesToSave? = []) {
+export function save(filesToSave = []) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
 

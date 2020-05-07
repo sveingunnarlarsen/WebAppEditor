@@ -1,9 +1,36 @@
+import {isImage} from "./utils";
+import store from "../store";
+import {createFsos, save} from "../actions/file";
+
 export async function importFolderZip(event, zipOrFolder) {
 	console.log("Event to import", event);
-	console.log("zipOrFolder: ", zipOrFolder);
+	console.log("zipOrFolder: ", zipOrFolder);		
 	
 	const data = await importFiles(event);
-	console.log(data);
+	
+	const filesToCreate = [];
+	const filesToSave = [];
+
+	data.forEach(file => {
+		file.path = file.path.substring(file.path.indexOf("/"));
+		const existingFile = store.getState().app.fileSystemObjects.find(f => f.path === file.path);
+		if (existingFile) {
+			filesToSave.push({
+				...existingFile,
+				content: file.content,
+			});
+		} else {
+			filesToCreate.push(file);
+		}
+	});
+
+	if (filesToCreate.length > 0) {
+		store.dispatch(createFsos(filesToCreate));
+	}	
+	if (filesToSave.length > 0) {
+		
+	}
+	store.dispatch(save(filesToSave));
 }
 
 export async function importFiles(event) {
@@ -12,6 +39,7 @@ export async function importFiles(event) {
     const filesMeta = [];
 	const promises = [];
 	for (let i = 0; i < files.length; i++) {
+		console.log(files[i]);
 	    filesMeta.push({
 	        name: files[i].name,
 	        path: files[i].webkitRelativePath ? files[i].webkitRelativePath : undefined,
@@ -46,6 +74,7 @@ async function readFile(file) {
 }
 
 function extractFileData(fileContent, meta) {
+	console.log(fileContent);
 	fileContent = fileContent.slice(5);
 	var type = fileContent.split(";")[0];
 	fileContent = fileContent.slice(type.length + 1);
@@ -54,8 +83,8 @@ function extractFileData(fileContent, meta) {
 
 	return {
 		name: meta.name,
-		path: meta.webkitRelativePath ? meta.webkitRelativePath : undefined,
-		type: type,
-		content: fileContent
+		path: meta.path ? meta.path : undefined,
+		type: 'file',
+		content: atob(fileContent),
 	};
 }

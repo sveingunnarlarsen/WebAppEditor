@@ -6,8 +6,12 @@ monaco.init().then(monaco => {
     monacoInstance = monaco;
 });
 
-export function getMonacoInstance() {
-    return monacoInstance;
+export function fileDeleted() {
+
+}
+
+export function fileCreated() {
+    
 }
 
 

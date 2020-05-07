@@ -14,6 +14,7 @@ import {setActiveEditor, splitEditor} from "../../actions/editor";
 import {DialogType} from "../../types/dialog";
 import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
+import {getFileLanguage} from '../../helpers/utils';
 
 
 let monacoInstance;
@@ -132,9 +133,11 @@ class AceEditorContainer extends React.Component {
 		const {classes, fso, editor} = this.props;
 		console.log("Rendering editor: ", fso, editor, monaco);
 
+        console.log(getFileLanguage(fso.path));
+
 		return (
 			<React.Fragment>
-				<Editor height="100%" language="javascript" theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
+				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
 				<SignatureHelp />
 			</React.Fragment>
 		);
