@@ -4,9 +4,9 @@ import * as net from 'net';
 import * as pather from 'path';
 import * as ts from 'typescript';
 import * as monaco from "../../types/monaco.d.ts";
-//import {LanguageClient} from "../../types/language-client.d.ts";
+import {LanguageClient} from "../../types/language-client.d.ts";
 
-console.log(monaco);
+console.log("Monaco: ", monaco);
 
 export class CompletionItemProvider {
 
@@ -21,7 +21,7 @@ export class CompletionItemProvider {
         position: monaco.Position,
         context: monaco.CompletionContext,
         token: monaco.CancellationToken,    
-    ): monaco.ProverResult<monaco.CompletionList> {
+    ): monaco.ProviderResult<monaco.CompletionList> {
 
         if (!this.languageClient.isReady) return;
 
@@ -43,19 +43,22 @@ export class CompletionItemProvider {
             throw new Error("Result not found!");
         }
 
-        const completionItems = list.result
-            .map<monaco.CompletionItem>((item) => new MyCompletionItem(
-                item.name,
-                1,//this.lookupCompletionItemKind(item.kind),
-                this.determineInsertText(item.name),
-                item.sortText,
-                document,
-                position
-            ));
+		var word = document.getWordUntilPosition(position);
 
-		console.log("completion items: ", completionItems);
-        return completionItems;
+        const suggestions = list.result.map(item => ({
+            label: item.name,
+            kind: 1,
+            insertText: item.name,
+            //sortText: item.sortText,
+            range: {
+            	startLineNumber: position.lineNumber,
+            	endLineNumber: position.lineNumber,
+            	startColumn: word.startColumn,
+            	endColumn: word.endColumn
+            }
+        }));
 
+		return {suggestions}
     }
 
     private determineInsertText(path: string) {
