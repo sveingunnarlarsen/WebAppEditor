@@ -3,27 +3,27 @@
 import * as net from 'net';
 import * as pather from 'path';
 import * as ts from 'typescript';
-import * as monaco from "../../types/monaco.d.ts";
-import {LanguageClient} from "../../types/language-client.d.ts";
-
-console.log("Monaco: ", monaco);
+import "../../types/monaco";
+import {LanguageClient} from "../../types/language-client";
 
 export class CompletionItemProvider {
 
-    private languageClient;
+    private languageClient: LanguageClient;
 
     constructor(languageClient) {
         this.languageClient = languageClient;
     }
 
     async provideCompletionItems(
-        document: monaco.ITextModel,
+        document: monaco.editor.ITextModel,
         position: monaco.Position,
-        context: monaco.CompletionContext,
+        context: monaco.languages.CompletionContext,
         token: monaco.CancellationToken,    
     ): monaco.ProviderResult<monaco.CompletionList> {
-
+    
         if (!this.languageClient.isReady) return;
+
+        
 
         //if (document.isDirty) {
             this.languageClient.textDocumentChanged(
@@ -47,7 +47,7 @@ export class CompletionItemProvider {
 
         const suggestions = list.result.map(item => ({
             label: item.name,
-            kind: 1,
+            kind: this.lookupCompletionItemKind(item.kind),
             insertText: item.name,
             //sortText: item.sortText,
             range: {

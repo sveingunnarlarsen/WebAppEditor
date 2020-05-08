@@ -10,7 +10,7 @@ module.exports = settings => ({
 	mode: "development",
 	devtool: "eval-source-map",
 	resolve: {
-		extensions: [".ts", ".tsx", ".js", ".jsx"]
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
 	},
 	module: {
 		rules: [
