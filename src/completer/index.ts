@@ -1,9 +1,35 @@
+import store from "../store";
 import {monaco} from "@monaco-editor/react";
+import {LanguageClient as LanguageClientType} from "../types/language-client.d.ts";
+import {CompletionItemProvider} from "./providers/completionItemProvider";
 
-let monacoInstance;
+let appId;
+const client: LanguageClientType = new LanguageClient();
+
+(async function() {
+	try {
+	    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+		await client.connect(`${wsProtocol}://${window.location.hostname}:8082`);
+		console.log("Language client connected");
+	} catch (e) {
+		console.log("Error connecting to language server", e);
+	}
+
+	if (client.isConnected) {
+		store.subscribe(handleChange);
+	}
+})();
+
+function handleChange() {
+	if (store.getState().app.id && store.getState().app.id !== appId) {
+		appId = store.getState().app.id;
+		client.initialize(appId);
+		console.log("Language client initialized for project", appId);
+	}
+}
 
 monaco.init().then(monaco => {
-    monacoInstance = monaco;
+    monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
 });
 
 export function fileDeleted() {

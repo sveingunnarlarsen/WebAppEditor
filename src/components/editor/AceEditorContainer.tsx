@@ -108,6 +108,8 @@ class AceEditorContainer extends React.Component {
 	handleEditorDidMount = (_, editor) => {
 	    window.monacoEditor = editor;
 		this.editor.current = editor;
+		const model = this.editor.current.getModel();
+		model.uri.path = this.props.fso.path;
 		
 		this.addActionsAndCommands(this.editor.current);
 		
@@ -125,7 +127,7 @@ class AceEditorContainer extends React.Component {
 				}
 
 				this.props.updateFileState({...this.props.fso, content, modified});
-			}, 1000);
+			}, 500);
 		});
 	};
 
