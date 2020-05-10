@@ -1,12 +1,12 @@
+import "../../types/monaco";
 import * as pather from 'path';
 import * as ts from 'typescript';
-import "../../types/monaco";
-import {LanguageClient} from "../../types/language-client";
+import {LanguageClient as LanguageClientType} from "../types/language-client.d.ts";
 
 export class CompletionItemProvider implements monaco.languages.CompletionItemProvider {
 
-    private languageClient: LanguageClient;
-
+    private languageClient: LanguageClientType;
+    
     constructor(languageClient) {
         this.languageClient = languageClient;
     }
@@ -19,7 +19,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
     ): monaco.ProviderResult<monaco.CompletionList> {
     
         if (!this.languageClient.isReady) return;
-
+        
         //if (document.isDirty) {
             this.languageClient.textDocumentChanged(
                 model.uri.path,

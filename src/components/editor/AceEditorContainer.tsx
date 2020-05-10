@@ -67,6 +67,8 @@ class AceEditorContainer extends React.Component {
 	componentDidUpdate() {
 		if (this.editor.current) {
 			this.editor.current.layout();
+            const model = this.editor.current.getModel();
+		    model.uri.path = this.props.fso.path;
 		}
 	}
 

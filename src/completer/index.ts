@@ -1,6 +1,7 @@
+import "../types/monaco";
 import store from "../store";
 import {monaco} from "@monaco-editor/react";
-import {LanguageClient as LanguageClientType} from "../types/language-client.d.ts";
+import {LanguageClient as LanguageClientType} from "../types/language-client";
 import {CompletionItemProvider} from "./providers/completionItemProvider";
 import {SignatureHelperProvider} from "./providers/signatureHelpProvider";
 import {HoverProvider} from "./providers/hoverProvider";
@@ -30,18 +31,77 @@ function handleChange() {
 	}
 }
 
-monaco.init().then(monaco => {
+monaco.init().then(monaco => {    
+
+	client.on('publishDiagnostics', (result) => {
+
+		console.log("Data: ", result);
+		console.log("Monaco model: ", monaco.editor.getModels()[0]);
+
+
+		const markerData = result.diagnostics.map(d => new ModelMarker(d));
+
+		console.log("MarkerData: ", markerData);
+				
+		monaco.editor.setModelMarkers(monaco.editor.getModels()[0], result.projectId, markerData);
+		console.log("Diagnostics published: ", result);
+	})
+
+    window.monaco = monaco;    
     monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
     monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelperProvider(client));
     monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
 });
 
-export function fileDeleted() {
 
+
+class ModelMarker implements monaco.editor.IMarkerData {
+    constructor({code = 0, severity, message, range, source, relatedInformation, tags}: {
+        code: string | {
+            value: string;
+            link: any;
+        };
+        severity: any;
+        message: string;
+		range: { start: {line: number, character: number}, end: {line: number, character: number}};
+		source?: string;
+        relatedInformation?: any[];
+        tags?: any[];
+	}) {
+		this.code = code;
+        this.severity = severity;
+        this.message = message;
+		this.startLineNumber = range.start.line + 1;
+        this.startColumn = range.start.character + 1;
+        this.endLineNumber = range.end.line + 1;
+        this.endColumn = range.end.character + 1;    
+		this.source = source;
+        this.relatedInformation = relatedInformation;
+        this.tags = tags;
+		console.log("ModelMarker: ", this);
+    }
 }
 
-export function fileCreated() {
-    
+
+
+export async function fileDeleted(path: string) {
+    if (client.isReady) {
+        try {
+            await client.textDocumentDeleted(path);   
+        } catch (e) {
+            console.log("Language client error", e);
+        }
+    }
+}
+
+export async function fileCreated(path: string, type: 'file' | 'foler' = 'file', content: string = "") {
+    if (client.isReady) {
+        try {
+            await client.textDocumentCreated(path, type, content);   
+        } catch (e) {
+            console.log("Language client error", e);
+        }
+    }
 }
 
 
