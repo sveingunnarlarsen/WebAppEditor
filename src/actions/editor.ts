@@ -1,4 +1,5 @@
 import {EditorActions} from "../types/editor";
+import {SplitDirection} from "../types/editor";
 
 export function showFile(fileId, editorId) {
     return {
@@ -29,7 +30,7 @@ export function closeAllTabs() {
     }
 }
 
-export function splitEditor(direction, editorId, fileId) {
+export function splitEditor(direction: SplitDirection, editorId, fileId) {
     return {
         type: EditorActions.SPLIT_EDITOR,
         direction,

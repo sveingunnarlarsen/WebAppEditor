@@ -2,6 +2,8 @@ import store from "../store";
 import {monaco} from "@monaco-editor/react";
 import {LanguageClient as LanguageClientType} from "../types/language-client.d.ts";
 import {CompletionItemProvider} from "./providers/completionItemProvider";
+import {SignatureHelperProvider} from "./providers/signatureHelpProvider";
+import {HoverProvider} from "./providers/hoverProvider";
 
 let appId;
 const client: LanguageClientType = new LanguageClient();
@@ -30,6 +32,8 @@ function handleChange() {
 
 monaco.init().then(monaco => {
     monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
+    monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelperProvider(client));
+    monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
 });
 
 export function fileDeleted() {

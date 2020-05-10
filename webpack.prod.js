@@ -7,7 +7,7 @@ const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
 module.exports = {
 	mode: "production",
 	resolve: {
-		extensions: [".ts", ".tsx", ".js", ".jsx"]
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
 	},
 	module: {
 		rules: [

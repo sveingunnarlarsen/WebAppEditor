@@ -1,12 +1,9 @@
-//import { LanguageClient } from '../language-client/src/language-client';
-
-import * as net from 'net';
 import * as pather from 'path';
 import * as ts from 'typescript';
 import "../../types/monaco";
 import {LanguageClient} from "../../types/language-client";
 
-export class CompletionItemProvider {
+export class CompletionItemProvider implements monaco.languages.CompletionItemProvider {
 
     private languageClient: LanguageClient;
 
@@ -15,7 +12,7 @@ export class CompletionItemProvider {
     }
 
     async provideCompletionItems(
-        document: monaco.editor.ITextModel,
+        model: monaco.editor.ITextModel,
         position: monaco.Position,
         context: monaco.languages.CompletionContext,
         token: monaco.CancellationToken,    
@@ -23,17 +20,15 @@ export class CompletionItemProvider {
     
         if (!this.languageClient.isReady) return;
 
-        
-
         //if (document.isDirty) {
             this.languageClient.textDocumentChanged(
-                document.uri.path,
-                document.getValue()
+                model.uri.path,
+                model.getValue()
             );
         //}
 
         const list = await this.languageClient.getCompletions(
-            document.uri.path,
+            model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
         ).catch(exception => { console.error(exception); throw exception; });
@@ -43,22 +38,29 @@ export class CompletionItemProvider {
             throw new Error("Result not found!");
         }
 
-		var word = document.getWordUntilPosition(position);
+		var word = model.getWordUntilPosition(position);
 
-        const suggestions = list.result.map(item => ({
-            label: item.name,
-            kind: this.lookupCompletionItemKind(item.kind),
-            insertText: item.name,
-            //sortText: item.sortText,
-            range: {
-            	startLineNumber: position.lineNumber,
-            	endLineNumber: position.lineNumber,
-            	startColumn: word.startColumn,
-            	endColumn: word.endColumn
-            }
-        }));
+        const suggestions = list.result.map<monaco.languages.CompletionItem>(item => new MyCompletionItem(
+            item.name,
+            this.lookupCompletionItemKind(item.kind),
+            this.determineInsertText(item.name),            
+            item.sortText,
+            this.getRange(model, position),
+            model,
+            position,
+        ));
 
 		return {suggestions}
+    }
+
+    private getRange(model: monaco.editor.ITextModel, position: monaco.Postion) {
+        var word = model.getWordUntilPosition(position);
+        return {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+        }
     }
 
     private determineInsertText(path: string) {
@@ -69,33 +71,35 @@ export class CompletionItemProvider {
         return result;
     }
 
-    /*
-    public async resolveCompletionItem?(
-        item: monaco.CompletionItem,
-        token: monaco.CancellationToken
-    ): Promise<vs.ProviderResult<vs.CompletionItem>> {
+    public async resolveCompletionItem?(        
+        model: monaco.editor.ITextModel,
+        position: monaco.Position,
+        item: monaco.languages.CompletionItem,
+        token: monaco.CancellationToken,
+    ): monaco.ProviderResult<moaco.languages.CompletionItem> {    
+        try {
+            if (!(item instanceof MyCompletionItem)) {                
+                return item;
+            }
 
-        if (!(item instanceof MyCompletionItem)) {
-            return undefined;
+            const response = await this.languageClient.getCompletionEntryDetails(
+                item.model.uri.path,
+                item.position.lineNumber - 1,
+                item.label,
+                item.position.column - 1,
+            );
+
+            if (response.result) {
+                const result = response.result;
+                item.detail = ts.displayPartsToString(result.displayParts);
+                item.documentation = ts.displayPartsToString(result.documentation);
+                return item;
+            }
+        } catch (e) {
+            console.log("Error resolving completion item", e);
         }
-
-        const response = await this.languageClient.getCompletionEntryDetails(
-            item.document.fileName,
-            item.position.line,
-            item.label,
-            item.position.character,
-        );
-
-        if (response.result) {
-            const result = response.result;
-            item.detail = ts.displayPartsToString(result.displayParts);
-            item.documentation = ts.displayPartsToString(result.documentation);
-            return item;
-        }
-
-        return undefined;
+        return item;
     }
-    */
 
     private lookupCompletionItemKind(kind: ts.ScriptElementKind): monaco.CompletionItemKind {
         switch (kind) {
@@ -119,22 +123,27 @@ export class CompletionItemProvider {
             case ts.ScriptElementKind.memberFunctionElement: return monaco.languages.CompletionItemKind.Method;
             case ts.ScriptElementKind.memberVariableElement: return monaco.languages.CompletionItemKind.Variable;
         }
-        return monaco.CompletionItemKind.Property;
+        return monaco.languages.CompletionItemKind.Property;
     }
 
 }
 
-class MyCompletionItem {
+class MyCompletionItem implements monaco.languages.CompletionItem {
     constructor(
         label: string,
-        kind: monaco.CompletionItemKind,
+        kind: monaco.languages.CompletionItemKind,
         insertText: string,
         sortText: string,
-        public readonly document: monaco.ITextModel,
-        public readonly position: monaco.Position,
+        range: monaco.IRange,
+        model: monaco.ITextModel,
+        position: monaco.Position,
     ) {
-        //super(label, kind);
+        this.label = label;
+        this.kind = kind;                
         this.insertText = insertText;
         this.sortText = sortText;
+        this.range = range;
+        this.model = model;
+        this.position = position;
     }
 }
