@@ -1,7 +1,7 @@
 import "../../types/monaco";
 import * as pather from 'path';
 import * as ts from 'typescript';
-import {LanguageClient as LanguageClientType} from "../types/language-client.d.ts";
+import {LanguageClient as LanguageClientType} from "../../types/language-client";
 
 export class CompletionItemProvider implements monaco.languages.CompletionItemProvider {
 
@@ -15,17 +15,16 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         model: monaco.editor.ITextModel,
         position: monaco.Position,
         context: monaco.languages.CompletionContext,
-        token: monaco.CancellationToken,    
-    ): monaco.ProviderResult<monaco.CompletionList> {
-    
+        token: monaco.CancellationToken,        
+    // @ts-ignore
+    ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
+
         if (!this.languageClient.isReady) return;
         
-        //if (document.isDirty) {
-            this.languageClient.textDocumentChanged(
-                model.uri.path,
-                model.getValue()
-            );
-        //}
+		this.languageClient.textDocumentChanged(
+			model.uri.path,
+			model.getValue()
+		);
 
         const list = await this.languageClient.getCompletions(
             model.uri.path,
@@ -41,7 +40,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
 		var word = model.getWordUntilPosition(position);
 
         const suggestions = list.result.map<monaco.languages.CompletionItem>(item => new MyCompletionItem(
-            item.name,
+            item.name as string,
             this.lookupCompletionItemKind(item.kind),
             this.determineInsertText(item.name),            
             item.sortText,
@@ -53,7 +52,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
 		return {suggestions}
     }
 
-    private getRange(model: monaco.editor.ITextModel, position: monaco.Postion) {
+    private getRange(model: monaco.editor.ITextModel, position: monaco.Position) {
         var word = model.getWordUntilPosition(position);
         return {
             startLineNumber: position.lineNumber,
@@ -71,11 +70,12 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         return result;
     }
 
-    public async resolveCompletionItem?(        
+    async resolveCompletionItem(        
         model: monaco.editor.ITextModel,
         position: monaco.Position,
         item: monaco.languages.CompletionItem,
         token: monaco.CancellationToken,
+    // @ts-ignore
     ): monaco.ProviderResult<moaco.languages.CompletionItem> {    
         try {
             if (!(item instanceof MyCompletionItem)) {                
@@ -101,7 +101,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         return item;
     }
 
-    private lookupCompletionItemKind(kind: ts.ScriptElementKind): monaco.CompletionItemKind {
+    private lookupCompletionItemKind(kind: ts.ScriptElementKind): monaco.languages.CompletionItemKind {
         switch (kind) {
             case ts.ScriptElementKind.directory: return monaco.languages.CompletionItemKind.Folder;
             case ts.ScriptElementKind.externalModuleName: return monaco.languages.CompletionItemKind.Module;
@@ -129,13 +129,20 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
 }
 
 class MyCompletionItem implements monaco.languages.CompletionItem {
+    label: string;
+    kind: monaco.languages.CompletionItemKind;
+    insertText: string;
+    sortText: string;
+    range: monaco.IRange;
+    model: monaco.editor.ITextModel;
+    position: monaco.Position;
     constructor(
         label: string,
         kind: monaco.languages.CompletionItemKind,
         insertText: string,
         sortText: string,
         range: monaco.IRange,
-        model: monaco.ITextModel,
+        model: monaco.editor.ITextModel,
         position: monaco.Position,
     ) {
         this.label = label;

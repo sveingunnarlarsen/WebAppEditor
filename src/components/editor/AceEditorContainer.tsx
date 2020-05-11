@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import Editor from "@monaco-editor/react";
-import {monaco}from "@monaco-editor/react";
+import {monaco} from "@monaco-editor/react";
 
 import EditorContextMenu from "./EditorContextMenu";
 import SignatureHelp from "./SignatureHelp";
@@ -15,7 +15,7 @@ import {DialogType} from "../../types/dialog";
 import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
-
+import {fileOpened} from "../../completer/index";
 
 let monacoInstance;
 monaco.init().then(monaco => {
@@ -69,15 +69,16 @@ class AceEditorContainer extends React.Component {
 			this.editor.current.layout();
             const model = this.editor.current.getModel();
 		    model.uri.path = this.props.fso.path;
+			fileOpened(model.uri.path);
 		}
 	}
 
 	componentWillUnmount() {
-	    
+	    console.log("Component unmounting");
 	}
 
 	componentDidMount() {
-	    
+        console.log("Component did mount");
 	}
 
 	onBlur = event => {

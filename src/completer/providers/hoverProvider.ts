@@ -1,6 +1,6 @@
 import "../../types/monaco";
 import * as ts from 'typescript';
-import {LanguageClientType} from "../../types/language-client";
+import {LanguageClient as LanguageClientType} from "../../types/language-client";
 
 export class HoverProvider implements monaco.languages.HoverProvider {
 
@@ -14,7 +14,7 @@ export class HoverProvider implements monaco.languages.HoverProvider {
         model: monaco.editor.ITextModel,
         position: monaco.Position,
         token: monaco.CancellationToken,    
-    ): monaco.ProviderResult<monaco.languages.Hover> {
+    ): monaco.languages.ProviderResult<monaco.languages.Hover> {
     
         if (!this.languageClient.isReady) return;
         
@@ -31,10 +31,12 @@ export class HoverProvider implements monaco.languages.HoverProvider {
 
         if (response.result && response.result.displayParts) {
             const hover: monaco.languages.Hover = {
-                contents: [ts.displayPartsToString(response.result.displayParts)],
+                contents: [{value: ts.displayPartsToString(response.result.displayParts)}],
             };
+			console.log("Returning hover", hover);
             return hover;
         }
+		console.log("Returning hover undefined");
         return undefined;
     }
 }

@@ -57,7 +57,7 @@ export function resizeTerminal() {
 	};
 }
 
-export function openDialog(dialog: DialogType, data) {
+export function openDialog(dialog: DialogType, data?) {
 	return function(dispatch, getState) {
 	    if (dialog === DialogType.PROJECT_LIST) {
 	        dispatch(getWebApps());   

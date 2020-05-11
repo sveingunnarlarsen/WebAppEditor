@@ -2,7 +2,7 @@ import "../../types/monaco";
 import * as ts from 'typescript';
 import {LanguageClient} from "../../types/language-client";
 
-export class SignatureHelperProvider implements monaco.languages.SignatureHelpProvider {
+export class SignatureHelpProvider implements monaco.languages.SignatureHelpProvider {
 
     private languageClient: LanguageClient;
 
@@ -15,7 +15,8 @@ export class SignatureHelperProvider implements monaco.languages.SignatureHelpPr
         position: monaco.Position,
         token: monaco.CancellationToken,    
         context: monaco.languages.CompletionContext,
-    ): monaco.ProviderResult<monaco.languages.SignatureHelpResult> {
+        // @ts-ignore
+    ): monaco.languages.ProviderResult<monaco.languages.SignatureHelpResult> {
 
         if (!this.languageClient.isReady) return;
 
@@ -27,7 +28,7 @@ export class SignatureHelperProvider implements monaco.languages.SignatureHelpPr
         const response = await this.languageClient.getSignatureHelp(
             model.uri.path,
             position.lineNumber - 1,
-            position.column,
+            position.column - 1,
         ).catch(exception => { console.error(exception); throw exception; });
 
         if (!response) return undefined;
@@ -49,12 +50,19 @@ export class SignatureHelperProvider implements monaco.languages.SignatureHelpPr
                 documentation: ts.displayPartsToString(item.documentation),
                 parameters,
             };
-        });
+        });		
 
+
+		
         return {
-            signatures: signatureInformations,
-            activeSignature: response.result.selectedItemIndex,
-            activeParameter: response.result.argumentIndex,
+			value: {
+				signatures: signatureInformations,
+				activeSignature: response.result.selectedItemIndex,
+				activeParameter: response.result.argumentIndex,
+			},
+			dispose: function() {
+                console.log("Dispose called");       
+            }
         };
     }
 }
