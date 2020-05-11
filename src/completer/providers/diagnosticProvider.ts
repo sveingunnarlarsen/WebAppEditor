@@ -1,10 +1,7 @@
 import "../../types/monaco";
 
 export function provideDiagnostics(result, monaco) {
-		console.log("Data: ", result);
-		console.log("Monaco model: ", monaco.editor.getModels()[0]);
-		const markerData = result.diagnostics.map(d => new ModelMarker(d));
-		console.log("MarkerData: ", markerData);				
+		const markerData = result.diagnostics.map(d => new ModelMarker(d));			
 		monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "typescript", markerData);
 }
 

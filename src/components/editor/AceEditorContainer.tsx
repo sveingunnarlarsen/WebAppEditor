@@ -3,11 +3,10 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
+import "../../types/monaco";
 import Editor from "@monaco-editor/react";
-import {monaco} from "@monaco-editor/react";
 
 import EditorContextMenu from "./EditorContextMenu";
-import SignatureHelp from "./SignatureHelp";
 import {updateFileState, save} from "../../actions/file";
 import {openDialog} from "../../actions";
 import {setActiveEditor, splitEditor} from "../../actions/editor";
@@ -16,11 +15,6 @@ import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
 import {fileOpened} from "../../completer/index";
-
-let monacoInstance;
-monaco.init().then(monaco => {
-    monacoInstance = monaco;
-});
 
 const mapState = (state, ownProps) => {
 	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
@@ -74,50 +68,16 @@ class AceEditorContainer extends React.Component {
 	}
 
 	componentWillUnmount() {
-	    console.log("Component unmounting");
+		this.props.keepEditorState(this.editor.current);
 	}
 
 	componentDidMount() {
-        console.log("Component did mount");
+		console.log("Editor did mount");
 	}
 
-	onBlur = event => {
-		console.log("Editor blur event fired");
-	};
-
-	onFocus = () => {
-		if (this.props.editor) {
-			this.props.setActiveEditor(this.props.editor.id);
-		}
-	};
-	
-	addActionsAndCommands = (editor) => {
-	    editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KEY_S, () => {
-	        this.props.save();
-	    })
-	    
-	    editor.addAction({
-	        id: "split_vertically",
-	        label: "Split Vertically",
-	        precondition: null,
-	        keybindingContext: null,
-	        contextMenuGroupId: '2_splitting',
-	        run: (editor) => {
-	            this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editor.id, this.props.fso.id)
-	        }
-	    })
-	}
-
-	handleEditorDidMount = (_, editor) => {
-	    window.monacoEditor = editor;
-		this.editor.current = editor;
-		const model = this.editor.current.getModel();
-		model.uri.path = this.props.fso.path;
-		
-		this.addActionsAndCommands(this.editor.current);
-		
-		let inputTimeout = null;
-		this.editor.current.onDidChangeModelContent(ev => {
+    onChange = (editor) => {
+        let inputTimeout = null;
+		editor.onDidChangeModelContent(ev => {
 			clearTimeout(inputTimeout);
 
 			inputTimeout = setTimeout(() => {
@@ -132,18 +92,50 @@ class AceEditorContainer extends React.Component {
 				this.props.updateFileState({...this.props.fso, content, modified});
 			}, 500);
 		});
+    }
+	
+	addActionsAndCommands = (editor) => {
+	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, this.props.save);
+	    
+	    editor.addAction({
+	        id: "split_vertically",
+	        label: "Split Vertically",
+	        precondition: null,
+	        keybindingContext: null,
+	        contextMenuGroupId: '2_splitting',
+	        run: (editor) => {
+	            this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editor.id, this.props.fso.id)
+	        }
+	    })
+	}
+
+	handleEditorDidMount = (_, editor) => {      		                          
+		this.editor.current = editor;
+		window.currentEditor = editor;
+		const model = this.editor.current.getModel();
+		model.uri.path = this.props.fso.path;
+
+		this.addActionsAndCommands(this.editor.current);
+        this.onChange(this.editor.current);        
+
+		if (this.props.editorState) {
+			if (this.props.editorState.viewState) {
+				this.editor.current.restoreViewState(this.props.editorState.viewState);
+			}
+			setTimeout(() => {
+				this.editor.current.focus();
+			}, 100);			
+		}		
 	};
 
 	render() {
 		const {classes, fso, editor} = this.props;
-		console.log("Rendering editor: ", fso, editor, monaco);
-
         console.log(getFileLanguage(fso.path));
+		console.log("Rendering editor");
 
 		return (
 			<React.Fragment>
 				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
-				<SignatureHelp />
 			</React.Fragment>
 		);
 	}

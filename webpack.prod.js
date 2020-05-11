@@ -7,12 +7,13 @@ const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
 module.exports = {
 	mode: "production",
 	resolve: {
+		symlinks: false,
 		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
 	},
 	module: {
 		rules: [
 			{
-				test: /\.(js|ts|jsx|tsx)$/,
+				test: /\.(js|ts|jsx|tsx|d.ts)$/,
 				exclude: /node_modules/,
 				use: {
 					loader: "babel-loader",

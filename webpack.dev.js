@@ -10,12 +10,13 @@ module.exports = settings => ({
 	mode: "development",
 	devtool: "eval-source-map",
 	resolve: {
+		symlinks: false,
 		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
 	},
 	module: {
 		rules: [
 			{
-				test: /\.(ts|tsx|js|jsx)$/,
+				test: /\.(ts|tsx|js|jsx|d.ts)$/,
 				exclude: /node_modules/,
 				use: [{
 					loader: "babel-loader",

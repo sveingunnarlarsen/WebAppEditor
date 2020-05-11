@@ -46,8 +46,22 @@ function mapDispatch(dispatch) {
 }
 
 class EditorTabs extends React.Component {
+	openEditors: any[];
 	constructor(props) {
 		super(props);
+		this.openEditors = [];
+	}
+
+	keepEditorState = (editor) => {
+		const editorState = this.openEditors.find(e => e.path === editor.getModel().uri.path);
+		if (editorState) {
+			editorState.viewState = editor.saveViewState();
+		} else {
+			this.openEditors.push({
+				path: editor.getModel().uri.path,
+				viewState: editor.saveViewState(),
+			});
+		}
 	}
 
 	handleChange(event, value) {
@@ -55,7 +69,7 @@ class EditorTabs extends React.Component {
 	}
 
 	handleClose(e, id) {
-		e.stopPropagation();
+		e.stopPropagation();		
 		this.props.closeTab(id, this.props.editor.id);
 	}
 
@@ -90,7 +104,8 @@ class EditorTabs extends React.Component {
 		    const link = `data:${getMimeType(file.path)};base64,${file.content}`
 			content = <img src={link} />;
 		} else {
-			content = <AceEditorContainer container={this} fileId={activeTab} />;
+			const editorState = this.openEditors.find(editor => editor.path === file.path);
+			content = <AceEditorContainer editorState={editorState} keepEditorState={this.keepEditorState} key={activeTab} container={this} fileId={activeTab} />;
 		}
 
 		return (
