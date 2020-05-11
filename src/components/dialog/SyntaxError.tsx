@@ -1,7 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
-import AceEditor from "react-ace-builds";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -29,18 +28,6 @@ class SyntaxError extends React.Component {
 		return (
 			<React.Fragment>
 				<DialogTitle>Syntax Error</DialogTitle>
-				<DialogContent>
-					<AceEditor
-					    width="100%"
-						theme="tomorrow_night"
-						value={this.state.value}
-						mode="text" // Mode is set in updateAceSession
-						editorProps={{$blockScrolling: Infinity}}
-						setOptions={{
-						    readOnly: true
-						}}
-					/>
-				</DialogContent>
 				<DialogActions>
 					<Button onClick={close}>Close</Button>
 				</DialogActions>

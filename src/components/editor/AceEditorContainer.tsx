@@ -43,7 +43,11 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class AceEditorContainer extends React.Component {
+interface EditorProps {
+	fso: any;
+}
+
+class AceEditorContainer extends React.Component<EditorProps> {
 	constructor(props) {
 		super(props);
 		this.editor = React.createRef();
@@ -51,7 +55,7 @@ class AceEditorContainer extends React.Component {
 
 	shouldComponentUpdate(nextProps, nextState) {
 		console.log("Should component update");
-		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized /* || this.ace.current.editor.getValue() !== this.props.fso.content*/) {
+		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized) {
 			return true;
 		} else {
 			return false;
@@ -78,12 +82,15 @@ class AceEditorContainer extends React.Component {
     onChange = (editor) => {
         let inputTimeout = null;
 		editor.onDidChangeModelContent(ev => {
+			
+			console.log(ev);
+			
 			clearTimeout(inputTimeout);
 
 			inputTimeout = setTimeout(() => {
 				let modified = true;
 
-				const content = this.editor.current.getValue();
+				const content = this.editor.current.getValue(); 
 
 				if (this.props.fso.orgContent === content) {
 					modified = false;
@@ -116,7 +123,7 @@ class AceEditorContainer extends React.Component {
 		model.uri.path = this.props.fso.path;
 
 		this.addActionsAndCommands(this.editor.current);
-        this.onChange(this.editor.current);        
+        this.onChange(this.editor.current);      
 
 		if (this.props.editorState) {
 			if (this.props.editorState.viewState) {
@@ -131,11 +138,12 @@ class AceEditorContainer extends React.Component {
 	render() {
 		const {classes, fso, editor} = this.props;
         console.log(getFileLanguage(fso.path));
+		fileOpened(fso.path); 
 		console.log("Rendering editor");
 
 		return (
 			<React.Fragment>
-				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
+				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} options={{renderValidationDecorations: "editable"}} />
 			</React.Fragment>
 		);
 	}

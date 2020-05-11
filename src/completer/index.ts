@@ -34,12 +34,19 @@ function handleChange() {
 
 monaco.init().then(monaco => {    
 
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: true,
+        noSyntaxValidation: true,
+        noSuggestionDiagnostics: true,        
+    });
+    
     window.monaco = monaco;
     monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
     monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
     monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
 
 	client.on('publishDiagnostics', (result) => {
+        console.log("Markers: ", result);
 		provideDiagnostics(result, monaco);
 	});
 });

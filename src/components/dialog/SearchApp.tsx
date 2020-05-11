@@ -16,7 +16,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 
 import AceEditorContainer from "../editor/AceEditorContainer";
-import AceOneLine from "../utils/AceOneLine";
 
 import keydown, {Keys} from "react-keydown";
 const {UP, DOWN, ENTER} = Keys;
