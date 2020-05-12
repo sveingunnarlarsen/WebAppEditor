@@ -15,7 +15,7 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
         position: monaco.Position,
         token: monaco.CancellationToken,
     // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.Definition | monaco.languages.LocationLink[]> {        
+    ): monaco.languages.ProviderResult<monaco.languages.Definition | monaco.languages.LocationLink[]> {                
 
         if (!this.languageClient.isReady) return;
 

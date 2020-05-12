@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
-import "../../types/monaco";
+import {monaco} from "@monaco-editor/react";
 import Editor from "@monaco-editor/react";
 
 import EditorContextMenu from "./EditorContextMenu";
@@ -15,6 +15,11 @@ import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
 import {fileOpened} from "../../completer/index";
+
+let monacoRef;
+monaco.init().then(monaco => {
+	monacoRef = monaco;
+})
 
 const mapState = (state, ownProps) => {
 	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
@@ -100,9 +105,9 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 	
 	addActionsAndCommands = (editor) => {
-	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+	    editor.addCommand(monacoRef.KeyMod.CtrlCmd | monacoRef.KeyCode.KEY_S, () => {
 			clearTimeout(this.inputTimeout);
-			this.props.updateFileState({...this.props.fso, content: this.editor.current.getValue(), modified: false});
+			this.props.updateFileState({...this.props.fso, content: this.editor.current.getValue(), modified: true});
 			this.props.save();
 		});
 	    
@@ -118,7 +123,13 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	    })
 	}
 
-	handleEditorDidMount = (_, editor) => {      		                          
+	handleEditorDidMount = (_, editor) => {     
+
+		console.log("monaco ref: ", monacoRef);
+
+		// editor.setModel(null);
+		// editor.setModel(monacoRef.editor.createModel(this.props.fso.content, 'typescript', monacoRef.Uri.parse(this.props.fso.path)));		
+
 		this.editor.current = editor;
 		window.currentEditor = editor;
 		const model = this.editor.current.getModel();
