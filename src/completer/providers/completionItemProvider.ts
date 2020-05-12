@@ -39,8 +39,8 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
 
 		var word = model.getWordUntilPosition(position);
 
-        const suggestions = list.result.map<monaco.languages.CompletionItem>(item => new MyCompletionItem(
-            item.name as string,
+        const suggestions = list.result.map(item => new MyCompletionItem(
+            item.name,
             this.lookupCompletionItemKind(item.kind),
             this.determineInsertText(item.name),            
             item.sortText,
@@ -52,17 +52,12 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
 		return {suggestions}
     }
 
-    private getRange(model: monaco.editor.ITextModel, position: monaco.Position) {
+    private getRange(model: monaco.editor.ITextModel, position: monaco.Position) : monaco.Range {
         var word = model.getWordUntilPosition(position);
-        return {
-            startLineNumber: position.lineNumber,
-            endLineNumber: position.lineNumber,
-            startColumn: word.startColumn,
-            endColumn: word.endColumn
-        }
+        return new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn);
     }
 
-    private determineInsertText(path: string) {
+    private determineInsertText(path: string) : string {
         const ext = pather.extname(path);
         // TODO: This should probably be a configurable option
         const extensionsToRemove = ['.js', '.ts', '.jsx', '.tsx'];
@@ -136,6 +131,8 @@ class MyCompletionItem implements monaco.languages.CompletionItem {
     range: monaco.IRange;
     model: monaco.editor.ITextModel;
     position: monaco.Position;
+    detail: string;
+    documentation: string;
     constructor(
         label: string,
         kind: monaco.languages.CompletionItemKind,
@@ -151,6 +148,6 @@ class MyCompletionItem implements monaco.languages.CompletionItem {
         this.sortText = sortText;
         this.range = range;
         this.model = model;
-        this.position = position;
+        this.position = position;        
     }
 }

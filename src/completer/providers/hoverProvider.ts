@@ -13,7 +13,8 @@ export class HoverProvider implements monaco.languages.HoverProvider {
     async provideHover(
         model: monaco.editor.ITextModel,
         position: monaco.Position,
-        token: monaco.CancellationToken,    
+        token: monaco.CancellationToken,
+    // @ts-ignore
     ): monaco.languages.ProviderResult<monaco.languages.Hover> {
     
         if (!this.languageClient.isReady) return;
@@ -30,13 +31,31 @@ export class HoverProvider implements monaco.languages.HoverProvider {
         );
 
         if (response.result && response.result.displayParts) {
+            
+            const parts = [];
+            const displayParts = await monaco.editor.colorize(ts.displayPartsToString(response.result.displayParts), "typescript", {tabSize: 2});
+            parts.push({value: displayParts});
+
+            if (response.result.documentation) {
+                const text = ts.displayPartsToString(response.result.documentation);
+                
+                parts.push({value: text});
+            }
+
             const hover: monaco.languages.Hover = {
-                contents: [{value: ts.displayPartsToString(response.result.displayParts)}],
+                contents: parts,
+                range: this.getRange(model, position),
             };
 			console.log("Returning hover", hover);
+            window.hoverRef = hover;
             return hover;
         }
 		console.log("Returning hover undefined");
         return undefined;
+    }
+
+    private getRange(model: monaco.editor.ITextModel, position: monaco.Position) {
+        var word = model.getWordUntilPosition(position);
+        return new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn);
     }
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
-import {withStyles, styled} from "@material-ui/styles";
+import {withStyles, styled, Styles} from "@material-ui/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -10,7 +10,7 @@ import {showFile, closeTab} from "../../actions/editor";
 import {getFileById} from "../../store/utils";
 import {base64ToArrayBuffer, isImage, getMimeType} from "../../helpers/utils";
 
-const styles = {
+const styles : Styles<any, any> = {
 	tabs: {
 		background: "#252526",
 		minHeight: "auto",

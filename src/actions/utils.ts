@@ -70,6 +70,8 @@ export function getFolderPath(id, fsos) {
 		parts.shift();
 		parts.pop();
 		return "/" + parts.join("/");
+	} else {
+		return "/";
 	}
 }
 

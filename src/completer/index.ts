@@ -1,4 +1,3 @@
-import "../types/monaco";
 import store from "../store";
 import {monaco} from "@monaco-editor/react";
 import {LanguageClient as LanguageClientType, ClientEvent} from "../types/language-client";
@@ -32,13 +31,13 @@ function handleChange() {
 	}
 }
 
-monaco.init().then(monaco => {    
-
+monaco.init().then(monaco => {                            
+        
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
         noSyntaxValidation: true,
         noSuggestionDiagnostics: true,        
-    });
+    });    
     
     window.monaco = monaco;
     monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));

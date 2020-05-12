@@ -132,8 +132,7 @@ export function createFso({type = 'file', content, path, name}: {type: 'file' | 
         }
         
         if (!path) {
-			const folderPath = getFolderPath(getState().selectedNode, getState().app.fileSystemObjects);
-			path = `${folderPath ? folderPath : ``}/${name}`;
+			path = `${getFolderPath(getState().selectedNode, getState().app.fileSystemObjects)}${name}`;
         }
         
         const fileSystemObject = {

@@ -143,7 +143,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
 		return (
 			<React.Fragment>
-				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} options={{renderValidationDecorations: "editable"}} />
+				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
 			</React.Fragment>
 		);
 	}
