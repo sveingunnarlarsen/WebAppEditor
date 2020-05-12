@@ -15,7 +15,7 @@ export class HoverProvider implements monaco.languages.HoverProvider {
         position: monaco.Position,
         token: monaco.CancellationToken,
     // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.Hover> {
+    ): monaco.languages.ProviderResult<monaco.languages.Hover> {        
     
         if (!this.languageClient.isReady) return;
         
@@ -29,11 +29,13 @@ export class HoverProvider implements monaco.languages.HoverProvider {
             position.lineNumber - 1,
             position.column - 1,
         );
-
-        if (response.result && response.result.displayParts) {
+    
+        if (response.result && response.result.displayParts) {            
             
             const parts = [];
-            const displayParts = await monaco.editor.colorize(ts.displayPartsToString(response.result.displayParts), "typescript", {tabSize: 2});
+            const displayParts = '```typescript\n' +
+                                 ts.displayPartsToString(response.result.displayParts) + '\n' +
+                                 '```\n';
             parts.push({value: displayParts});
 
             if (response.result.documentation) {

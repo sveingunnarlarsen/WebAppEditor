@@ -48,6 +48,7 @@ interface EditorProps {
 }
 
 class AceEditorContainer extends React.Component<EditorProps> {
+	inputTimeout: any;
 	constructor(props) {
 		super(props);
 		this.editor = React.createRef();
@@ -80,14 +81,11 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	}
 
     onChange = (editor) => {
-        let inputTimeout = null;
-		editor.onDidChangeModelContent(ev => {
-			
-			console.log(ev);
-			
-			clearTimeout(inputTimeout);
+        this.inputTimeout = null;
+		editor.onDidChangeModelContent(ev => {						
+			clearTimeout(this.inputTimeout);
 
-			inputTimeout = setTimeout(() => {
+			this.inputTimeout = setTimeout(() => {
 				let modified = true;
 
 				const content = this.editor.current.getValue(); 
@@ -102,7 +100,11 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 	
 	addActionsAndCommands = (editor) => {
-	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, this.props.save);
+	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+			clearTimeout(this.inputTimeout);
+			this.props.updateFileState({...this.props.fso, this.editor.current.getValue(), modified: false});
+			this.props.save();
+		});
 	    
 	    editor.addAction({
 	        id: "split_vertically",
