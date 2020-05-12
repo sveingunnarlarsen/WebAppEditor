@@ -12,8 +12,22 @@ const client: LanguageClientType = new LanguageClient();
 (async function() {
 	try {
 	    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-		await client.connect(`${wsProtocol}://${window.location.hostname}:8082`);
+        const lsUrl = `${wsProtocol}://${window.location.hostname}:8082`;
+		await client.connect(lsUrl);
 		console.log("Language client connected");
+        
+        // @ts-ignore
+        client.on("disconnected", async (closeEvent) => {
+            if(closeEvent.wasClean) return;
+            await new Promise(r => setTimeout(r, 1000));
+            const result = await client.connect(lsUrl);
+            if(result.success) {
+                if(!appId) return;
+                client.initialize(appId);
+                console.log('LanguageClient reconnected');
+            }
+        })
+
 	} catch (e) {
 		console.log("Error connecting to language server", e);
 	}
