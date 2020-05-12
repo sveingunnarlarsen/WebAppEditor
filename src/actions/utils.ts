@@ -64,12 +64,12 @@ export function extractFileMeta(item, fsos, updatedFsos = []) {
 export function getFolderPath(id, fsos) {
 	const item = fsos.find(f => f.id === id);
 	if (item && item.type === "folder") {
-		return item.path;
+		return item.path + "/";
 	} else if (item && item.type === "file") {
 		const parts = item.path.split("/");
 		parts.shift();
 		parts.pop();
-		return "/" + parts.join("/");
+		return "/" + parts.join("/") + "/";
 	} else {
 		return "/";
 	}
