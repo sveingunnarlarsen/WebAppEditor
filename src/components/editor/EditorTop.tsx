@@ -4,24 +4,23 @@ import {connect} from "react-redux";
 
 import EditorContainer from "./EditorContainer";
 
-const mapState = (state, ownProps) => {
-    const container = state.editor.containers.find(c => c.id === ownProps.containerId);
-	return {container};
-};
+interface EditorTopProps {
+	containerId: string;
+}
 
-class EditorTop extends React.Component {
+class EditorTop extends React.Component<EditorTopProps> {
 	constructor(props) {
 		super(props);
 	}
 
 	render() {
-		const {container} = this.props;
-		if (container) {
-			return <EditorContainer containerId={container.id} />;
+		const {containerId} = this.props;
+		if (containerId) {
+			return <EditorContainer containerId={containerId} />;
 		} else {
 			return null;
 		}
 	}
 }
 
-export default connect(mapState)(EditorTop);
+export default EditorTop;

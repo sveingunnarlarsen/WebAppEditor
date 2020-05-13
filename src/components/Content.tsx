@@ -38,7 +38,24 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class Content extends React.Component {
+interface ContentProps {
+	classes: any;
+	top: any;
+	left: any;
+	previewVisible: any;
+	commandLineVisible: any;
+	topContainerId: string | null;
+
+	resizeTool: () => void;
+	resizeEditor: () => void;
+	resizeTerminal: () => void;
+}
+
+interface ContentState {
+	isDragging: boolean;
+}
+
+class Content extends React.Component<ContentProps, ContentState> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -106,9 +123,5 @@ class Content extends React.Component {
 		);
 	}
 }
-
-Content.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState, mapDispatch)(withStyles(styles)(Content));

@@ -1,9 +1,12 @@
 import React from "react";
+import {RefObject} from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
-import Editor from "./monaco/MonacoEditor";
+import {FileSystemObject} from "../../types";
+import {Editor} from "../../types/editor";
+import MonacoEditor from "./monaco/MonacoEditor";
 import EditorContextMenu from "./EditorContextMenu";
 import {updateFileState, save} from "../../actions/file";
 import {openDialog} from "../../actions";
@@ -17,20 +20,10 @@ import MonacoManager from "../../monaco";
 
 const mapState = (state, ownProps) => {
 	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
-	if (ownProps.container) {
-		return {
-			fso,
-			editor: ownProps.container.props.editor,
-			editorResized: state.editorResized,
-			updateEditors: state.updateEditors,
-		};
-	} else {
-		return {
-			fso,
-			editor: {id: "in_dialog"},
-			editorResized: state.editorResized,
-			updateEditors: state.updateEditors,
-		};
+	return {
+		fso,
+		editorResized: state.editorResized,
+		updateEditors: state.updateEditors,
 	}
 };
 
@@ -45,20 +38,32 @@ function mapDispatch(dispatch) {
 }
 
 interface EditorProps {
-	fso: any;
+	fso: FileSystemObject;
+	viewState: monaco.editor.ICodeEditorViewState | null;
+	editorId: string | null;
+	
+	editorResized: number;
+	updateEditors: number;
+
+	save: () => void;
+	updateFileState: (fso: FileSystemObject) => void;	
+	splitEditor: (direction: SplitDirection, editorId: string, fileId: string) => void;
+	keepEditorState: (editor: monaco.editor.ICodeEditor) => void | null;
 }
 
 class AceEditorContainer extends React.Component<EditorProps> {
-	inputTimeout: any;
+		
+	inputTimeout: number;
+	editor: monaco.editor.IStandaloneCodeEditor;
+	
 	constructor(props) {
 		super(props);
-		this.editor = React.createRef();
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.props.fso.id !== nextProps.fso.id) {
 			if (this.props.keepEditorState) {
-				this.props.keepEditorState(this.editor.current);
+				this.props.keepEditorState(this.editor);
 			}
 			return true;
 		}
@@ -66,43 +71,22 @@ class AceEditorContainer extends React.Component<EditorProps> {
 			return true;
 		}
 		if (this.props.updateEditors != nextProps.updateEditors) {
-			console.log("Updating editor");
 			return true;
 		}
-		console.log("not updating editor");
 		return false;
-		/*
-		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized) {
-			if (this.props.keepEditorState) {
-				this.props.keepEditorState(this.editor.current);
-			}			
-			return true;
-		} else {
-			return false;
-		}
-		*/
 	}
 
 	componentDidUpdate() {
-		if (this.editor.current) {
-			this.editor.current.layout();			
+		if (this.editor) {
+			this.editor.layout();			
 			fileOpened(this.props.fso.path);
-			if (this.props.editorState) {
+			if (this.props.viewState) {
 				setTimeout(() => {
-					this.editor.current.focus();
+					this.editor.focus();
 				}, 100);
 			}
 		}
-	}
-
-	componentWillUnmount() {
-		console.log("Component unmnounting");
-		//this.props.keepEditorState(this.editor.current);
-	}
-
-	componentDidMount() {
-		console.log("Editor did mount");		
-	}
+	}	
 
     onChange = (editor) => {
         this.inputTimeout = null;
@@ -112,77 +96,60 @@ class AceEditorContainer extends React.Component<EditorProps> {
 			this.inputTimeout = setTimeout(() => {
 				let modified = true;
 
-				const content = this.editor.current.getValue(); 
+				const content = this.editor.getValue(); 
+				if (!content) return;
 
 				if (this.props.fso.orgContent === content) {
 					modified = false;
 				}
-
 				this.props.updateFileState({...this.props.fso, content, modified});
 			}, 500);
 		});
     }
 	
-	addActionsAndCommands = (editor) => {
-		console.log("We are here");
+	addActionsAndCommands = (editor: monaco.editor.IStandaloneCodeEditor) => {
+
 	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
 			clearTimeout(this.inputTimeout);
-			this.props.updateFileState({...this.props.fso, content: this.editor.current.getValue(), modified: true});
+			this.props.updateFileState({...this.props.fso, content: this.editor.getValue(), modified: true});
 			this.props.save();
 		});
-	    
-	    editor.addAction({
-	        id: "split_vertically",
-	        label: "Split Vertically",
-	        precondition: null,
-	        keybindingContext: null,
-	        contextMenuGroupId: '2_splitting',
-	        run: (editor) => {
-	            this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editor.id, this.props.fso.id)
-	        }
-	    })
-	}
 
-	restoreEditorState = () => {
-		if (this.props.editorState) {
-			if (this.props.editorState.viewState) {
-				this.editor.current.restoreViewState(this.props.editorState.viewState);
-			}
-			setTimeout(() => {
-				this.editor.current.focus();
-			}, 100);			
-		}		
+		if (this.props.editorId) {
+			editor.addAction({
+				id: "split_vertically",
+				label: "Split Vertically",
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: '2_splitting',
+				run: (editor) => {
+					this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editorId, this.props.fso.id)
+				}
+			});
+		}			
 	}
 
 	handleEditorDidMount = (_, editor) => {     
-		this.editor.current = editor;
-		this.addActionsAndCommands(this.editor.current);
-        this.onChange(this.editor.current);      
+		this.editor = editor;
+		this.addActionsAndCommands(this.editor);
+        this.onChange(this.editor);      
 	};
 
 	render() {
-		const {classes, fso, editor} = this.props;		
-		fileOpened(fso.path); 
-
-		console.log("Rendering editor");
-
+		const {fso, viewState} = this.props;
+				
 		const model = MonacoManager.getModel(this.props.fso.path);
-		model.setValue(fso.content);
-		console.log("Before");
-		const viewState = this.props.editorState?.viewState;
-		console.log("View state: ", viewState);
-
+		if (fso.content) {
+			model.setValue(fso.content);
+		}
+		
 		return (
 			<React.Fragment>
-				<Editor height="100%" model={model} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
+				<MonacoEditor height="100%" model={model} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
 			</React.Fragment>
 		);
 	}
 }
-
-AceEditorContainer.propTypes = {
-	fso: PropTypes.object.isRequired
-};
 
 export default connect(
 	mapState,

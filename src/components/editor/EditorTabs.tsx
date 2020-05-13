@@ -5,6 +5,9 @@ import {withStyles, styled, Styles} from "@material-ui/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import ClearIcon from "@material-ui/icons/Clear";
+
+import {FileSystemObject} from "../../types";
+import {Editor} from "../../types/editor";
 import AceEditorContainer from "./AceEditorContainer";
 import {showFile, closeTab} from "../../actions/editor";
 import {getFileById} from "../../store/utils";
@@ -45,22 +48,29 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class EditorTabs extends React.Component {
-	openEditors: any[];
+interface EditorTabsProps {
+	classes: any;
+	editor: Editor;
+	files: FileSystemObject[]
+
+	showFile: (id: string, editorId: string) => void;
+	closeTab: (fileId: string, editorId: string) => void;
+}
+
+class EditorTabs extends React.Component<EditorTabsProps> {
+	openFsos: {path: string, viewState: monaco.editor.ICodeEditorViewState}[];
 	constructor(props) {
 		super(props);
-		this.openEditors = [];
+		this.openFsos = [];
 	}
 
-	keepEditorState = (editor) => {
-		const editorState = this.openEditors.find(e => e.path === editor.getModel().uri.path);
-		if (editorState) {
-			editorState.viewState = editor.saveViewState();
+	keepEditorState = (editor: monaco.editor.IStandaloneCodeEditor) => {
+		const path = editor.getModel().uri.path;
+		const openFso = this.openFsos.find(e => e.path === path);
+		if (openFso) {
+			openFso.viewState = editor.saveViewState();
 		} else {
-			this.openEditors.push({
-				path: editor.getModel().uri.path,
-				viewState: editor.saveViewState(),
-			});
+			this.openFsos.push({path, viewState: editor.saveViewState()});
 		}
 	}
 
@@ -104,8 +114,8 @@ class EditorTabs extends React.Component {
 		    const link = `data:${getMimeType(file.path)};base64,${file.content}`
 			content = <img src={link} />;
 		} else {
-			const editorState = this.openEditors.find(editor => editor.path === file.path);
-			content = <AceEditorContainer editorState={editorState} keepEditorState={this.keepEditorState} container={this} fileId={activeTab} />;
+			const state = this.openFsos.find(editor => editor.path === file.path);
+			content = <AceEditorContainer viewState={state?.viewState} keepEditorState={this.keepEditorState} fileId={activeTab} editorId={editor.id}/>;
 		}
 
 		return (
@@ -118,10 +128,6 @@ class EditorTabs extends React.Component {
 		);
 	}
 }
-
-EditorTabs.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(
 	mapState,

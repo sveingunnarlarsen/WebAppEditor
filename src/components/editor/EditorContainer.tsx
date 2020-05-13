@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {withStyles} from "@material-ui/styles";
 import SplitPane from "react-split-pane";
 
+import {EditorContainer as EditorContainerType} from "../../types/editor";
 import EditorTop from "./EditorTop";
 import EditorTabs from "./EditorTabs";
 
@@ -18,11 +19,17 @@ const styles = {
 };
 
 const mapState = (state, ownProps) => {
-    const container = state.editor.containers.find(c => c.id === ownProps.containerId);
+    const container: EditorContainerType = state.editor.containers.find(c => c.id === ownProps.containerId);
     return {container};
 };
 
-class EditorContainer extends React.Component {
+interface EditorContainerProps {
+	classes: any;
+	containerId: string;
+	container: EditorContainerType;
+}
+
+class EditorContainer extends React.Component<EditorContainerProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -54,9 +61,5 @@ class EditorContainer extends React.Component {
 		return <div className={classes.editorContainer}>{content}</div>;
 	}
 }
-
-EditorContainer.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState)(withStyles(styles)(EditorContainer));
