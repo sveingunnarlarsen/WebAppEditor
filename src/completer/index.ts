@@ -26,7 +26,7 @@ const client: LanguageClientType = new LanguageClient();
                 client.initialize(appId);
                 console.log('LanguageClient reconnected');
             }
-        })
+        });
 
 	} catch (e) {
 		console.log("Error connecting to language server", e);
@@ -66,7 +66,7 @@ function handleChange() {
 export async function fileDeleted(path: string) {
     if (client.isReady) {
         try {
-            client.textDocumentDeleted(path);   
+            await client.textDocumentDeleted(path);   
             MonacoManager.deleteModel(path);
         } catch (e) {
             console.log("Language client error", e);
@@ -77,7 +77,7 @@ export async function fileDeleted(path: string) {
 export async function fileCreated(path: string, type: 'file' | 'foler' = 'file', content: string = "") {
     if (client.isReady) {
         try {
-            client.textDocumentCreated(path, type, content);
+            await client.textDocumentCreated(path, type, content);
             MonacoManager.createModel({path, type, content});
         } catch (e) {
             console.log("Language client error", e);
@@ -88,7 +88,7 @@ export async function fileCreated(path: string, type: 'file' | 'foler' = 'file',
 export async function fileOpened(path: string) {
     if (client.isReady) {
         try {            
-			client.textDocumentOpened(path);
+			await client.textDocumentOpened(path);
         } catch (e) {
             console.log("Language client error: ", e);
         }
