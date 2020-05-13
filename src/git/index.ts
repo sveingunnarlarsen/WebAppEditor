@@ -13,7 +13,7 @@ let options: any = {enabled: true, level: 2};
 const forcedChalk = new chalk.constructor(options);
 
 class GitEmitter extends EventTarget {
-	isInitializing: false;
+	isInitializing: boolean;
 
 	start() {
 		this.isInitializing = true;
@@ -390,7 +390,7 @@ class GitCommand {
 				}
 				return "Switching branches is not supported yet";
 				//await git.checkout({dir: currentGitDir, ref: arg});
-			} else {
+			} else {				
 				// TODO: Check that the filepath is actually a file path.
 				// await git.fastCheckout({fs, dir: currentGitDir, force: true, filepaths: [arg]});
 				// await syncFilesFromFS(arg);

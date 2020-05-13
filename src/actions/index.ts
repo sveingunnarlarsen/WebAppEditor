@@ -57,6 +57,12 @@ export function resizeTerminal() {
 	};
 }
 
+export function updateEditors() {
+	return {
+		type: Actions.UPDATE_EDITORS
+	}
+}
+
 export function openDialog(dialog: DialogType, data?) {
 	return function(dispatch, getState) {
 	    if (dialog === DialogType.PROJECT_LIST) {

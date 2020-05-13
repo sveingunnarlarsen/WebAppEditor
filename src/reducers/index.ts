@@ -14,6 +14,7 @@ const initialState: AppEditorState = {
 	toolResized: 0,
 	editorResized: 0,
 	terminalResized: 0,
+	updateEditors: 0,
 	isCompiling: false,
 	modules: [],
 	isUpdatingNpm: false,
@@ -188,6 +189,15 @@ function terminalResized(state = initialState.terminalResized, action) {
 	return state;
 }
 
+function updateEditors(state = initialState.updateEditors, action) {
+	if (action.type === Actions.UPDATE_EDITORS) {
+		return state + 1;
+	} else if (action.type === Actions.RESET) {
+		return initialState.updateEditors;
+	}
+	return state;
+}
+
 const rootReducer = combineReducers({
 	visibleTool,
 	selectedNode,
@@ -196,6 +206,7 @@ const rootReducer = combineReducers({
 	toolResized,
 	editorResized,
 	terminalResized,
+	updateEditors,
 	isCompiling,
 	modules,
 	isUpdatingNpm,

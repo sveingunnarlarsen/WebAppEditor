@@ -21,13 +21,15 @@ const mapState = (state, ownProps) => {
 		return {
 			fso,
 			editor: ownProps.container.props.editor,
-			editorResized: state.editorResized
+			editorResized: state.editorResized,
+			updateEditors: state.updateEditors,
 		};
 	} else {
 		return {
 			fso,
 			editor: {id: "in_dialog"},
-			editorResized: state.editorResized
+			editorResized: state.editorResized,
+			updateEditors: state.updateEditors,
 		};
 	}
 };
@@ -54,6 +56,22 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
+		if (this.props.fso.id !== nextProps.fso.id) {
+			if (this.props.keepEditorState) {
+				this.props.keepEditorState(this.editor.current);
+			}
+			return true;
+		}
+		if (this.props.editorResized != nextProps.editorResized) {
+			return true;
+		}
+		if (this.props.updateEditors != nextProps.updateEditors) {
+			console.log("Updating editor");
+			return true;
+		}
+		console.log("not updating editor");
+		return false;
+		/*
 		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized) {
 			if (this.props.keepEditorState) {
 				this.props.keepEditorState(this.editor.current);
@@ -62,6 +80,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 		} else {
 			return false;
 		}
+		*/
 	}
 
 	componentDidUpdate() {
@@ -148,6 +167,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 		console.log("Rendering editor");
 
 		const model = MonacoManager.getModel(this.props.fso.path);
+		model.setValue(fso.content);
 		console.log("Before");
 		const viewState = this.props.editorState?.viewState;
 		console.log("View state: ", viewState);

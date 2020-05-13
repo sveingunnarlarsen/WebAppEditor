@@ -1,7 +1,7 @@
 import {Actions} from "../types";
 import {DialogType} from "../types/dialog";
 import {syncFile, removeFile} from "../git";
-import {openDialog} from "./";
+import {openDialog, updateEditors} from "./";
 import {closeFile} from "./editor";
 import {throwError, handleAjaxError} from "./error";
 import {extractFileMeta, destructFileServerProps, getFolderPath} from "./utils";
@@ -15,6 +15,11 @@ const headers = {
 export function save(filesToSave = []) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
+
+        let shouldUpdateEditors = false; 
+        if (filesToSave.length > 0) {
+            shouldUpdateEditors = true;
+        }
 
 		const app = getState().app;
 		if (filesToSave.length < 1) {
@@ -39,6 +44,7 @@ export function save(filesToSave = []) {
 			    return files;
 			})
 			.then(files => dispatch(receiveSave(files)))
+            .then(() => shouldUpdateEditors ? dispatch(updateEditors()) : null)
 			.catch(error => handleAjaxError(error, dispatch));
 	};
 }
