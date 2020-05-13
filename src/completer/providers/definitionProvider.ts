@@ -1,5 +1,5 @@
-import "../../types/monaco";
 import * as ts from 'typescript';
+import {getFileByPath} from "../../store/utils";
 import {LanguageClient as LanguageClientType} from "../../types/language-client";
 
 export class DefinitionProvider implements monaco.languages.DefinitionProvider {
@@ -30,10 +30,15 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
             position.column - 1,
         );
 
-        if (response.result) {
+        if (response.result) {            
             
             const locations = response.result.map<monaco.languages.Location>(r => {
-                
+                const uri = monaco.Uri.parse(r.fileName);                
+                const fileContent = getFileByPath(r.fileName);
+                const sourceFile = ts.createSourceFile(r.fileName, fileContent, ts.ScriptTarget.ES2018);
+
+                //const p = ts.getLineAndCharacterOfPosition(sourceFile, r.textSpan)
+                return undefined;
             });
 
             /*

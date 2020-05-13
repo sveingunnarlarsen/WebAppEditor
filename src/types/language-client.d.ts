@@ -1,4 +1,4 @@
-import * as protocol from './messages';
+import * as protocol from './language-client-protocol';
 export declare enum ClientEvent {
     Connected = "connected",
     Disconnected = "disconnected",

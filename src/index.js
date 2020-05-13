@@ -1,4 +1,6 @@
 import "babel-polyfill";
+import "./types/monaco";
+import "./monaco";
 import "./terminal";
 import "./git";
 

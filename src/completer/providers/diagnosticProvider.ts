@@ -1,8 +1,8 @@
-import "../../types/monaco";
+import MonacoManager from "../../monaco";
 
-export function provideDiagnostics(result, monaco) {
-		const markerData = result.diagnostics.map(d => new ModelMarker(d));			
-		monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "planet9_typescript", markerData);
+export function provideDiagnostics(result) {
+    const markerData = result.diagnostics.map(d => new ModelMarker(d));			
+    MonacoManager.setModelMarkers(result.path, markerData);
 }
 
 class ModelMarker implements monaco.editor.IMarkerData {

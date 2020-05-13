@@ -105,7 +105,7 @@ class EditorTabs extends React.Component {
 			content = <img src={link} />;
 		} else {
 			const editorState = this.openEditors.find(editor => editor.path === file.path);
-			content = <AceEditorContainer editorState={editorState} keepEditorState={this.keepEditorState} key={activeTab} container={this} fileId={activeTab} />;
+			content = <AceEditorContainer editorState={editorState} keepEditorState={this.keepEditorState} container={this} fileId={activeTab} />;
 		}
 
 		return (

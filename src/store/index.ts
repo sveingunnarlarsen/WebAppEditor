@@ -1,11 +1,11 @@
 //import reduxLogger from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
-import {createStore, applyMiddleware} from "redux";
+import {createStore, applyMiddleware, Store} from "redux";
 
 import rootReducer from "../reducers/index";
 import {getMasterData, getWebApps} from '../actions/app';
 
-const store = createStore(
+const store: Store<any> = createStore(
     rootReducer,
     applyMiddleware(
         thunkMiddleware,

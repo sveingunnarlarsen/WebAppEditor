@@ -5,6 +5,7 @@ import {reset, openDialog} from "./";
 import {getNpmModules} from "./npm";
 import {throwError, handleAjaxError, handleCompileError} from "./error";
 import {convertApiWebAppData, destructAppServerProps} from "./utils";
+import MonacoManager from "../monaco";
 
 const headers = {
 	"Content-Type": "application/json"
@@ -61,6 +62,7 @@ export function getProject(id: string) {
 			.then(response => response.json())
 			.then(json => convertApiWebAppData(json))
 			.then(app => dispatch(receiveWebApp(app)))
+            .then(() => MonacoManager.loadProject(getState))
 			.catch(error => handleAjaxError(error, dispatch))
 			.finally(() => dispatch(getNpmModules()))
     }

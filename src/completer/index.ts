@@ -1,5 +1,5 @@
 import store from "../store";
-import {monaco} from "@monaco-editor/react";
+import MonacoManager from "../monaco";
 import {LanguageClient as LanguageClientType, ClientEvent} from "../types/language-client";
 import {provideDiagnostics} from "./providers/diagnosticProvider";
 import {CompletionItemProvider} from "./providers/completionItemProvider";
@@ -21,6 +21,24 @@ const client: LanguageClientType = new LanguageClient();
 	if (client.isConnected) {
 		store.subscribe(handleChange);
 	}
+
+    const monacoInstance = await MonacoManager.getInstance();
+
+    monacoInstance.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: true,
+        noSyntaxValidation: true,
+        noSuggestionDiagnostics: true,        
+    });
+    
+    window.monaco = monacoInstance;
+    monacoInstance.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
+    monacoInstance.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
+    monacoInstance.languages.registerHoverProvider('typescript', new HoverProvider(client));
+
+	client.on('publishDiagnostics', (result) => {
+        console.log("Markers: ", result);
+		provideDiagnostics(result);
+	});
 })();
 
 function handleChange() {
@@ -31,34 +49,11 @@ function handleChange() {
 	}
 }
 
-monaco.init().then(monaco => {                            
-    /*
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-        noLib: true,
-    });
-    */    
-
-    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: true,
-        noSyntaxValidation: true,
-        noSuggestionDiagnostics: true,        
-    });
-    
-    window.monaco = monaco;
-    monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
-    monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
-    monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
-
-	client.on('publishDiagnostics', (result) => {
-        console.log("Markers: ", result);
-		provideDiagnostics(result, monaco);
-	});
-});
-
 export async function fileDeleted(path: string) {
     if (client.isReady) {
         try {
-            await client.textDocumentDeleted(path);   
+            client.textDocumentDeleted(path);   
+            MonacoManager.deleteModel(path);
         } catch (e) {
             console.log("Language client error", e);
         }
@@ -68,7 +63,8 @@ export async function fileDeleted(path: string) {
 export async function fileCreated(path: string, type: 'file' | 'foler' = 'file', content: string = "") {
     if (client.isReady) {
         try {
-            await client.textDocumentCreated(path, type, content);   
+            client.textDocumentCreated(path, type, content);
+            MonacoManager.createModel({path, type, content});
         } catch (e) {
             console.log("Language client error", e);
         }

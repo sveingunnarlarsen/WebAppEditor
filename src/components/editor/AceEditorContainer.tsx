@@ -3,9 +3,7 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
-import {monaco} from "@monaco-editor/react";
-import Editor from "@monaco-editor/react";
-
+import Editor from "./monaco/MonacoEditor";
 import EditorContextMenu from "./EditorContextMenu";
 import {updateFileState, save} from "../../actions/file";
 import {openDialog} from "../../actions";
@@ -15,11 +13,7 @@ import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
 import {fileOpened} from "../../completer/index";
-
-let monacoRef;
-monaco.init().then(monaco => {
-	monacoRef = monaco;
-})
+import MonacoManager from "../../monaco";
 
 const mapState = (state, ownProps) => {
 	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
@@ -60,8 +54,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		console.log("Should component update");
 		if (this.props.fso.id !== nextProps.fso.id || this.props.editorResized !== nextProps.editorResized) {
+			if (this.props.keepEditorState) {
+				this.props.keepEditorState(this.editor.current);
+			}			
 			return true;
 		} else {
 			return false;
@@ -70,19 +66,23 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
 	componentDidUpdate() {
 		if (this.editor.current) {
-			this.editor.current.layout();
-            const model = this.editor.current.getModel();
-		    model.uri.path = this.props.fso.path;
-			fileOpened(model.uri.path);
+			this.editor.current.layout();			
+			fileOpened(this.props.fso.path);
+			if (this.props.editorState) {
+				setTimeout(() => {
+					this.editor.current.focus();
+				}, 100);
+			}
 		}
 	}
 
 	componentWillUnmount() {
-		this.props.keepEditorState(this.editor.current);
+		console.log("Component unmnounting");
+		//this.props.keepEditorState(this.editor.current);
 	}
 
 	componentDidMount() {
-		console.log("Editor did mount");
+		console.log("Editor did mount");		
 	}
 
     onChange = (editor) => {
@@ -105,7 +105,8 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 	
 	addActionsAndCommands = (editor) => {
-	    editor.addCommand(monacoRef.KeyMod.CtrlCmd | monacoRef.KeyCode.KEY_S, () => {
+		console.log("We are here");
+	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
 			clearTimeout(this.inputTimeout);
 			this.props.updateFileState({...this.props.fso, content: this.editor.current.getValue(), modified: true});
 			this.props.save();
@@ -123,21 +124,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	    })
 	}
 
-	handleEditorDidMount = (_, editor) => {     
-
-		console.log("monaco ref: ", monacoRef);
-
-		// editor.setModel(null);
-		// editor.setModel(monacoRef.editor.createModel(this.props.fso.content, 'typescript', monacoRef.Uri.parse(this.props.fso.path)));		
-
-		this.editor.current = editor;
-		window.currentEditor = editor;
-		const model = this.editor.current.getModel();
-		model.uri.path = this.props.fso.path;
-
-		this.addActionsAndCommands(this.editor.current);
-        this.onChange(this.editor.current);      
-
+	restoreEditorState = () => {
 		if (this.props.editorState) {
 			if (this.props.editorState.viewState) {
 				this.editor.current.restoreViewState(this.props.editorState.viewState);
@@ -146,17 +133,28 @@ class AceEditorContainer extends React.Component<EditorProps> {
 				this.editor.current.focus();
 			}, 100);			
 		}		
+	}
+
+	handleEditorDidMount = (_, editor) => {     
+		this.editor.current = editor;
+		this.addActionsAndCommands(this.editor.current);
+        this.onChange(this.editor.current);      
 	};
 
 	render() {
-		const {classes, fso, editor} = this.props;
-        console.log(getFileLanguage(fso.path));
+		const {classes, fso, editor} = this.props;		
 		fileOpened(fso.path); 
+
 		console.log("Rendering editor");
+
+		const model = MonacoManager.getModel(this.props.fso.path);
+		console.log("Before");
+		const viewState = this.props.editorState?.viewState;
+		console.log("View state: ", viewState);
 
 		return (
 			<React.Fragment>
-				<Editor height="100%" language={getFileLanguage(fso.path)} theme="dark" value={fso.content} editorDidMount={this.handleEditorDidMount} />
+				<Editor height="100%" model={model} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
 			</React.Fragment>
 		);
 	}

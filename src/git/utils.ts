@@ -20,12 +20,9 @@ export async function writeFileContent(pfs, filePath: string, content: string) {
 
 export async function fsExists(pfs, path) {
     try {
-        console.log("Checking if path exists: ", path);
         const res = await pfs.stat(path);
-        console.log("id does exist: ", res);
         return true;
     } catch (e) {
-        console.log("does not exist");
         return false;
     }
 }

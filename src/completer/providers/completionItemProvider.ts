@@ -18,7 +18,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         token: monaco.CancellationToken,        
     // @ts-ignore
     ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
-
+        
         if (!this.languageClient.isReady) return;
         
 		this.languageClient.textDocumentChanged(

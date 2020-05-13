@@ -30,7 +30,11 @@
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
+    "@types/redux-logger": "^3.0.7"
+  },
   "author": "sveingunnarlarsen@gmail.com",
   "license": "ISC"
 }

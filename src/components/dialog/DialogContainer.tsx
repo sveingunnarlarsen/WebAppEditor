@@ -29,8 +29,6 @@ import NpmInstall from "./NpmInstall";
 import {DialogType} from "../../types/dialog";
 import {closeDialog} from "../../actions";
 
-import {someFunc} from "../../helpers/utils";
-
 const {ESC} = Keys;
 
 const styles = {
