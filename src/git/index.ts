@@ -457,7 +457,7 @@ class GitCommand {
 			corsProxy,
 			ref,
 			singleBranch: true,
-			fastForwardOnly: true,
+			fastForwardOnly: false,
 			author: {
 				name: configUser.name,
 				email: configUser.email
