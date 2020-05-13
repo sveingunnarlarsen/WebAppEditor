@@ -21,7 +21,7 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         
         if (!this.languageClient.isReady) return;
         
-		this.languageClient.textDocumentChanged(
+		await this.languageClient.textDocumentChanged(
 			model.uri.path,
 			model.getValue()
 		);

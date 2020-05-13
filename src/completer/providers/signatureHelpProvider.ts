@@ -14,13 +14,13 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
         model: monaco.editor.ITextModel,
         position: monaco.Position,
         token: monaco.CancellationToken,    
-        context: monaco.languages.CompletionContext,
+        context: monaco.languages.SignatureHelpContext,
         // @ts-ignore
     ): monaco.languages.ProviderResult<monaco.languages.SignatureHelpResult> {
 
         if (!this.languageClient.isReady) return;
 
-        this.languageClient.textDocumentChanged(
+        await this.languageClient.textDocumentChanged(
             model.uri.path,
             model.getValue(),
         );
