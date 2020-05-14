@@ -15,7 +15,7 @@ import {DialogType} from "../../types/dialog";
 import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
-import {fileOpened} from "../../completer/index";
+import {fileOpened, fileUpdated} from "../../completer/index";
 import MonacoManager from "../../monaco";
 
 const mapState = (state, ownProps) => {
@@ -103,6 +103,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 					modified = false;
 				}
 				this.props.updateFileState({...this.props.fso, content, modified});
+				fileUpdated(this.props.fso);
 			}, 500);
 		});
     }

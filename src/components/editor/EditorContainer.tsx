@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
-import {withStyles} from "@material-ui/styles";
+import { connect } from "react-redux";
+import { withStyles } from "@material-ui/styles";
 import SplitPane from "react-split-pane";
 
-import {EditorContainer as EditorContainerType} from "../../types/editor";
+import { resizeEditor } from "../../actions";
+import { EditorContainer as EditorContainerType } from "../../types/editor";
 import EditorTop from "./EditorTop";
 import EditorTabs from "./EditorTabs";
 
@@ -18,15 +19,21 @@ const styles = {
 	}
 };
 
+function mapDispatch(dispatch) {
+	return {
+		resizeEditor: () => dispatch(resizeEditor()),
+	};
+}
 const mapState = (state, ownProps) => {
-    const container: EditorContainerType = state.editor.containers.find(c => c.id === ownProps.containerId);
-    return {container};
+	const container: EditorContainerType = state.editor.containers.find(c => c.id === ownProps.containerId);
+	return { container };
 };
 
 interface EditorContainerProps {
 	classes: any;
 	containerId: string;
 	container: EditorContainerType;
+	resizeEditor: () => void;
 }
 
 class EditorContainer extends React.Component<EditorContainerProps> {
@@ -43,13 +50,15 @@ class EditorContainer extends React.Component<EditorContainerProps> {
 	}
 
 	render() {
-		const {classes, container} = this.props;
-		const {editor1, editor2, split} = container;
-		
+		const { classes, container } = this.props;
+		const { editor1, editor2, split } = container;
+
 		let content;
 		if (editor1 && editor2) {
 			content = (
-				<SplitPane split={split} defaultSize={"50%"}>
+				<SplitPane split={split} defaultSize={"50%"} onDragFinished={() => {
+					this.props.resizeEditor();
+				}}>
 					{this.createEditor(editor1)}
 					{this.createEditor(editor2)}
 				</SplitPane>
@@ -62,4 +71,4 @@ class EditorContainer extends React.Component<EditorContainerProps> {
 	}
 }
 
-export default connect(mapState)(withStyles(styles)(EditorContainer));
+export default connect(mapState, mapDispatch)(withStyles(styles)(EditorContainer));

@@ -15,7 +15,7 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
         position: monaco.Position,
         token: monaco.CancellationToken,
     // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.Definition | monaco.languages.LocationLink[]> {                
+    ): monaco.languages.ProviderResult<monaco.languages.Definition | monaco.languages.LocationLink[]> {      
 
         if (!this.languageClient.isReady) return;
 
@@ -30,33 +30,16 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
             position.column - 1,
         );
 
-        if (response.result) {            
-            
+        if (response.result) {      
             const locations = response.result.map<monaco.languages.Location>(r => {
-                const uri = monaco.Uri.parse(r.fileName);                
-                const fileContent = getFileByPath(r.fileName);
+                const uri = monaco.Uri.parse(r.fileName);
+                const fileContent = getFileByPath(r.fileName).content;
                 const sourceFile = ts.createSourceFile(r.fileName, fileContent, ts.ScriptTarget.ES2018);
-
-                //const p = ts.getLineAndCharacterOfPosition(sourceFile, r.textSpan)
-                return undefined;
-            });
-
-            /*
-            const locations = response.result.map<vs.Location>(r => {
-                const uri = vs.Uri.parse(`memfs://${r.fileName}`);
-                const sourceFile = ts.createSourceFile(
-                    r.fileName,
-                    this.fs.readFile(uri).toString(),
-                    ts.ScriptTarget.ES2018,
-                );
                 const p = ts.getLineAndCharacterOfPosition(sourceFile, r.textSpan.start);
-
-                const range = new vs.Range(p.line, p.character, p.line, p.character + r.textSpan.length);
-
-                return { range, uri } as vs.Location;
+                const range = new monaco.Range(p.line + 1, p.character + 1, p.line + 1, (p.character + r.textSpan.length) + 1);
+                return { range, uri }
             });
-            */
-            return undefined;
+            return locations;
         }
         return undefined;
     }

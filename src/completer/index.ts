@@ -5,8 +5,10 @@ import {provideDiagnostics} from "./providers/diagnosticProvider";
 import {CompletionItemProvider} from "./providers/completionItemProvider";
 import {SignatureHelpProvider} from "./providers/signatureHelpProvider";
 import {HoverProvider} from "./providers/hoverProvider";
+import {DefinitionProvider} from "./providers/definitionProvider";
 
 let appId;
+//@ts-ignore
 const client: LanguageClientType = new LanguageClient();
 
 (async function() {
@@ -37,6 +39,7 @@ const client: LanguageClientType = new LanguageClient();
 	}
 
     const monacoInstance = await MonacoManager.getInstance();
+    window.monaco = monacoInstance;
 
     monacoInstance.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
@@ -44,10 +47,11 @@ const client: LanguageClientType = new LanguageClient();
         noSuggestionDiagnostics: true,        
     });
     
-    window.monaco = monacoInstance;
     monacoInstance.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
     monacoInstance.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
     monacoInstance.languages.registerHoverProvider('typescript', new HoverProvider(client));
+    monacoInstance.languages.registerDefinitionProvider('typescript', new DefinitionProvider(client));
+
 
 	client.on('publishDiagnostics', (result) => {
         console.log("Markers: ", result);
@@ -61,6 +65,16 @@ function handleChange() {
 		client.initialize(appId);
 		console.log("Language client initialized for project", appId);
 	}
+}
+
+export async function fileUpdated({path, content} : {path: string, content: string}) {
+    if (client.isReady) {
+        try {
+            await client.textDocumentChanged(path, content);
+        } catch (e) {
+            console.log("Language client error", e);
+        }
+    }
 }
 
 export async function fileDeleted(path: string) {
