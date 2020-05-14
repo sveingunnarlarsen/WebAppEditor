@@ -1,5 +1,5 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -10,7 +10,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
-import {createProject} from '../../actions/app';
+import { createProject } from '../../actions/app';
 
 function mapDispatch(dispatch) {
 	return {
@@ -18,11 +18,12 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class CreateProject extends React.Component {
+class CreateProject extends React.Component<> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			type: "react",
+			template: "react",
 			name: "",
 			description: "",
 			remote: ""
@@ -31,7 +32,13 @@ class CreateProject extends React.Component {
 
 	updateType = e => {
 		this.setState({
-			type: e.target.value
+			type: e.target.value,
+			template: e.target.value
+		});
+	};
+	updateTemplate = e => {
+		this.setState({
+			template: e.target.value
 		});
 	};
 	updateName = e => {
@@ -57,20 +64,34 @@ class CreateProject extends React.Component {
 	};
 
 	render() {
-		const {close} = this.props;
-		const {type, name, description, remote} = this.state;
+		const { close } = this.props;
+		const { type, template, name, description, remote } = this.state;
 		return (
 			<React.Fragment>
 				<DialogTitle>New Project</DialogTitle>
 				<DialogContent>
 					<form onSubmit={this.handleSubmit}>
-				        <InputLabel shrink>
-                            Type
+						<InputLabel shrink>
+							Type
                         </InputLabel>
 						<Select fullWidth value={type} onChange={this.updateType}>
 							<MenuItem value={"react"}>React</MenuItem>
 							<MenuItem value={"vue"}>Vue</MenuItem>
 						</Select>
+						<InputLabel shrink>
+							Template
+						</InputLabel>
+						{type === 'react' &&
+							<Select fullWidth value={template} onChange={this.updateTemplate}>
+								<MenuItem value={"react-typescript"}>React Typescript</MenuItem>
+								<MenuItem value={"react"}>Basic react</MenuItem>
+							</Select>
+						}
+						{type === 'vue' &&
+							<Select fullWidth value={template} onChange={this.updateTemplate}>
+								<MenuItem value={"vue"}>Basic vue</MenuItem>
+							</Select>
+						}
 						<TextField
 							value={name}
 							onChange={this.updateName}
