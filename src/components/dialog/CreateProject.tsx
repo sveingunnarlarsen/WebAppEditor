@@ -18,7 +18,7 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class CreateProject extends React.Component<> {
+class CreateProject extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
