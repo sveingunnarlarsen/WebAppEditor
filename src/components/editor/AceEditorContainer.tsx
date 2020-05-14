@@ -139,7 +139,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	render() {
 		const {fso, viewState} = this.props;
 				
-		const model = MonacoManager.getModel(this.props.fso.path);
+		const model = MonacoManager.getModel(this.props.fso.path);		
 		if (fso.content) {
 			model.setValue(fso.content);
 		}

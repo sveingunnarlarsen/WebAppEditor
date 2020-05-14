@@ -97,7 +97,13 @@ const Editor =
         model,
         automaticLayout: true,
         ...options,
-      });      
+      }, {
+        openerSerivce: {
+          open: function() {
+            console.log("testfasfasdfasdfasdfdasdfasdfsa");
+          }
+        }
+      });
 
       editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
