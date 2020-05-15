@@ -198,7 +198,7 @@ function updateEditors(state = initialState.updateEditors, action) {
 	return state;
 }
 
-const rootReducer = combineReducers({
+const rootReducer = combineReducers<AppEditorState>({
 	visibleTool,
 	selectedNode,
 	previewVisible,

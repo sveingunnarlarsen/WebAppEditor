@@ -5,7 +5,7 @@ import {createStore, applyMiddleware, Store} from "redux";
 import rootReducer from "../reducers/index";
 import {getMasterData, getWebApps} from '../actions/app';
 
-const store: Store<any> = createStore(
+const store = createStore(
     rootReducer,
     applyMiddleware(
         thunkMiddleware,
