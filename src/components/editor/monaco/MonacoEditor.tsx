@@ -71,22 +71,16 @@ const Editor =
         model,
         automaticLayout: false,
         ...options,
-      }, {
-        editorService: {
-          findModel: function(editor, resource) {
-            debugger;
-            console.log("findModel");
-          },
-          doOpenEditor: function(editor, input) {
-            debugger;
-            console.log("doOpenEditor");
-          },
-          openCodeEditor() {
-            debugger;
-            console.log("openCodeEditor");
-          }
-        }
       });
+
+      editorRef.current._codeEditorService.openCodeEditor = ({resource, options}) => {
+
+          const file = resource.path;
+          const range = options.selection;
+          
+          console.log("Open code editor here");
+          // Add code here to open the code editor.          
+      }
 
       editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
