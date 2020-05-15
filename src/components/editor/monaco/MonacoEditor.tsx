@@ -92,16 +92,30 @@ const Editor =
     }, [options], isEditorReady);
 
     const createEditor = useCallback(_ => {
-      
+
       editorRef.current = monacoRef.current.editor.create(containerRef.current, {
         model,
         automaticLayout: true,
         ...options,
       }, {
-        openerSerivce: {
-          open: function() {
-            console.log("testfasfasdfasdfasdfdasdfasdfsa");
-          }
+        textModelService: {
+          /*
+          createModelReference: function (uri: monaco.Uri) {
+            console.log("In create model reference", uri);
+            const textEditorModel = {
+              load() {
+                return Promise.resolve(textEditorModel)
+              },
+              dispose() { },
+              textEditorModel: monaco.editor.getModel(uri)
+            }
+            return Promise.resolve({
+              object: textEditorModel,
+              dispose() { }
+            })
+          },
+          registerTextModelContentProvider: () => ({ dispose: () => { } })
+          */
         }
       });
 

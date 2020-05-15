@@ -53,7 +53,7 @@ export function createProject({type, template, name, description, remote}: proje
             .then(response => response.json())
             .then(json => convertApiWebAppData(json))
             .then(app => dispatch(receiveWebApp(app)))
-            .then(() => remote ? cloneGitRepo(remote) : null)
+            .then(() => remote ? cloneGitRepo(remote) : MonacoManager.loadProject(getState))
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
