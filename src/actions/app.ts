@@ -7,6 +7,14 @@ import {throwError, handleAjaxError, handleCompileError} from "./error";
 import {convertApiWebAppData, destructAppServerProps} from "./utils";
 import MonacoManager from "../monaco";
 
+type project = {
+    type: 'react' | 'vue',
+    template: 'react' | 'react-typescript' | 'vue',
+    name: string,
+    description: string,
+    remote?: string
+}
+
 const headers = {
 	"Content-Type": "application/json"
 };
@@ -35,12 +43,12 @@ export function getWebApps() {
     }
 }
 
-export function createProject({type, name, description, remote}: {type: 'react' | 'vue', name: string, description: string, remote?: string}) {
+export function createProject({type, template, name, description, remote}: project) {
     return function(dispatch, getState) {
         dispatch(reset());
         dispatch(requestCreateWebApp());
         
-        return createApp({type, name, description, remote})
+        return createApp({type, template, name, description, remote})
             .then(throwError)
             .then(response => response.json())
             .then(json => convertApiWebAppData(json))
@@ -181,12 +189,12 @@ function receiveCompile() {
 	};
 }
 
-function createApp({type, name, description, remote}: {type: 'react' | 'vue', name: string, description: string, remote?: string}) {
+function createApp({type, template, name, description, remote}: project) {
     return fetch(`/api/webapp?fetch=true`, {
         method: "POST",
         headers,
         body: JSON.stringify({
-            template: remote ? null : type,
+            template: remote ? null : template,
             app: {
                 type,
                 name,
