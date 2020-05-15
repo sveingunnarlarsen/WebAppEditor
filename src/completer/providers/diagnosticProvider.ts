@@ -1,7 +1,7 @@
 import MonacoManager from "../../monaco";
 
 export function provideDiagnostics(result) {
-    const markerData = result.diagnostics.map(d => new ModelMarker(d));			
+    const markerData = result.diagnostics.map(d => new ModelMarker({...d, path: result.path}));
     MonacoManager.setModelMarkers(result.path, markerData);
 }
 
@@ -20,8 +20,9 @@ class ModelMarker implements monaco.editor.IMarkerData {
     relatedInformation?: monaco.editor.IRelatedInformation[];
     tags?: monaco.MarkerTag[];
         
-    constructor({code, severity, message, range, source, relatedInformation, tags}: {
+    constructor({code, path, severity, message, range, source, relatedInformation, tags}: {
         code: string;
+        path: string;
         severity: monaco.MarkerSeverity;
         message: string;
 		range: { start: {line: number, character: number}, end: {line: number, character: number}};
@@ -29,7 +30,7 @@ class ModelMarker implements monaco.editor.IMarkerData {
         relatedInformation?: monaco.editor.IRelatedInformation[];
         tags?: monaco.MarkerTag[];
 	}) {
-		this.code = {value: code, link: ""};
+		this.code = {value: code, link: monaco.Uri.parse(path)};
         this.severity = severity;
         this.message = message;
 		this.startLineNumber = range.start.line + 1;

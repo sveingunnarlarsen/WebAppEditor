@@ -45,7 +45,7 @@ class MonacoManager {
             }
 
             store.dispatch(updateFileState({...fso, content, modified}));
-            fileUpdated(fso);
+            fileUpdated({...fso, content});
         }, 500);
 
     }

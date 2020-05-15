@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import MonacoContainer from './MonacoContainer';
 import { monaco } from "@monaco-editor/react";
 
-//import EditorService from "../../../completer/editorService";
-
 const noop = _ => { };
 const useMount = effect => useEffect(effect, []);
 const useUpdate = (effect, deps, applyChanges = true) => {
@@ -49,34 +47,10 @@ const Editor =
     });
 
     useUpdate(_ => {
-      /*
-      if (options.readOnly) {
-        editorRef.current.setValue(value);
-      } else {
-        editorRef.current.executeEdits('', [{
-          range: editorRef.current.getModel().getFullModelRange(),
-          text: value,
-        }]);
-  
-        if (_isControlledMode) {
-          const model = editorRef.current.getModel();
-  
-          model.forceTokenization(model.getLineCount());
-        }
-  
-        editorRef.current.pushUndoStop();
-      }
-      */
-    }, [viewState], isEditorReady);
-
-    useUpdate(_ => {
       editorRef.current.setModel(model);
       if (viewState) {
         editorRef.current.restoreViewState(viewState);
       }
-      // set last value by .setValue method before changing the language
-      // editorRef.current.setValue(value);
-      // monacoRef.current.editor.setModelLanguage(editorRef.current.getModel(), language);
     }, [model, viewState], isEditorReady);
 
     useUpdate(_ => {
@@ -98,44 +72,17 @@ const Editor =
         automaticLayout: false,
         ...options,
       }, {
-        textModelService: {
-          createModelReference: function (uri: monaco.Uri) {
-            
-            console.log("In create model reference", uri);
-                        
-            const textEditorModel = {
-              load() {
-                return Promise.resolve(textEditorModel)
-              },
-              dispose() { },
-              textEditorModel: monacoRef.current.editor.getModel(uri)
-            }
-            
-            console.log(textEditorModel);
-
-            return Promise.resolve({
-              object: textEditorModel,
-              dispose() { }
-            })
-
-          },
-          registerTextModelContentProvider: () => { 
-
-            console.log("registerTextModelContentProvider: ", arguments);
-            
-            return {
-              dispose: () => { } 
-            }  
-          }
-        },
         editorService: {
           findModel: function(editor, resource) {
+            debugger;
             console.log("findModel");
           },
           doOpenEditor: function(editor, input) {
+            debugger;
             console.log("doOpenEditor");
           },
           openCodeEditor() {
+            debugger;
             console.log("openCodeEditor");
           }
         }

@@ -54,7 +54,6 @@ const client: LanguageClientType = new LanguageClient();
 
 
 	client.on('publishDiagnostics', (result) => {
-        console.log("Markers: ", result);
 		provideDiagnostics(result);
 	});
 })();

@@ -67,11 +67,11 @@ class AceEditorContainer extends React.Component<EditorProps> {
 			}
 			return true;
 		}
-		if (this.props.editorResized != nextProps.editorResized) {
-			return true;
-		}
 		if (this.props.updateEditors != nextProps.updateEditors) {
 			return true;
+		}
+		if (this.props.editorResized != nextProps.editorResized) {
+			this.editor.layout();			
 		}
 		return false;
 	}
