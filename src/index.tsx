@@ -1,4 +1,3 @@
-import "react-ace-builds";
 import "babel-polyfill";
 import "./terminal";
 import "./completer";

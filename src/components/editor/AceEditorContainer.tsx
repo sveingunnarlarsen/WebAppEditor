@@ -111,7 +111,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	addActionsAndCommands = (editor: monaco.editor.IStandaloneCodeEditor) => {
 
 	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
-			clearTimeout(this.inputTimeout);
+			//clearTimeout(this.inputTimeout);
 			this.props.updateFileState({...this.props.fso, content: this.editor.getValue(), modified: true});
 			this.props.save();
 		});
@@ -133,7 +133,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	handleEditorDidMount = (_, editor) => {     
 		this.editor = editor;
 		this.addActionsAndCommands(this.editor);
-        this.onChange(this.editor);      
+        //this.onChange(this.editor);  
+		setTimeout(() => {
+			this.editor.layout();    
+		}, 10);		
 	};
 
 	render() {

@@ -1,10 +1,15 @@
-import {monaco as monacoRef} from "@monaco-editor/react";
+import { monaco as monacoRef } from "@monaco-editor/react";
+import { updateFileState } from "../actions/file";
+import { getFileByPath } from "../store/utils";
+import store from "../store";
+import { fileUpdated } from "../completer";
 
 class MonacoManager {
+    private inputTimeout: number;
     private instance: typeof monaco;
     private isReady: boolean;
 
-    private monacoData: {model: monaco.editor.ITextModel, state: monaco.editor.ICodeEditorViewState}[];
+    private monacoData: { model: monaco.editor.ITextModel, state: monaco.editor.ICodeEditorViewState }[];
 
     constructor(monacoRef) {
         this.isReady = false;
@@ -19,33 +24,55 @@ class MonacoManager {
             })
     }
 
-    private disposeAllData() : void {
+    private disposeAllData(): void {
         this.instance.editor.getModels().forEach(model => {
             model.dispose();
         });
     }
 
+    private onModelContentChagned(model: monaco.editor.ITextModel) {
+        clearTimeout(this.inputTimeout);
+
+        this.inputTimeout = setTimeout(() => {
+            let modified = true;
+            const content = model.getValue();
+            if (!content) return;
+
+            const fso = getFileByPath(model.uri.path);
+
+            if (fso.orgContent === content) {
+                modified = false;
+            }
+
+            store.dispatch(updateFileState({...fso, content, modified}));
+            fileUpdated(fso);
+        }, 500);
+
+    }
+
     public async getInstance(): Promise<typeof monaco> {
-        return new Promise((resolve, reject) => {            
+        return new Promise((resolve, reject) => {
             const check = () => {
                 if (this.isReady) {
                     resolve(this.instance);
                 } else {
-                    setTimeout(check, 100);                        
+                    setTimeout(check, 100);
                 }
             }
             check();
         });
-    }        
+    }
 
     public getModel(path) {
         return this.instance.editor.getModel(monaco.Uri.parse(path));
     }
 
     public createModel(fso) {
-        console.log("Creating model", fso);
         if (fso.type === 'file') {
-            this.instance.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+            const model = this.instance.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+            model.onDidChangeContent(() => {
+                this.onModelContentChagned(model);
+            });
         }
     }
 
@@ -60,12 +87,15 @@ class MonacoManager {
             const fileSystemObjects = getState().app.fileSystemObjects;
             fileSystemObjects.forEach(fso => {
                 if (fso.type === 'file') {
-                    this.instance.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
-                }            
+                    const model = this.instance.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+                    model.onDidChangeContent(() => {
+                        this.onModelContentChagned(model);
+                    });
+                }
             });
         } catch (e) {
             console.log("Error creating monaco models", e);
-        }        
+        }
     }
 
     public setModelMarkers(path: string, data) {

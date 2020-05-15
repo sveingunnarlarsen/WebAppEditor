@@ -95,27 +95,49 @@ const Editor =
 
       editorRef.current = monacoRef.current.editor.create(containerRef.current, {
         model,
-        automaticLayout: true,
+        automaticLayout: false,
         ...options,
       }, {
         textModelService: {
-          /*
           createModelReference: function (uri: monaco.Uri) {
+            
             console.log("In create model reference", uri);
+                        
             const textEditorModel = {
               load() {
                 return Promise.resolve(textEditorModel)
               },
               dispose() { },
-              textEditorModel: monaco.editor.getModel(uri)
+              textEditorModel: monacoRef.current.editor.getModel(uri)
             }
+            
+            console.log(textEditorModel);
+
             return Promise.resolve({
               object: textEditorModel,
               dispose() { }
             })
+
           },
-          registerTextModelContentProvider: () => ({ dispose: () => { } })
-          */
+          registerTextModelContentProvider: () => { 
+
+            console.log("registerTextModelContentProvider: ", arguments);
+            
+            return {
+              dispose: () => { } 
+            }  
+          }
+        },
+        editorService: {
+          findModel: function(editor, resource) {
+            console.log("findModel");
+          },
+          doOpenEditor: function(editor, input) {
+            console.log("doOpenEditor");
+          },
+          openCodeEditor() {
+            console.log("openCodeEditor");
+          }
         }
       });
 
