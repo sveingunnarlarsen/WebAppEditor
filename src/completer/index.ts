@@ -6,6 +6,7 @@ import {CompletionItemProvider} from "./providers/completionItemProvider";
 import {SignatureHelpProvider} from "./providers/signatureHelpProvider";
 import {HoverProvider} from "./providers/hoverProvider";
 import {DefinitionProvider} from "./providers/definitionProvider";
+import {ReferenceProvider} from "./providers/referenceProvider";
 
 let appId;
 //@ts-ignore
@@ -51,6 +52,7 @@ const client: LanguageClientType = new LanguageClient();
     monacoInstance.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
     monacoInstance.languages.registerHoverProvider('typescript', new HoverProvider(client));
     monacoInstance.languages.registerDefinitionProvider('typescript', new DefinitionProvider(client));
+    monacoInstance.languages.registerReferenceProvider('typescript', new ReferenceProvider(client));
 
 
 	client.on('publishDiagnostics', (result) => {

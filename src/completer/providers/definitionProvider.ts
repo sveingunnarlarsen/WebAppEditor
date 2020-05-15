@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import {getFileByPath} from "../../store/utils";
 import {LanguageClient as LanguageClientType} from "../../types/language-client";
+import {spanToRange} from "../utils";
 
 export class DefinitionProvider implements monaco.languages.DefinitionProvider {
 
@@ -33,10 +34,7 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
         if (response.result) {      
             const locations = response.result.map<monaco.languages.Location>(r => {
                 const uri = monaco.Uri.parse(r.fileName);
-                const fileContent = getFileByPath(r.fileName).content;
-                const sourceFile = ts.createSourceFile(r.fileName, fileContent, ts.ScriptTarget.ES2018);
-                const p = ts.getLineAndCharacterOfPosition(sourceFile, r.textSpan.start);
-                const range = new monaco.Range(p.line + 1, p.character + 1, p.line + 1, (p.character + r.textSpan.length) + 1);
+                const range = spanToRange(r.textSpan, uri);
                 return { range, uri }
             });
             return locations;

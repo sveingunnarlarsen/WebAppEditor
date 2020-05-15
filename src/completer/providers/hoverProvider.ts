@@ -48,11 +48,8 @@ export class HoverProvider implements monaco.languages.HoverProvider {
                 contents: parts,
                 range: this.getRange(model, position),
             };
-			console.log("Returning hover", hover);
-            window.hoverRef = hover;
             return hover;
         }
-		console.log("Returning hover undefined");
         return undefined;
     }
 
