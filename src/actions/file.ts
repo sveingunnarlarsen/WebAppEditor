@@ -96,7 +96,7 @@ export function deleteFsos(fileSystemObjects) {
             .then(() => {
                 return fileSystemObjects.forEach(file => {
                     removeFile(file.id);
-                    fileDeleted(getFileById(file.id));
+                    fileDeleted(getFileById(file.id).path);
                 });
             })
             .then(() => dispatch(receiveDeleteFiles(fileSystemObjects)))

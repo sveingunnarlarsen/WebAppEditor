@@ -75,7 +75,7 @@ function startModuleUpdate() {
 	};
 }
 
-function endModuleUpdate(result) {
+function endModuleUpdate(result?) {
 	return {
 		type: Actions.END_MODULE_UPDATE,
 		result
