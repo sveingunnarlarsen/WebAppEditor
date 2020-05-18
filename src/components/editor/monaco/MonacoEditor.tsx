@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 
 import MonacoContainer from './MonacoContainer';
 import { monaco } from "@monaco-editor/react";
+import store from "../../../store";
+import { getFileByPath } from "../../../store/utils";
+import { showFile, resetOpenAt } from "../../../actions/editor";
 
 const noop = _ => { };
 const useMount = effect => useEffect(effect, []);
@@ -29,7 +32,7 @@ const themes = {
 };
 
 const Editor =
-  ({ model, viewState, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
+  ({ model, viewState, openFileAt, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
     const [isEditorReady, setIsEditorReady] = useState(false);
     const [isMonacoMounting, setIsMonacoMounting] = useState(true);
     const editorRef = useRef();
@@ -51,7 +54,13 @@ const Editor =
       if (viewState) {
         editorRef.current.restoreViewState(viewState);
       }
-    }, [model, viewState], isEditorReady);
+      if (openFileAt) {
+        console.log("Opening file at: ", openFileAt);
+        editorRef.current.revealRangeInCenter(openFileAt);
+        editorRef.current.setSelection(openFileAt);
+        store.dispatch(resetOpenAt());
+      }
+    }, [model, viewState, openFileAt], isEditorReady);
 
     useUpdate(_ => {
       editorRef.current.setScrollPosition({ scrollTop: line });
@@ -73,22 +82,25 @@ const Editor =
         ...options,
       });
 
-      editorRef.current._codeEditorService.openCodeEditor = ({resource, options}) => {
-
-          const file = resource.path;
-          const range = options.selection;
-          
-          console.log("Open code editor here");
-          // Add code here to open the code editor.          
+      editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
+        const file = getFileByPath(resource.path);        
+        const range = options.selection; 
+        store.dispatch(showFile(file.id, null, range));
       }
 
       editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
       monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
       monacoRef.current.editor.setTheme(theme);
+      if (openFileAt) {
+        console.log("Opening file at(2):", openFileAt);
+        editorRef.current.revealRangeInCenter(openFileAt);
+        editorRef.current.setSelection(openFileAt);
+        store.dispatch(resetOpenAt());
+      }      
 
       setIsEditorReady(true);
-    }, [editorDidMount, model, options, theme]);
+    }, [editorDidMount, model, openFileAt, options, theme]);
 
     useEffect(_ => {
       !isMonacoMounting && !isEditorReady && createEditor();
@@ -115,6 +127,7 @@ Editor.propTypes = {
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   loading: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   options: PropTypes.object,
+  openFileAt: PropTypes.object,
   _isControlledMode: PropTypes.bool,
 };
 

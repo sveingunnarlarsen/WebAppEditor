@@ -1,11 +1,18 @@
 import {EditorActions} from "../types/editor";
 import {SplitDirection} from "../types/editor";
 
-export function showFile(fileId, editorId) {
+export function resetOpenAt() {
+    return {
+        type: EditorActions.RESET_OPEN_AT,
+    }
+}
+
+export function showFile(fileId, editorId, openFileAt?) {
     return {
         type: EditorActions.SHOW_FILE,
         fileId,
         editorId,
+        openFileAt,
     }
 }
 

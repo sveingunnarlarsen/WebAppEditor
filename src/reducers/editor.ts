@@ -9,7 +9,8 @@ export const initState: EditorState = {
 	editors: [],
 	containers: [],
 	showSignatureHelp: false,
-	signatureHelpData: null
+	signatureHelpData: null,
+	openFileAt: null,
 };
 
 function initEditor(draft, fileId) {
@@ -41,7 +42,15 @@ const reset = produce((draft) => {
     return {...initState};
 });
 
-const showFile = produce((draft, fileId, editorId) => {
+const resetOpenAt = produce((draft) => {
+    draft.openFileAt = null;
+});
+
+const showFile = produce((draft, fileId, editorId, openFileAt?) => {
+	if (openFileAt) {
+		draft.openFileAt = openFileAt;
+	}
+
 	if (!draft.activeEditor) {
 		initEditor(draft, fileId);
 	} else {
@@ -189,8 +198,10 @@ export function editor(state = initState, action) {
 	switch (action.type) {
 	    case Actions.RESET:
 	        return reset(state);
+		case EditorActions.RESET_OPEN_AT:
+			return resetOpenAt(state);
 		case EditorActions.SHOW_FILE:
-			return showFile(state, action.fileId, action.editorId);
+			return showFile(state, action.fileId, action.editorId, action.openFileAt);
 		case EditorActions.CLOSE_TAB:
 			return closeTab(state, action.fileId, action.editorId);
 		case EditorActions.CLOSE_FILE:

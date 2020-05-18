@@ -87,6 +87,7 @@ export interface AppSettings {
 		repo: string;
 		branch: string;
 	};
+	projectFolder: string;
 }
 
 export interface ListApp extends DateProps {
@@ -101,18 +102,22 @@ export interface AppState extends ListApp {
 	isFetching: boolean;
 	fileSystemObjects: FileSystemObject[];
 	updateTree: boolean;
-}
-
-export interface AppsState {
-    isFetching: boolean;
-    list: ListApp[];
+	isSaving: boolean;
 }
 
 export interface AppEditorState {
 	visibleTool: Tool;
-	previewVisible: boolean;
-	isCompiling: boolean;
 	selectedNode: string;
+	previewVisible: boolean;
+	commandLineVisible: boolean;
+	toolResized: number;
+	editorResized: number;
+	terminalResized: number;
+	updateEditors: number;
+	isCompiling: boolean;
+	modules: any[];
+	isUpdatingNpm: boolean;
+	isCloning: boolean;
 	resources: any;
 	app: AppState;
 	apps: {
@@ -122,7 +127,8 @@ export interface AppEditorState {
 	editor: EditorState;
 	dialog: {
 		visible: boolean;
-		type: DialogType;
+		type: DialogType | null;
+		data: any;
 	};
-	snackbar: any;
+	snackbar?: any;
 }

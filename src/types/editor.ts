@@ -1,4 +1,5 @@
 export enum EditorActions {
+	RESET_OPEN_AT = "RESET_OPEN_AT",	
     SHOW_FILE = "SHOW_FILE",
     CLOSE_TAB = "CLOSE_TAB",
     CLOSE_FILE = "CLOSE_FILE",
@@ -22,6 +23,7 @@ export interface EditorState {
 	containers: EditorContainer[];
 	showSignatureHelp: boolean;
 	signatureHelpData: any;
+	openFileAt: any | null;
 }
 
 export interface Editor {

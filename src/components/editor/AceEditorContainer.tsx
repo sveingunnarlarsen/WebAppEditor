@@ -19,11 +19,12 @@ import {fileOpened, fileUpdated} from "../../completer/index";
 import MonacoManager from "../../monaco";
 
 const mapState = (state, ownProps) => {
-	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
+	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);	
 	return {
 		fso,
 		editorResized: state.editorResized,
 		updateEditors: state.updateEditors,
+		openFileAt: state.editor.openFileAt,
 	}
 };
 
@@ -41,6 +42,7 @@ interface EditorProps {
 	fso: FileSystemObject;
 	viewState: monaco.editor.ICodeEditorViewState | null;
 	editorId: string | null;
+	openFileAt: any;
 	
 	editorResized: number;
 	updateEditors: number;
@@ -87,31 +89,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
 			}
 		}
 	}	
-
-    onChange = (editor) => {
-        this.inputTimeout = null;
-		editor.onDidChangeModelContent(ev => {						
-			clearTimeout(this.inputTimeout);
-
-			this.inputTimeout = setTimeout(() => {
-				let modified = true;
-
-				const content = this.editor.getValue(); 
-				if (!content) return;
-
-				if (this.props.fso.orgContent === content) {
-					modified = false;
-				}
-				this.props.updateFileState({...this.props.fso, content, modified});
-				fileUpdated(this.props.fso);
-			}, 500);
-		});
-    }
 	
 	addActionsAndCommands = (editor: monaco.editor.IStandaloneCodeEditor) => {
 
 	    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
-			//clearTimeout(this.inputTimeout);
 			this.props.updateFileState({...this.props.fso, content: this.editor.getValue(), modified: true});
 			this.props.save();
 		});
@@ -133,7 +114,6 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	handleEditorDidMount = (_, editor) => {     
 		this.editor = editor;
 		this.addActionsAndCommands(this.editor);
-        //this.onChange(this.editor);  
 		setTimeout(() => {
 			this.editor.layout();    
 		}, 10);		
@@ -141,7 +121,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
 	render() {
 		const {fso, viewState} = this.props;
-				
+						
 		const model = MonacoManager.getModel(this.props.fso.path);		
 		if (fso.content) {
 			model.setValue(fso.content);
@@ -149,7 +129,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 		
 		return (
 			<React.Fragment>
-				<MonacoEditor height="100%" model={model} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
+				<MonacoEditor height="100%" model={model} openFileAt={this.props.openFileAt} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
 			</React.Fragment>
 		);
 	}

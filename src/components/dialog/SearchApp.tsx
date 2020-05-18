@@ -32,6 +32,7 @@ function mapDispatch(dispatch) {
 }
 
 class SearchApp extends React.Component {
+	inputTimeout: number;
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -83,26 +84,20 @@ class SearchApp extends React.Component {
 			});
 		}
 	}
-
-	waitForMoreChanges(content) {
-		setTimeout(() => {
-			const plussOneSecond = new Date().getTime();
-			const diff = plussOneSecond - (this.lastUpdate + 200);
-			if (diff >= 0) {
-				this.updateSearchResult(content);
-			}
-		}, 200);
-	}
 	
 	updateValue = e => {
 	    e.preventDefault();
 		this.setState({
 			value: e.target.value
 		});
-		if (e.target.value.length > 1) {
-	        this.lastUpdate = new Date().getTime();
-	        this.waitForMoreChanges(e.target.value);
-		}
+
+		clearTimeout(this.inputTimeout);
+		const value = e.target.value;
+
+        this.inputTimeout = setTimeout(() => {
+			console.log("Updating search result: ", value);
+			this.updateSearchResult(value);			
+        }, 500);
 	}
 
 	updateSearchResult = value => {
