@@ -46,7 +46,18 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class SideMenu extends React.Component {
+interface SideMenuProps {
+	classes: any;
+	width: any;
+
+	switchTool: (tool: Tool) => void;
+	openSearch: () => void;
+	togglePreview: () => void;
+	closeAllTabs: () => void;
+	toggleCommandLine: () => void;
+}
+
+class SideMenu extends React.Component<SideMenuProps> {
 	constructor(props) {
 		super(props);
 	}

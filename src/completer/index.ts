@@ -55,6 +55,7 @@ const client: LanguageClientType = new LanguageClient();
     monacoInstance.languages.registerReferenceProvider('typescript', new ReferenceProvider(client));
 
 
+    // @ts-ignore
     client.on('publishDiagnostics', (result) => {
         provideDiagnostics(result);
     });

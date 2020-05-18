@@ -1,4 +1,4 @@
-import {Actions} from "../types";
+import {Actions, FileSystemObject} from "../types";
 import {DialogType} from "../types/dialog";
 import {syncFile, removeFile} from "../git";
 import {openDialog, updateEditors} from "./";
@@ -12,19 +12,18 @@ const headers = {
 	"Content-Type": "application/json"
 };
 
-export function save(filesToSave = []) {
+export function save(filesToSave: FileSystemObject[] = []) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
-
+        
+        const app = getState().app;
         let shouldUpdateEditors = false; 
-        if (filesToSave.length > 0) {
-            shouldUpdateEditors = true;
-        }
-
-		const app = getState().app;
+		
 		if (filesToSave.length < 1) {
 			filesToSave = getState().app.fileSystemObjects.filter(f => f.modified);
-		}
+		} else {
+            shouldUpdateEditors = true;
+        }
 		if (filesToSave.length < 1) return;
 
 		return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
@@ -49,7 +48,7 @@ export function save(filesToSave = []) {
 	};
 }
 
-export function createFsos(fileSystemObjects) {
+export function createFsos(fileSystemObjects: FileSystemObject[]) {
     return function(dispatch, getState) {
         dispatch(requestCreateFiles());
         
@@ -77,7 +76,7 @@ export function createFsos(fileSystemObjects) {
     }
 }
 
-export function deleteFsos(fileSystemObjects) {
+export function deleteFsos(fileSystemObjects: FileSystemObject[]) {
     return function(dispatch, getState) {
         dispatch(requestDeleteFiles())
         
@@ -104,7 +103,7 @@ export function deleteFsos(fileSystemObjects) {
     }
 }
 
-export function saveFso(fileSystemObject) {
+export function saveFso(fileSystemObject: FileSystemObject) {
 	return function(dispatch, getState) {
 		dispatch(requestSave());
 
@@ -196,7 +195,7 @@ export function deleteFolder() {
 	};
 }
 
-export function renameFolder(newName) {
+export function renameFolder(newName: string) {
 	return function(dispatch, getState) {
 	    const selectedFolder = getFileById(getState().selectedNode);
 	    const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path + "/") === 0);

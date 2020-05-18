@@ -13,7 +13,11 @@ const mapState = state => {
 	};
 };
 
-class CompileError extends React.Component {
+interface CompileErrorProps {
+	close: () => void;
+}
+
+class CompileError extends React.Component<CompileErrorProps> {
 	constructor(props) {
 		super(props);
 		this.state = {

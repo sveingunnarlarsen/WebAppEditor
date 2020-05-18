@@ -19,14 +19,13 @@ import RenameFolder from "./RenameFolder";
 import DeleteFile from "./DeleteFile";
 import DeleteFolder from "./DeleteFolder";
 import SearchApp from "./SearchApp";
-import ShowReferences from "./ShowReferences";
 import Message from "./Message";
 import ServerMessage from "./ServerMessage";
 import AjaxError from "./AjaxError";
 import DeleteProject from "./DeleteProject";
 import NpmInstall from "./NpmInstall";
 
-import {DialogType} from "../../types/dialog";
+import {DialogType, DialogState} from "../../types/dialog";
 import {closeDialog} from "../../actions";
 
 const {ESC} = Keys;
@@ -56,6 +55,10 @@ function mapDispatch(dispatch) {
 	};
 }
 
+interface DialogContainerProps {
+	dialog: DialogState;
+}
+
 function PaperComponent(props) {
 	return (
 		<Draggable cancel={'[class*="MuiDialogContent-root"]'}>
@@ -64,7 +67,7 @@ function PaperComponent(props) {
 	);
 }
 
-class DialogContainer extends React.Component {
+class DialogContainer extends React.Component<DialogContainerProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -153,12 +156,6 @@ class DialogContainer extends React.Component {
 				return (
 					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
 						<CompileError close={close} />
-					</Dialog>
-				);
-			case DialogType.SHOW_REFERENCES:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.refPaper}} open={dialog.visible}>
-						<ShowReferences close={close} />
 					</Dialog>
 				);
 			case DialogType.MESSAGE:

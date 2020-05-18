@@ -1,4 +1,4 @@
-import {DialogType} from "./dialog";
+import {DialogState, DialogType} from "./dialog";
 import {EditorState} from "./editor";
 
 export enum Actions {
@@ -125,10 +125,6 @@ export interface AppEditorState {
 		list: ListApp[];
 	};
 	editor: EditorState;
-	dialog: {
-		visible: boolean;
-		type: DialogType | null;
-		data: any;
-	};
+	dialog: DialogState;
 	snackbar?: any;
 }

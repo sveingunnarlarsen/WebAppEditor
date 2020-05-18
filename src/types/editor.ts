@@ -7,7 +7,6 @@ export enum EditorActions {
     CLOSE_CONTAINER = "CLOSE_CONTAINER",
     SPLIT_EDITOR = "SPLIT_EDITOR",
     SET_ACTIVE_EDITOR = "SET_ACTIVE_EDITOR",
-    SHOW_SIGNATURE_HELP = "SHOW_SIGNATURE_HELP",
     CLOSE_SIGNATURE_HELP = "CLOSE_SIGNATURE_HELP",
 }
 
@@ -21,8 +20,6 @@ export interface EditorState {
 	activeContainer: string;
 	editors: Editor[];
 	containers: EditorContainer[];
-	showSignatureHelp: boolean;
-	signatureHelpData: any;
 	openFileAt: any | null;
 }
 

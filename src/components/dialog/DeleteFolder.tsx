@@ -14,7 +14,12 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class DeleteFolder extends React.Component {
+interface DeleteFolderProps {
+	close: () => void;
+	deleteFolder: () => void;
+}
+
+class DeleteFolder extends React.Component<DeleteFolderProps> {
 	constructor(props) {
 		super(props);
 	}

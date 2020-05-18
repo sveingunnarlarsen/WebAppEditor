@@ -14,7 +14,12 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class DeleteFile extends React.Component {
+interface DeleteFileProps {
+	close: () => void;
+	deleteFile: () => void;
+}
+
+class DeleteFile extends React.Component<DeleteFileProps> {
 	constructor(props) {
 		super(props);
 	}

@@ -120,7 +120,6 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
         }
         return monaco.languages.CompletionItemKind.Property;
     }
-
 }
 
 class MyCompletionItem implements monaco.languages.CompletionItem {

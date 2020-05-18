@@ -13,7 +13,13 @@ const mapState = state => {
 	};
 };
 
-class AjaxError extends React.Component {
+interface AjaxErrorProps {
+	data: any;
+	close: () => void;
+	value: any;
+}
+
+class AjaxError extends React.Component<AjaxErrorProps, {value: any}> {
 	constructor(props) {
 		super(props);
 		this.state = {

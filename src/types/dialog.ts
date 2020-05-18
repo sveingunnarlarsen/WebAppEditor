@@ -24,3 +24,9 @@ export enum DialogType {
 	MESSAGE = "MESSAGE",
 	NPM_INSTALL = "NPM_INSTALL",
 }
+
+export interface DialogState {
+	visible: boolean;
+	type: DialogType | null;
+	data: any;
+}

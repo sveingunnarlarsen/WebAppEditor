@@ -8,8 +8,6 @@ export const initState: EditorState = {
 	activeContainer: "",
 	editors: [],
 	containers: [],
-	showSignatureHelp: false,
-	signatureHelpData: null,
 	openFileAt: null,
 };
 
@@ -184,16 +182,6 @@ const setActiveEditor = produce((draft, id) => {
 	draft.activeEditor = id;
 });
 
-const showSignatureHelp = produce((draft, data) => {
-	draft.showSignatureHelp = true;
-	draft.signatureHelpData = data;
-});
-
-const closeSignatureHelp = produce(draft => {
-	draft.showSignatureHelp = false;
-	draft.signatureHelpData = null;
-});
-
 export function editor(state = initState, action) {
 	switch (action.type) {
 	    case Actions.RESET:
@@ -212,8 +200,6 @@ export function editor(state = initState, action) {
 			return splitEditor(state, action.direction, action.editorId, action.fileId);
 		case EditorActions.SET_ACTIVE_EDITOR:
 			return setActiveEditor(state, action.id);
-		case EditorActions.SHOW_SIGNATURE_HELP:
-			return showSignatureHelp(state, action.data);
 		case EditorActions.CLOSE_SIGNATURE_HELP:
 			return closeSignatureHelp(state);
 		default:

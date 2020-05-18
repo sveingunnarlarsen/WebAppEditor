@@ -7,7 +7,7 @@ export function resetOpenAt() {
     }
 }
 
-export function showFile(fileId, editorId, openFileAt?) {
+export function showFile(fileId: string, editorId?: string, openFileAt?: monaco.IRange) {
     return {
         type: EditorActions.SHOW_FILE,
         fileId,
@@ -16,7 +16,7 @@ export function showFile(fileId, editorId, openFileAt?) {
     }
 }
 
-export function closeTab(fileId, editorId) {
+export function closeTab(fileId: string, editorId?: string) {
     return {
         type: EditorActions.CLOSE_TAB,
         fileId,
@@ -24,7 +24,7 @@ export function closeTab(fileId, editorId) {
     }
 }
 
-export function closeFile(fileId) {
+export function closeFile(fileId: string) {
     return {
         type: EditorActions.CLOSE_FILE,
         fileId,
@@ -37,7 +37,7 @@ export function closeAllTabs() {
     }
 }
 
-export function splitEditor(direction: SplitDirection, editorId, fileId) {
+export function splitEditor(direction: SplitDirection, editorId: string, fileId: string) {
     return {
         type: EditorActions.SPLIT_EDITOR,
         direction,
@@ -46,22 +46,9 @@ export function splitEditor(direction: SplitDirection, editorId, fileId) {
     }
 }
 
-export function setActiveEditor(id) {
+export function setActiveEditor(id: string) {
     return {
         type: EditorActions.SET_ACTIVE_EDITOR,
         id
-    }
-}
-
-export function showSignatureHelp(data) {
-    return {
-        type: EditorActions.SHOW_SIGNATURE_HELP,
-        data,
-    }
-}
-
-export function closeSignatureHelp() {
-    return {
-        type: EditorActions.CLOSE_SIGNATURE_HELP,
     }
 }

@@ -51,6 +51,7 @@ interface EditorProps {
 	updateFileState: (fso: FileSystemObject) => void;	
 	splitEditor: (direction: SplitDirection, editorId: string, fileId: string) => void;
 	keepEditorState: (editor: monaco.editor.ICodeEditor) => void | null;
+	setActiveEditor: (id: string) => void; 
 }
 
 class AceEditorContainer extends React.Component<EditorProps> {
@@ -107,6 +108,11 @@ class AceEditorContainer extends React.Component<EditorProps> {
 				run: (editor) => {
 					this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editorId, this.props.fso.id)
 				}
+			});
+
+			editor.onDidFocusEditorWidget(() => {
+				console.log("Editor focused");
+				this.props.setActiveEditor(this.props.editorId);
 			});
 		}			
 	}
