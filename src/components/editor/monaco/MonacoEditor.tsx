@@ -78,9 +78,10 @@ const Editor =
 
       editorRef.current = monacoRef.current.editor.create(containerRef.current, {
         model,
-        automaticLayout: false,
         ...options,
       });
+
+      window.standAloneEditor = editorRef.current;
 
       editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
         const file = getFileByPath(resource.path);        
@@ -92,13 +93,15 @@ const Editor =
 
       monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
       monacoRef.current.editor.setTheme(theme);
-      if (openFileAt) {
+      
+      if (openFileAt) {        
+
         console.log("Opening file at(2):", openFileAt);
+        
         editorRef.current.revealRangeInCenter(openFileAt);
         editorRef.current.setSelection(openFileAt);
         store.dispatch(resetOpenAt());
-      }      
-
+      }
       setIsEditorReady(true);
     }, [editorDidMount, model, openFileAt, options, theme]);
 

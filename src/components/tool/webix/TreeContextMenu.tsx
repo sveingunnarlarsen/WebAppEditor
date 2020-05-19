@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import {withStyles} from "@material-ui/styles";
+import { withStyles } from "@material-ui/styles";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -15,24 +15,28 @@ import DraftsIcon from "@material-ui/icons/Drafts";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
+import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 import store from "../../../store";
-import {getFileById} from "../../../store/utils";
-import {openDialog} from "../../../actions";
-import {createFile} from "../../../actions/app";
-import {DialogType} from "../../../types/dialog";
-import {importFiles} from "../../../helpers/import";
+import { getFileById } from "../../../store/utils";
+import { openDialog } from "../../../actions";
+import { createFile } from "../../../actions/app";
+import { DialogType } from "../../../types/dialog";
+import { importFiles } from "../../../helpers/import";
 
 import "./TreeContextMenu.css";
 
 const mapState = state => {
-	return {selectedId: state.selectedNode};
+	return { selectedId: state.selectedNode };
 };
 
 function mapDispatch(dispatch) {
 	return {
+		newFile: () => dispatch(openDialog(DialogType.CREATE_FILE)),
+		newFolder: () => dispatch(openDialog(DialogType.CREATE_FOLDER)),
 		deleteFile: () => dispatch(openDialog(DialogType.DELETE_FILE)),
 		renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE)),
 		deleteFolder: () => dispatch(openDialog(DialogType.DELETE_FOLDER)),
@@ -50,12 +54,12 @@ const styles = theme => ({
 	}
 });
 
-window.importFileInTree = async function(e) {
+window.importFileInTree = async function (e) {
 	console.log(e);
 	const files = await importFiles(e);
 	console.log("Files to import: ", files);
 	for (let i = 0; i < files.length; i++) {
-		store.dispatch(createFile(files[i].name, {content: files[i].content}));
+		store.dispatch(createFile(files[i].name, { content: files[i].content }));
 	}
 	document.getElementById("importFileInTree").value = "";
 };
@@ -83,14 +87,14 @@ class TreeContextMenu extends React.Component {
 		if (this.keepOpen) {
 			this.keepOpen = false;
 		} else {
-			this.setState({visible: false});
+			this.setState({ visible: false });
 		}
 	};
 
 	handleContextMenu = event => {
 		event.preventDefault();
 
-		this.setState({visible: true});
+		this.setState({ visible: true });
 		this.keepOpen = true;
 
 		const clickX = event.clientX;
@@ -123,35 +127,41 @@ class TreeContextMenu extends React.Component {
 	};
 
 	handleClick = event => {
-		const {visible} = this.state;
+		const { visible } = this.state;
 		const wasOutside = !(event.target.contains === this.root);
 
-		if (wasOutside && visible) this.setState({visible: false});
+		if (wasOutside && visible) this.setState({ visible: false });
 	};
 
+	handleNewFile = e => {
+		this.props.newFile();
+	}
+
+	handleNewFolder = e => {
+		this.props.newFolder();
+	}
+
 	handleRename = e => {
-	    const fso = getFileById(this.props.selectedId);
-	    console.log(fso)
-	    if (fso.type === "folder") {
-            this.props.renameFolder();   
-	    } else {
-	        this.props.renameFile();
-	    }
+		const fso = getFileById(this.props.selectedId);
+		if (fso.type === "folder") {
+			this.props.renameFolder();
+		} else {
+			this.props.renameFile();
+		}
 	};
 
 	handleDelete = e => {
-	    const fso = getFileById(this.props.selectedId);
-	    console.log(fso);
-	    if (fso.type === "folder") {
-            this.props.deleteFolder();   
-	    } else {
-	        this.props.deleteFile();   
-	    }
+		const fso = getFileById(this.props.selectedId);
+		if (fso.type === "folder") {
+			this.props.deleteFolder();
+		} else {
+			this.props.deleteFile();
+		}
 	};
 
 	render() {
-		const {visible} = this.state;
-		const {classes, renameFile, deleteFile} = this.props;
+		const { visible } = this.state;
+		const { classes, renameFile, deleteFile } = this.props;
 
 		return (
 			(visible || null) && (
@@ -162,6 +172,30 @@ class TreeContextMenu extends React.Component {
 					className={classes.root}
 				>
 					<List component="nav" dense disablePadding>
+						<ListItem
+							button
+							dense
+							onClick={e => {
+								this.handleNewFile(e);
+							}}
+						>
+							<ListItemIcon>
+								<NoteAddOutlinedIcon />
+							</ListItemIcon>
+							<ListItemText primary="New File" />
+						</ListItem>
+						<ListItem
+							button
+							dense
+							onClick={e => {
+								this.handleNewFolder(e);
+							}}
+						>
+							<ListItemIcon>
+								<CreateNewFolderOutlinedIcon />
+							</ListItemIcon>
+							<ListItemText primary="New Folder" />
+						</ListItem>
 						<ListItem
 							button
 							dense

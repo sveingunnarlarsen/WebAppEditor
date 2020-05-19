@@ -1,7 +1,6 @@
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 import yargs from "yargs-parser";
-import globby from "globby";
 
 import {startGitCloneClone, endGitClone} from "../actions";
 import {createFsos, save, deleteFsos} from "../actions/file";

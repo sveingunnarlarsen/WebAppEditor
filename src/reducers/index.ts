@@ -1,10 +1,10 @@
 import produce from "immer";
-import {combineReducers} from "redux";
-import {AppEditorState, Tool, Actions} from "../types";
-import {DialogAction} from "../types/dialog";
+import { combineReducers } from "redux";
+import { AppEditorState, Tool, Actions } from "../types";
+import { DialogAction } from "../types/dialog";
 
-import {initState as appInitState, app} from "./app";
-import {initState as editorInitState, editor} from "./editor";
+import { initState as appInitState, app } from "./app";
+import { initState as editorInitState, editor } from "./editor";
 
 const initialState: AppEditorState = {
 	visibleTool: Tool.EXPLORER,
@@ -51,7 +51,7 @@ function selectedNode(state = initialState.selectedNode, action) {
 	if (action.type === Actions.SET_SELECTED_NODE) {
 		return action.id;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.selectedNode;
+		return initialState.selectedNode;
 	}
 	return state;
 }
@@ -60,7 +60,7 @@ function visibleTool(state = initialState.visibleTool, action) {
 	if (action.type == Actions.SWITCH_TOOL) {
 		return action.tool;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.visibleTool;
+		return initialState.visibleTool;
 	}
 	return state;
 }
@@ -69,7 +69,7 @@ function previewVisible(state = initialState.previewVisible, action) {
 	if (action.type === Actions.TOGGLE_PREVIEW) {
 		return !state;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.previewVisible;
+		return initialState.previewVisible;
 	}
 	return state;
 }
@@ -78,7 +78,7 @@ function commandLineVisible(state = initialState.commandLineVisible, action) {
 	if (action.type === Actions.TOGGLE_CLI) {
 		return !state;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.commandLineVisible;
+		return initialState.commandLineVisible;
 	}
 	return state;
 }
@@ -98,9 +98,9 @@ function modules(state = initialState.modules, action) {
 	} else if (action.type === Actions.RECEIVE_MODULES) {
 		return action.modules;
 	} else if (action.type === Actions.REQUEST_DELETE_MODULES) {
-	    
+
 	} else if (action.type === Actions.RECEIVE_DELETE_MODULES) {
-	    return [];
+		return [];
 	}
 	return state;
 }
@@ -139,7 +139,7 @@ function apps(state = initialState.apps, action) {
 		case Actions.REQUEST_WEBAPPS:
 			return fetching(state);
 		case Actions.RECEIVE_WEBAPPS:
-			return doneFetching(state, {list: action.data});
+			return doneFetching(state, { list: action.data });
 		default:
 			return state;
 	}
@@ -163,28 +163,28 @@ function dialog(state = initialState.dialog, action) {
 }
 
 function toolResized(state = initialState.toolResized, action) {
-	if (action.type === Actions.RESIZE_TOOL) {
+	if (action.type === Actions.RESIZE_TOOL || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
 		return state + 1;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.toolResized;
+		return initialState.toolResized;
 	}
 	return state;
 }
 
 function editorResized(state = initialState.editorResized, action) {
-	if (action.type === Actions.RESIZE_EDITOR) {
+	if (action.type === Actions.RESIZE_EDITOR || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
 		return state + 1;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.editorResized;
+		return initialState.editorResized;
 	}
 	return state;
 }
 
 function terminalResized(state = initialState.terminalResized, action) {
-	if (action.type === Actions.RESIZE_TERMINAL) {
+	if (action.type === Actions.RESIZE_TERMINAL || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
 		return state + 1;
 	} else if (action.type === Actions.RESET) {
-	    return initialState.terminalResized;
+		return initialState.terminalResized;
 	}
 	return state;
 }
