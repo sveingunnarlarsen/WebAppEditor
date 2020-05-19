@@ -42,12 +42,14 @@ const client: LanguageClientType = new LanguageClient();
     const monacoInstance = await MonacoManager.getInstance();
     window.monaco = monacoInstance;
 
+    /*
     monacoInstance.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
         noSyntaxValidation: true,
         noSuggestionDiagnostics: true,
     });
-
+    */
+    
     monacoInstance.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
     monacoInstance.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
     monacoInstance.languages.registerHoverProvider('typescript', new HoverProvider(client));

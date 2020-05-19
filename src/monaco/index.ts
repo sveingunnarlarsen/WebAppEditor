@@ -1,4 +1,5 @@
-import { monaco as monacoRef } from "@monaco-editor/react";
+//import { monaco as monacoRef } from "@monaco-editor/react";
+import {default as monacoRef} from "./monaco";
 import { updateFileState } from "../actions/file";
 import { getFileByPath } from "../store/utils";
 import store from "../store";
@@ -12,7 +13,9 @@ class MonacoManager {
     private monacoData: { model: monaco.editor.ITextModel, state: monaco.editor.ICodeEditorViewState }[];
 
     constructor(monacoRef) {
-        this.isReady = false;
+        this.isReady = true;
+        this.instance = monacoRef;
+        /*
         monacoRef.init()
             .then(monaco => {
                 this.instance = monaco;
@@ -22,6 +25,7 @@ class MonacoManager {
             .catch(e => {
                 console.log("Error initializing monaco", e);
             })
+        */
     }
 
     private disposeAllData(): void {

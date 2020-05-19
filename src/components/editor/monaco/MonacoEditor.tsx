@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import MonacoContainer from './MonacoContainer';
-import { monaco } from "@monaco-editor/react";
+import monaco from "../../../monaco/monaco";
 import store from "../../../store";
 import { getFileByPath } from "../../../store/utils";
 import { showFile, resetOpenAt } from "../../../actions/editor";
@@ -40,13 +40,17 @@ const Editor =
     const containerRef = useRef();
 
     useMount(_ => {
+      monacoRef.current = monaco;
+      setIsMonacoMounting(false);
+
+      /*
       const cancelable = monaco.init();
 
       cancelable
         .then(monaco => ((monacoRef.current = monaco) && setIsMonacoMounting(false)))
         .catch(error => console.error('An error occurred during initialization of Monaco:', error));
-
-      return _ => editorRef.current ? disposeEditor() : cancelable.cancel();
+      */
+      return _ => editorRef.current ? disposeEditor() : null;
     });
 
     useUpdate(_ => {

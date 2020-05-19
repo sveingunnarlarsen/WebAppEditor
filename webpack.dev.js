@@ -9,6 +9,14 @@ const path = require("path");
 module.exports = settings => ({
 	mode: "development",
 	devtool: "eval-source-map",
+	entry: {
+    	"editor.worker": 'monaco-editor/esm/vs/editor/editor.worker.js',
+  	},
+	output: {
+		globalObject: 'self',
+		filename: '[name].bundle.js',
+		path: "/build"
+  	},
 	resolve: {
 		symlinks: false,
 		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
@@ -31,7 +39,7 @@ module.exports = settings => ({
               use: ["style-loader", "css-loader"],
             },
 			{
-				test: /\.(png|jpe?g|svg)$/,
+				test: /\.(png|jpe?g|svg|ttf)$/,
 				use: [
 					{
 						loader: "file-loader",
