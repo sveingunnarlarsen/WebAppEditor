@@ -49,21 +49,23 @@ module.exports = settings => ({
 						loader: "file-loader",
 						options: {
 							name(fileName) {
+								console.log("FIleName: " + fileName);
+								if(fileName.includes("codicon.ttf")) {
+									return "codicon.ttf";
+								}
 								return `.${fileName}`;
 							},
-							emitFile: false
+							emitFile: true
 						}
 					}
 				]
 			}
 		]
 	},
-	/*
 	plugins: [
-		new MonacoWebpackPlugin({ languages: ['abap', 'apex', 'azcli', 'bat', 'cameligo', 'clojure', 'coffee', 'cpp', 'csharp', 'csp', 'css', 'dockerfile', 'fsharp', 'go', 'graphql', 'handlebars', 'html', 'ini', 'java', 'javascript', 'json', 'kotlin', 'less', 'lua', 'markdown', 'mips', 'msdax', 'mysql', 'objective-c', 'pascal', 'pascaligo', 'perl', 'pgsql', 'php', 'postiats', 'powerquery', 'powershell', 'pug', 'python', 'r', 'razor', 'redis', 'redshift', 'restructuredtext', 'ruby', 'rust', 'sb', 'scheme', 'scss', 'shell', 'solidity', 'sophia', 'sql', 'st', 'swift', 'tcl', 'twig', '!typescript', 'vb', 'xml', 'yaml'] }),
+		//new MonacoWebpackPlugin({ languages: ['abap', 'apex', 'azcli', 'bat', 'cameligo', 'clojure', 'coffee', 'cpp', 'csharp', 'csp', 'css', 'dockerfile', 'fsharp', 'go', 'graphql', 'handlebars', 'html', 'ini', 'java', 'javascript', 'json', 'kotlin', 'less', 'lua', 'markdown', 'mips', 'msdax', 'mysql', 'objective-c', 'pascal', 'pascaligo', 'perl', 'pgsql', 'php', 'postiats', 'powerquery', 'powershell', 'pug', 'python', 'r', 'razor', 'redis', 'redshift', 'restructuredtext', 'ruby', 'rust', 'sb', 'scheme', 'scss', 'shell', 'solidity', 'sophia', 'sql', 'st', 'swift', 'tcl', 'twig', '!typescript', 'vb', 'xml', 'yaml'] }),
 		new webpack.DefinePlugin({
-			BASENAME: JSON.stringify(`/webapp/${settings.appName}`)
+			ROOTPATH: JSON.stringify(`/webapp/${settings.appName}`)
 		}),
 	]
-	*/
 });
