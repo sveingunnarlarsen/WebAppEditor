@@ -3,6 +3,7 @@ import 'monaco-editor/esm/vs/editor/browser/controller/coreCommands.js';
 import 'monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js';
 import 'monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js';
 import 'monaco-editor/esm/vs/editor/browser/widget/diffNavigator.js';
+
 import 'monaco-editor/esm/vs/editor/contrib/bracketMatching/bracketMatching.js';
 import 'monaco-editor/esm/vs/editor/contrib/caretOperations/caretOperations.js';
 import 'monaco-editor/esm/vs/editor/contrib/caretOperations/transpose.js';
@@ -17,13 +18,17 @@ import 'monaco-editor/esm/vs/editor/contrib/find/findController.js';
 import 'monaco-editor/esm/vs/editor/contrib/folding/folding.js';
 import 'monaco-editor/esm/vs/editor/contrib/format/format.js';
 import 'monaco-editor/esm/vs/editor/contrib/format/formatActions.js';
+import 'monaco-editor/esm/vs/editor/contrib/format/formattingEdit.js';
 import 'monaco-editor/esm/vs/editor/contrib/gotoError/gotoError.js';
+import 'monaco-editor/esm/vs/editor/contrib/gotoSymbol/goToSymbol.js';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover.js';
 import 'monaco-editor/esm/vs/editor/contrib/inPlaceReplace/inPlaceReplace.js';
 import 'monaco-editor/esm/vs/editor/contrib/linesOperations/linesOperations.js';
 import 'monaco-editor/esm/vs/editor/contrib/links/links.js';
 import 'monaco-editor/esm/vs/editor/contrib/multicursor/multicursor.js';
 import 'monaco-editor/esm/vs/editor/contrib/parameterHints/parameterHints.js';
+import 'monaco-editor/esm/vs/editor/contrib/peekView/peekView.js';
+import 'monaco-editor/esm/vs/editor/contrib/quickOpen/quickOpen.js';
 import 'monaco-editor/esm/vs/editor/contrib/rename/rename.js';
 import 'monaco-editor/esm/vs/editor/contrib/smartSelect/smartSelect.js';
 import 'monaco-editor/esm/vs/editor/contrib/snippet/snippetController2.js';
@@ -31,12 +36,14 @@ import 'monaco-editor/esm/vs/editor/contrib/suggest/suggestController.js';
 import 'monaco-editor/esm/vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode.js';
 import 'monaco-editor/esm/vs/editor/contrib/wordHighlighter/wordHighlighter.js';
 import 'monaco-editor/esm/vs/editor/contrib/wordOperations/wordOperations.js';
+
 import 'monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickOpen/quickOutline.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickOpen/gotoLine.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickOpen/quickCommand.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
@@ -44,7 +51,8 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 // import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/json/monaco.contribution';
-// import 'monaco-editor/esm/vs/language/html/monaco.contribution';
+import 'monaco-editor/esm/vs/language/html/monaco.contribution';
+
 import 'monaco-editor/esm/vs/basic-languages/bat/bat.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/coffee/coffee.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution.js';
@@ -90,17 +98,22 @@ import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
 self.MonacoEnvironment = {
 	getWorkerUrl: function (moduleId, label) {
 		const basePath = ROOTPATH;
+		console.log("Basepath: ", basePath);
 		if (label === 'json') {
-			return './json.worker.bundle.js';
+			console.log("Returning json worker");
+			return `.${basePath}/build/json.worker.bundle.js`;
 		}
 		if (label === 'css') {
-			return './css.worker.bundle.js';
+			console.log("Returning css worker");
+			return `.${basePath}/build/css.worker.bundle.js`;
 		}
 		if (label === 'html') {
-			return './html.worker.bundle.js';
+			console.log("Returning html worker");
+			return `./WebAppEditor/build/html.worker.bundle.js`;
 		}
 		if (label === 'typescript' || label === 'javascript') {
-			return './ts.worker.bundle.js';
+			console.log("Returning typescript worker");
+			return `.${basePath}/build/ts.worker.bundle.js`;
 		}
 		return `${basePath}/build/editor.worker.bundle.js`; // './editor.worker.bundle.js';
 	}
