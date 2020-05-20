@@ -1,8 +1,8 @@
-import MonacoManager from "../../monaco";
+import {setModelMarkers} from "../../monaco";
 
 export function provideDiagnostics(result) {
     const markerData = result.diagnostics.map(d => new ModelMarker({...d, path: result.path}));
-    MonacoManager.setModelMarkers(result.path, markerData);
+    setModelMarkers(result.path, markerData);
 }
 
 class ModelMarker implements monaco.editor.IMarkerData {

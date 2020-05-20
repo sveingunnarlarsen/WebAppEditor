@@ -5,7 +5,7 @@ import {reset, openDialog} from "./";
 import {getNpmModules} from "./npm";
 import {throwError, handleAjaxError, handleCompileError} from "./error";
 import {convertApiWebAppData, destructAppServerProps} from "./utils";
-import MonacoManager from "../monaco";
+import {loadProject} from "../monaco";
 
 type project = {
     type: 'react' | 'vue',
@@ -53,7 +53,7 @@ export function createProject({type, template, name, description, remote}: proje
             .then(response => response.json())
             .then(json => convertApiWebAppData(json))
             .then(app => dispatch(receiveWebApp(app)))
-            .then(() => remote ? cloneGitRepo(remote) : MonacoManager.loadProject(getState))
+            .then(() => remote ? cloneGitRepo(remote) : loadProject(getState))
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
@@ -70,7 +70,7 @@ export function getProject(id: string) {
 			.then(response => response.json())
 			.then(json => convertApiWebAppData(json))
 			.then(app => dispatch(receiveWebApp(app)))
-            .then(() => MonacoManager.loadProject(getState))
+            .then(() => loadProject(getState))
 			.catch(error => handleAjaxError(error, dispatch))
 			.finally(() => dispatch(getNpmModules()))
     }

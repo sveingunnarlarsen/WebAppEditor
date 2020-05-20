@@ -16,7 +16,7 @@ import {SplitDirection} from "../../types/editor";
 import {prettyPrint} from "./utils";
 import {getFileLanguage} from '../../helpers/utils';
 import {fileOpened, fileUpdated} from "../../completer/index";
-import MonacoManager from "../../monaco";
+import {getModel} from "../../monaco";
 
 const mapState = (state, ownProps) => {
 	let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);	
@@ -128,7 +128,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 	render() {
 		const {fso, viewState} = this.props;
 						
-		const model = MonacoManager.getModel(this.props.fso.path);		
+		const model = getModel(this.props.fso.path);		
 		if (fso.content) {
 			model.setValue(fso.content);
 		}

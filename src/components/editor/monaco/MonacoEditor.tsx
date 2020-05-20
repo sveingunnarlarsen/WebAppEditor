@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-
-import MonacoContainer from './MonacoContainer';
-import monaco from "../../../monaco/monaco";
 import store from "../../../store";
+import MonacoContainer from './MonacoContainer';
+import { monaco } from "../../../monaco";
 import { getFileByPath } from "../../../store/utils";
 import { showFile, resetOpenAt } from "../../../actions/editor";
 
@@ -35,21 +34,14 @@ const Editor =
   ({ model, viewState, openFileAt, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
     const [isEditorReady, setIsEditorReady] = useState(false);
     const [isMonacoMounting, setIsMonacoMounting] = useState(true);
-    const editorRef = useRef();
-    const monacoRef = useRef();
+    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+    const monacoRef = useRef<typeof monaco>();
     const containerRef = useRef();
 
     useMount(_ => {
       monacoRef.current = monaco;
       setIsMonacoMounting(false);
 
-      /*
-      const cancelable = monaco.init();
-
-      cancelable
-        .then(monaco => ((monacoRef.current = monaco) && setIsMonacoMounting(false)))
-        .catch(error => console.error('An error occurred during initialization of Monaco:', error));
-      */
       return _ => editorRef.current ? disposeEditor() : null;
     });
 
@@ -85,8 +77,7 @@ const Editor =
         ...options,
       });
 
-      window.standAloneEditor = editorRef.current;
-
+      // @ts-ignore
       editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
         const file = getFileByPath(resource.path);        
         const range = options.selection; 
@@ -113,7 +104,7 @@ const Editor =
       !isMonacoMounting && !isEditorReady && createEditor();
     }, [isMonacoMounting, isEditorReady, createEditor]);
 
-    const disposeEditor = _ => editorRef.current.dispose();
+    const disposeEditor = () => editorRef.current.dispose();
 
     return <MonacoContainer
       width={width}

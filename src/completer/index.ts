@@ -1,5 +1,5 @@
 import store from "../store";
-import MonacoManager from "../monaco";
+import {monaco, deleteModel, createModel} from "../monaco";
 import { LanguageClient as LanguageClientType, ClientEvent } from "../types/language-client";
 import { provideDiagnostics } from "./providers/diagnosticProvider";
 import { CompletionItemProvider } from "./providers/completionItemProvider";
@@ -39,17 +39,13 @@ const client: LanguageClientType = new LanguageClient();
     if (client.isConnected) {
         store.subscribe(handleChange);
     }
-
-    const monacoInstance = await MonacoManager.getInstance();
-    window.monaco = monacoInstance;
     
-    monacoInstance.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
-    monacoInstance.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
-    monacoInstance.languages.registerHoverProvider('typescript', new HoverProvider(client));
-    monacoInstance.languages.registerDefinitionProvider('typescript', new DefinitionProvider(client));
-    monacoInstance.languages.registerReferenceProvider('typescript', new ReferenceProvider(client));
-    monacoInstance.languages.registerDocumentFormattingEditProvider('typescript', new DocumentFormattingEditorProvider(client));
-
+    monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
+    monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
+    monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
+    monaco.languages.registerDefinitionProvider('typescript', new DefinitionProvider(client));
+    monaco.languages.registerReferenceProvider('typescript', new ReferenceProvider(client));
+    monaco.languages.registerDocumentFormattingEditProvider('typescript', new DocumentFormattingEditorProvider(client));
 
     // @ts-ignore
     client.on('publishDiagnostics', (result) => {
@@ -79,18 +75,18 @@ export async function fileDeleted(path: string) {
     if (client.isReady) {
         try {
             await client.textDocumentDeleted(path);
-            MonacoManager.deleteModel(path);
+            deleteModel(path);
         } catch (e) {
             console.log("Language client error", e);
         }
     }
 }
 
-export async function fileCreated(path: string, type: 'file' | 'foler' = 'file', content: string = "") {
+export async function fileCreated(path: string, type: 'file' | 'folder' = 'file', content: string = "") {
     if (client.isReady) {
         try {
             await client.textDocumentCreated(path, type, content);
-            MonacoManager.createModel({ path, type, content });
+            createModel({ path, type, content });
         } catch (e) {
             console.log("Language client error", e);
         }

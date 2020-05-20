@@ -1,4 +1,3 @@
-// (1) Desired editor features:
 import 'monaco-editor/esm/vs/editor/browser/controller/coreCommands.js';
 import 'monaco-editor/esm/vs/editor/browser/widget/codeEditorWidget.js';
 import 'monaco-editor/esm/vs/editor/browser/widget/diffEditorWidget.js';
@@ -47,10 +46,9 @@ import 'monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standalon
 import 'monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
-// (2) Desired languages:
 // import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
-// import 'monaco-editor/esm/vs/language/css/monaco.contribution';
-// import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+import 'monaco-editor/esm/vs/language/css/monaco.contribution';
+import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-editor/esm/vs/language/html/monaco.contribution';
 
 import 'monaco-editor/esm/vs/basic-languages/bat/bat.contribution.js';
@@ -94,31 +92,26 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
-
+// @ts-ignore
 self.MonacoEnvironment = {
 	getWorkerUrl: function (moduleId, label) {
+		// @ts-ignore
 		const basePath = ROOTPATH;
 		console.log("Basepath: ", basePath);
 		if (label === 'json') {
-			console.log("Returning json worker");
-			return `.${basePath}/build/json.worker.bundle.js`;
+			return `./WebAppEditor/build/json.worker.bundle.js`;
 		}
 		if (label === 'css') {
-			console.log("Returning css worker");
-			return `.${basePath}/build/css.worker.bundle.js`;
+			return `./WebAppEditor/build/css.worker.bundle.js`;
 		}
 		if (label === 'html') {
-			console.log("Returning html worker");
 			return `./WebAppEditor/build/html.worker.bundle.js`;
 		}
 		if (label === 'typescript' || label === 'javascript') {
-			console.log("Returning typescript worker");
-			return `.${basePath}/build/ts.worker.bundle.js`;
+			return `./WebAppEditor/build/ts.worker.bundle.js`;
 		}
-		return `${basePath}/build/editor.worker.bundle.js`; // './editor.worker.bundle.js';
+		return `${basePath}/build/editor.worker.bundle.js`;
 	}
 }
 
 export default monaco;
-
-//window.monaco = monaco;
