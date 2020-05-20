@@ -64,6 +64,10 @@ function handleChange() {
 export async function fileUpdated({ path, content }: { path: string, content: string }) {
     if (client.isReady) {
         try {
+            if (!content) {
+                console.log("textDocumentChanged with no content: ", content);
+                return;
+            }
             await client.textDocumentChanged(path, content);
         } catch (e) {
             console.log("Language client error", e);

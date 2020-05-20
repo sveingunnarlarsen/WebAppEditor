@@ -38,7 +38,7 @@ export function getModel(path) {
 
 export function createModel(fso: {type: 'file' | 'folder', content: string, path: string}) {
     if (fso.type === 'file') {
-        const model = this.instance.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+        const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
         model.onDidChangeContent(() => {
             onModelContentChanged(model);
         });
@@ -58,7 +58,7 @@ export function loadProject(getState: () => AppEditorState) {
             if (fso.type === 'file') {                
                 const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
                 model.onDidChangeContent(() => {
-                    this.onModelContentChagned(model);
+                    onModelContentChanged(model);
                 });
             }
         });
