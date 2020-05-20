@@ -18,7 +18,8 @@ module.exports = settings => ({
 	output: {
 		globalObject: 'self',
 		filename: '[name].bundle.js',
-		path: "/build"
+		path: "/build",
+		publicPath: `/webapp/${settings.appName}/build/`
   	},
 	resolve: {
 		symlinks: false,
