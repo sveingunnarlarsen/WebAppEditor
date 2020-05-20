@@ -57,7 +57,7 @@ module.exports = settings => ({
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-			BASENAME: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
+			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
 		}),
 	]
 });

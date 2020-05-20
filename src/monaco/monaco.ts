@@ -88,19 +88,20 @@ import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
 
 self.MonacoEnvironment = {
 	getWorkerUrl: function (moduleId, label) {
+		const basePath = ROOTPATH;
 		if (label === 'json') {
-		return './json.worker.bundle.js';
+			return './json.worker.bundle.js';
 		}
 		if (label === 'css') {
-		return './css.worker.bundle.js';
+			return './css.worker.bundle.js';
 		}
 		if (label === 'html') {
-		return './html.worker.bundle.js';
+			return './html.worker.bundle.js';
 		}
 		if (label === 'typescript' || label === 'javascript') {
-		return './ts.worker.bundle.js';
+			return './ts.worker.bundle.js';
 		}
-		return './editor.worker.bundle.js';
+		return `${basePath}/build/editor.worker.bundle.js`; // './editor.worker.bundle.js';
 	}
 }
 
