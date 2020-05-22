@@ -24,8 +24,9 @@ const styles : Styles<any, any> = {
 	},
 	tab: {
 		minHeight: "auto",
+		maxWidth: "100%",
 		padding: 5,
-		textTransform: "none"
+		textTransform: "none",		
 	},
 	tabSelected: {
 		background: "#333333"

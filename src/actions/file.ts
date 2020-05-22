@@ -1,12 +1,14 @@
 import {Actions, FileSystemObject} from "../types";
 import {DialogType} from "../types/dialog";
 import {syncFile, removeFile} from "../git";
-import {openDialog, updateEditors} from "./";
+import {fileCreated, fileDeleted} from "../completer";
+import {getFileById} from "../store/utils";
+
 import {closeFile} from "./editor";
 import {throwError, handleAjaxError} from "./error";
-import {extractFileMeta, destructFileServerProps, getFolderPath} from "./utils";
-import {getFileById} from "../store/utils";
-import {fileCreated, fileDeleted} from "../completer";
+import {extractFileMeta, destructFileServerProps, getFolderPathFromSelectedNode} from "./utils";
+
+import {openDialog, updateEditors} from "./";
 
 const headers = {
 	"Content-Type": "application/json"
@@ -137,7 +139,7 @@ export function createFso({type = 'file', content, path, name}: {type: 'file' | 
         }
         
         if (!path) {
-			path = `${getFolderPath(getState().selectedNode, getState().app.fileSystemObjects)}${name}`;
+			path = `${getFolderPathFromSelectedNode(getState)}${name}`;
         }
         
         const fileSystemObject = {
@@ -282,9 +284,3 @@ function receiveDeleteFile(fileId) {
         fileId
     }
 }
-
-
-
-
-
-

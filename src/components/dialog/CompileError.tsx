@@ -4,10 +4,11 @@ import {connect} from "react-redux";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-const mapState = state => {
+import { AppEditorState } from "../../types"
+
+const mapState = (state: AppEditorState) => {
 	return {
 		data: state.dialog.data
 	};
@@ -15,9 +16,14 @@ const mapState = state => {
 
 interface CompileErrorProps {
 	close: () => void;
+	data: any;	
 }
 
-class CompileError extends React.Component<CompileErrorProps> {
+interface CompileErrorState {
+	value: any;
+}
+
+class CompileError extends React.Component<CompileErrorProps, CompileErrorState> {
 	constructor(props) {
 		super(props);
 		this.state = {

@@ -1,19 +1,13 @@
-import {Actions} from "../types";
+import {Actions, project} from "../types";
 import {DialogType} from "../types/dialog";
 import {cloneGitRepo, deleteGitRepo} from "../git";
-import {reset, openDialog} from "./";
+import {loadProject} from "../monaco"
+
 import {getNpmModules} from "./npm";
 import {throwError, handleAjaxError, handleCompileError} from "./error";
 import {convertApiWebAppData, destructAppServerProps} from "./utils";
-import {loadProject} from "../monaco";
 
-type project = {
-    type: 'react' | 'vue',
-    template: 'react' | 'react-typescript' | 'vue',
-    name: string,
-    description: string,
-    remote?: string
-}
+import {reset, openDialog} from "./";
 
 const headers = {
 	"Content-Type": "application/json"

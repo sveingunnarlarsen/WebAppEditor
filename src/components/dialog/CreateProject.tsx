@@ -10,6 +10,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
+import Box from "@material-ui/core/Box";
+
+import { project } from "../../types";
 import { createProject } from '../../actions/app';
 
 function mapDispatch(dispatch) {
@@ -18,13 +21,18 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class CreateProject extends React.Component {
+interface CreateProjectProps {
+	createProject: (opts: project) => void;
+	close: () => void;
+}
+
+class CreateProject extends React.Component<CreateProjectProps, project> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			type: "react",
 			template: "react",
-			name: "",
+			name: "", 
 			description: "",
 			remote: ""
 		};

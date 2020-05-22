@@ -1,3 +1,4 @@
+import {AppEditorState} from "../types";
 import {getFileTypeImageData} from "../helpers/utils";
 
 export function convertApiWebAppData(json) {
@@ -61,7 +62,10 @@ export function extractFileMeta(item, fsos, updatedFsos = []) {
 	}
 }
 
-export function getFolderPath(id, fsos) {
+export function getFolderPathFromSelectedNode(getState: () => AppEditorState) {
+	const id = getState().selectedNode;
+	const fsos = getState().app.fileSystemObjects;
+
 	const item = fsos.find(f => f.id === id);
 	if (item && item.type === "folder") {
 		return item.path + "/";

@@ -42,7 +42,6 @@ export enum Actions {
     UPDATE_APP_DATA = "UPDATE_APP_DATA",
 }
 
-
 export enum Tool {
 	EXPLORER = "EXPLORER",
 	SEARCH = "SEARCH",
@@ -54,6 +53,14 @@ export enum Tool {
 export enum FsoType {
 	FILE = "file",
 	FOLDER = "folder",
+}
+
+export type project = {
+    type: 'react' | 'vue',
+    template: 'react' | 'react-typescript' | 'vue',
+    name: string,
+    description: string,
+    remote?: string
 }
 
 export interface DateProps {

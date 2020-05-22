@@ -1,15 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { withStyles } from "@material-ui/styles";
 import SplitPane from "react-split-pane";
+import { connect } from "react-redux";
+import { withStyles, Styles } from "@material-ui/styles";
 
 import { resizeEditor } from "../../actions";
 import { EditorContainer as EditorContainerType } from "../../types/editor";
 import EditorTop from "./EditorTop";
 import EditorTabs from "./EditorTabs";
 
-const styles = {
+const styles: Styles<any, any> = {
 	editorContainer: {
 		position: "absolute",
 		top: 0,

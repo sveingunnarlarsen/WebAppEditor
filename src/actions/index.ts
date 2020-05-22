@@ -1,5 +1,6 @@
 import {Actions} from "../types";
 import {DialogAction, DialogType} from "../types/dialog";
+
 import {getWebApps} from "./app";
 
 export function reset() {

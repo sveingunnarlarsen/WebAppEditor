@@ -1,5 +1,6 @@
-import {openDialog} from "./";
 import {DialogType} from "../types/dialog";
+
+import {openDialog} from "./";
 
 export function throwError(response) {
 	if (!response.ok) {
@@ -8,7 +9,7 @@ export function throwError(response) {
 	return response;
 }
 
-export async function handleAjaxError(error, dispatch) {
+export async function handleAjaxError(error: any, dispatch) {
     console.log("In handle ajax error", error);
 	const status = error.status;
 	try {
