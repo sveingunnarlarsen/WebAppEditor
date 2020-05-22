@@ -1,6 +1,5 @@
 import React from "react";
 import {withStyles} from "@material-ui/styles";
-import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -20,13 +19,14 @@ import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
 import {getConfigUser, setConfigUser} from "../../git";
+import {AppEditorState} from "../../types";
 
 import keydown, {Keys} from "react-keydown";
 const {ENTER} = Keys;
 
 import {updateAppData, saveAppData} from "../../actions/app";
 
-const mapState = state => {
+const mapState = (state: AppEditorState) => {
 	const {name, description, type, settings} = state.app;
 	return {
 		data: {
@@ -38,14 +38,11 @@ const mapState = state => {
 	};
 };
 
-const styles = {
+const styles: any = {
 	container: {
 		padding: "1rem",
 		height: "100%",
 		overflowY: "auto",
-	},
-	form: {
-	    
 	}
 };
 
@@ -56,7 +53,16 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class Settings extends React.Component {
+interface SettingsProps {
+	classes: any;
+	show: boolean;
+	data: {name: string, description: string, type: 'react' | 'vue', settings: any};
+
+	updateAppData: (data: any) => void;
+	saveAppData: () => void; 
+}
+
+class Settings extends React.Component<SettingsProps> {
 	constructor(props) {
 		super(props);
 		const git = getConfigUser();
@@ -91,7 +97,7 @@ class Settings extends React.Component {
 		return (
 			<div style={{display}} className={classes.container}>
 				<InputLabel shrink>Type</InputLabel>
-				<Select fullWidth value={type} onChange={e => this.updateDate(e, "type")}>
+				<Select fullWidth value={type} onChange={e => this.updateData(e, "type")}>
 					<MenuItem value={"react"}>React</MenuItem>
 					<MenuItem value={"vue"}>Vue</MenuItem>
 				</Select>
@@ -201,10 +207,6 @@ class Settings extends React.Component {
 		);
 	}
 }
-
-Settings.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(
 	mapState,

@@ -1,6 +1,5 @@
 import React from "react";
 import {withStyles} from "@material-ui/styles";
-import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -17,7 +16,7 @@ import {installNpmModules, deleteNpmModules} from "../../actions/npm";
 import {openDialog} from "../../actions";
 import {DialogType} from "../../types/dialog";
 
-const styles = {
+const styles: any = {
 	container: {
 		background: "#252526",
 		height: "100%"
@@ -51,7 +50,19 @@ function mapDispatch(dispatch) {
 	};
 }
 
-class NpmExplorer extends React.Component {
+interface NpmExplorerProps {
+	modules: any[];
+
+	classes: any;
+	show: boolean;
+
+	install: () => void;
+	update: () => void;
+	delete: () => void;
+	add: () => void;
+}
+
+class NpmExplorer extends React.Component<NpmExplorerProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -123,10 +134,6 @@ class NpmExplorer extends React.Component {
 		);
 	}
 }
-
-NpmExplorer.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(
 	mapState,

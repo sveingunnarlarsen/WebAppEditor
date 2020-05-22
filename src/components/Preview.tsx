@@ -1,9 +1,5 @@
 import React from "react";
 import {connect} from "react-redux";
-import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/styles";
-
-const styles = {};
 
 const mapState = state => {
 	return {
@@ -11,7 +7,13 @@ const mapState = state => {
 	};
 };
 
-class Preview extends React.Component {
+interface PreviewProps {
+	id: string;
+	isVisible: string;
+	useClass: string;
+}
+
+class Preview extends React.Component<PreviewProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -33,8 +35,4 @@ class Preview extends React.Component {
 	}
 }
 
-Preview.propTypes = {
-	classes: PropTypes.object.isRequired
-};
-
-export default connect(mapState)(withStyles(styles)(Preview));
+export default connect(mapState)(Preview);

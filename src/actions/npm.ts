@@ -17,7 +17,7 @@ export function getNpmModules() {
 	};
 }
 
-export function installNpmModules(runUpgrade: boolean) {
+export function installNpmModules(runUpgrade: boolean = false) {
 	return function(dispatch, getState) {
 		dispatch(startModuleUpdate());
 

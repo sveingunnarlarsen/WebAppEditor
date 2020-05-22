@@ -33,7 +33,12 @@ const styles = {
 	}
 };
 
-class FileExplorer extends React.Component {
+interface FileExplorerProps {
+	classes: any;
+	show: boolean;
+}
+
+class FileExplorer extends React.Component<FileExplorerProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -48,9 +53,5 @@ class FileExplorer extends React.Component {
 		);
 	}
 }
-
-FileExplorer.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default withStyles(styles)(FileExplorer);

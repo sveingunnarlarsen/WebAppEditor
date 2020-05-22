@@ -12,7 +12,7 @@ import Preview from "./Preview";
 import TerminalContainer from "./terminal/TerminalContainer";
 import "./Content.css";
 
-const styles = {
+const styles: any = {
 	interactive: {
 		pointerEvents: "auto"
 	},

@@ -1,6 +1,5 @@
 import React from "react";
 import {withStyles} from "@material-ui/styles";
-import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import FileExplorer from "./FileExplorer";
@@ -24,7 +23,12 @@ const mapState = state => {
 	return {visibleTool: state.visibleTool};
 };
 
-class ToolContent extends React.Component {
+interface ToolContentProps {
+	visibleTool: Tool,
+	classes: any;
+}
+
+class ToolContent extends React.Component<ToolContentProps> {
 	constructor(props) {
 		super(props);
 	}
@@ -42,9 +46,5 @@ class ToolContent extends React.Component {
 		);
 	}
 }
-
-ToolContent.propTypes = {
-	classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState)(withStyles(styles)(ToolContent));
