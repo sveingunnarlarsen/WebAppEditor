@@ -67,3 +67,31 @@ export function getFileLanguage(filepath: string) {
 export function getMimeType(filepath) {
     return mime.lookup(filepath);
 }
+
+export function calculateContextPos({x, y}, root) {
+	const screenW = window.innerWidth;
+	const screenH = window.innerHeight;
+	const rootW = root.offsetWidth;
+	const rootH = root.offsetHeight;
+
+	const right = screenW - x > rootW;
+	const left = !right;
+	const top = screenH - y > rootH;
+	const bottom = !top;
+
+	if (right) {
+		root.style.left = `${x + 5}px`;
+	}
+
+	if (left) {
+		root.style.left = `${x - rootW - 5}px`;
+	}
+
+	if (top) {
+		root.style.top = `${y + 5}px`;
+	}
+
+	if (bottom) {
+		root.style.top = `${y - rootH - 5}px`;
+	}
+}

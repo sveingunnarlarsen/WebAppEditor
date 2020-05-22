@@ -62,8 +62,7 @@ module.exports = settings => ({
 			}
 		]
 	},
-	plugins: [
-		//new MonacoWebpackPlugin({ languages: ['abap', 'apex', 'azcli', 'bat', 'cameligo', 'clojure', 'coffee', 'cpp', 'csharp', 'csp', 'css', 'dockerfile', 'fsharp', 'go', 'graphql', 'handlebars', 'html', 'ini', 'java', 'javascript', 'json', 'kotlin', 'less', 'lua', 'markdown', 'mips', 'msdax', 'mysql', 'objective-c', 'pascal', 'pascaligo', 'perl', 'pgsql', 'php', 'postiats', 'powerquery', 'powershell', 'pug', 'python', 'r', 'razor', 'redis', 'redshift', 'restructuredtext', 'ruby', 'rust', 'sb', 'scheme', 'scss', 'shell', 'solidity', 'sophia', 'sql', 'st', 'swift', 'tcl', 'twig', '!typescript', 'vb', 'xml', 'yaml'] }),
+	plugins: [		
 		new webpack.DefinePlugin({
 			ROOTPATH: JSON.stringify(`/webapp/${settings.appName}`)
 		}),
