@@ -72,6 +72,7 @@ export function getProject(id: string) {
 
 export function deleteProject() {
     return function(dispatch, getState) {
+        dispatch(requestDeleteWebApp());
         const id = getState().app.id;
         
         if (!id) {
@@ -153,6 +154,12 @@ function receiveWebApps(data) {
 function requestCreateWebApp() {
     return {
         type: Actions.REQUEST_CREATE_WEBAPP
+    }
+}
+
+function requestDeleteWebApp() {
+    return {
+        type: Actions.REQUEST_DELETE_WEBAPP
     }
 }
 

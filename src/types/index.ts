@@ -16,7 +16,8 @@ export enum Actions {
     RECEIVE_MASTERDATA = "RECEIVE_MASTERDATA",    
     REQUEST_WEBAPPS = "REQUEST_WEBAPPS",    
     RECEIVE_WEBAPPS = "RECEIVE_WEBAPPS",    
-    REQUEST_CREATE_WEBAPP = "REQUEST_CREATE_WEBAPP",    
+    REQUEST_CREATE_WEBAPP = "REQUEST_CREATE_WEBAPP",
+	REQUEST_DELETE_WEBAPP = "REQUEST_DELETE_WEBAPP",
     REQUEST_WEBAPP = "REQUEST_WEBAPP",    
     RECEIVE_WEBAPP = "RECEIVE_WEBAPP",    
     START_MODULE_UPDATE = "START_MODULE_UPDATE",    
@@ -122,6 +123,7 @@ export interface AppEditorState {
 	terminalResized: number;
 	updateEditors: number;
 	isCompiling: boolean;
+	isDeleting: boolean;
 	modules: any[];
 	isUpdatingNpm: boolean;
 	isCloning: boolean;

@@ -16,6 +16,7 @@ const initialState: AppEditorState = {
 	terminalResized: 0,
 	updateEditors: 0,
 	isCompiling: false,
+	isDeleting: false,
 	modules: [],
 	isUpdatingNpm: false,
 	isCloning: false,
@@ -87,6 +88,15 @@ function isCompiling(state = initialState.isCompiling, action) {
 	if (action.type === Actions.REQUEST_COMPILE) {
 		return true;
 	} else if (action.type === Actions.RECEIVE_COMPILE) {
+		return false;
+	}
+	return state;
+}
+
+function isDeleting(state = initialState.isDeleting, action) {
+	if (action.type === Actions.REQUEST_DELETE_WEBAPP) {
+		return true;
+	} else if (action.type === Actions.RESET) {
 		return false;
 	}
 	return state;
