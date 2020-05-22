@@ -34,7 +34,7 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
         if (!response.result) return;
 
         const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
-            newText: e.newText,
+            text: e.newText,
             range: spanToRange(e.span, model.uri),
         }));
 
