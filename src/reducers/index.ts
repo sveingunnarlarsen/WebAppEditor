@@ -15,6 +15,7 @@ const initialState: AppEditorState = {
 	editorResized: 0,
 	terminalResized: 0,
 	updateEditors: 0,
+	isCreating: false,
 	isCompiling: false,
 	isDeleting: false,
 	modules: [],
@@ -80,6 +81,15 @@ function commandLineVisible(state = initialState.commandLineVisible, action) {
 		return !state;
 	} else if (action.type === Actions.RESET) {
 		return initialState.commandLineVisible;
+	}
+	return state;
+}
+
+function isCreating(state = initialState.isCreating, action) {
+	if (action.type === Actions.REQUEST_CREATE_WEBAPP) {
+		return true;
+	} else if (action.type === Actions.RECEIVE_WEBAPP) {
+		return false;
 	}
 	return state;
 }
@@ -217,7 +227,9 @@ const rootReducer = combineReducers<AppEditorState>({
 	editorResized,
 	terminalResized,
 	updateEditors,
+	isCreating,
 	isCompiling,
+	isDeleting,
 	modules,
 	isUpdatingNpm,
 	isCloning,

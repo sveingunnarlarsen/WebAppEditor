@@ -142,19 +142,19 @@ export function app(state = initState, action) {
 			return receiveSave(state, action.files);
 
 		case Actions.REQUEST_CREATE_FILES:
-			return requestCreateFiles(state);
+			return requestCreateFiles(state, action.files);
 
 		case Actions.RECEIVE_CREATE_FILES:
 			return receiveCreateFiles(state, action.files);
 
 		case Actions.REQUEST_CREATE_FILE:
-			return requestCreate(state);
+			return requestCreate(state, null);
 
 		case Actions.RECEIVE_CREATE_FILE:
 			return receiveCreate(state, action.file);
 
 		case Actions.REQUEST_DELETE_FILE:
-			return requestDelete(state);
+			return requestDelete(state, null);
 
 		case Actions.RECEIVE_DELETE_FILE:
 			return receiveDelete(state, action.fileId);

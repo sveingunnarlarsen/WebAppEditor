@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 
 import CompilingStatus from "./CompilingStatus";
+import CreatingProjectStatus from "./CreatingProjectStatus";
 import DeletingProjectStatus from "./DeleteProjectStatus";
 import GitCloningStatus from "./GitCloneStatus";
 import NpmStatus from "./NpmStatus";
@@ -19,6 +20,7 @@ class SnackbarContainer extends React.Component {
                 <NpmStatus />
                 <GitCloningStatus />
 				<DeletingProjectStatus />
+				<CreatingProjectStatus />
             </React.Fragment>
 		);
 	}

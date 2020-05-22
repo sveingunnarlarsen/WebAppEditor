@@ -122,6 +122,7 @@ export interface AppEditorState {
 	editorResized: number;
 	terminalResized: number;
 	updateEditors: number;
+	isCreating: boolean;
 	isCompiling: boolean;
 	isDeleting: boolean;
 	modules: any[];
