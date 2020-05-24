@@ -1,5 +1,5 @@
 import store from "../store";
-import {monaco, deleteModel, createModel} from "../monaco";
+import { monaco, deleteModel, createModel } from "../monaco";
 import { LanguageClient as LanguageClientType, ClientEvent } from "../types/language-client";
 import { provideDiagnostics } from "./providers/diagnosticProvider";
 import { CompletionItemProvider } from "./providers/completionItemProvider";
@@ -9,11 +9,14 @@ import { DefinitionProvider } from "./providers/definitionProvider";
 import { ReferenceProvider } from "./providers/referenceProvider";
 import { DocumentFormattingEditorProvider } from "./providers/documentFormattingEditProvider";
 
+import { spanToRange } from "./utils";
+import { updateModel } from "../monaco";
+
 let appId;
 //@ts-ignore
 const client: LanguageClientType = new LanguageClient();
 
-(async function () {
+(async function() {
     try {
         const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const lsUrl = `${wsProtocol}://${window.location.hostname}:8082`;
@@ -39,7 +42,7 @@ const client: LanguageClientType = new LanguageClient();
     if (client.isConnected) {
         store.subscribe(handleChange);
     }
-    
+
     monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
     monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
     monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
@@ -58,6 +61,34 @@ function handleChange() {
         appId = store.getState().app.id;
         client.initialize(appId);
         console.log("Language client initialized for project", appId);
+    }
+}
+
+export async function formatAllFiles() {
+    if (client.isReady) {
+
+        const options: monaco.languages.FormattingOptions = {
+            insertSpaces: true,
+            tabSize: 4,
+        }
+
+        const models = monaco.editor.getModels();
+        models.forEach(async model => {
+            const response = await client.getFormattingEdits(
+                model.uri.path,
+                options.insertSpaces,
+                options.tabSize,
+            );
+
+            const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
+                text: e.newText,
+                range: spanToRange(e.span, model.uri),
+            }));
+
+            console.log("Applying edits: ", textEdits);
+            model.applyEdits(textEdits);
+            updateModel(model);
+        })
     }
 }
 

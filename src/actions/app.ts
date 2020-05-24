@@ -1,34 +1,34 @@
-import {Actions, project} from "../types";
-import {DialogType} from "../types/dialog";
-import {cloneGitRepo, deleteGitRepo} from "../git";
-import {loadProject} from "../monaco"
+import { Actions, project } from "../types";
+import { DialogType } from "../types/dialog";
+import { cloneGitRepo, deleteGitRepo } from "../git";
+import { loadProject } from "../monaco"
 
-import {getNpmModules} from "./npm";
-import {throwError, handleAjaxError, handleCompileError} from "./error";
-import {convertApiWebAppData, destructAppServerProps} from "./utils";
+import { getNpmModules } from "./npm";
+import { throwError, handleAjaxError, handleCompileError } from "./error";
+import { convertApiWebAppData, destructAppServerProps } from "./utils";
 
-import {reset, openDialog} from "./";
+import { reset, openDialog } from "./";
 
 const headers = {
-	"Content-Type": "application/json"
+    "Content-Type": "application/json"
 };
 
 export function getMasterData() {
-	return function(dispatch) {
-		dispatch(requestMasterData());
+    return function(dispatch) {
+        dispatch(requestMasterData());
 
-		return fetch(`/api/editor/data`)
-			.then(throwError)
-			.then(response => response.json())
-			.then(json => dispatch(receiveMasterData(json)))
-			.catch(error => handleAjaxError(error, dispatch));
-	};
+        return fetch(`/api/editor/data`)
+            .then(throwError)
+            .then(response => response.json())
+            .then(json => dispatch(receiveMasterData(json)))
+            .catch(error => handleAjaxError(error, dispatch));
+    };
 }
 
 export function getWebApps() {
     return function(dispatch, getState) {
         dispatch(requestWebApps());
-        
+
         return fetch(`/api/webapp`)
             .then(throwError)
             .then(response => response.json())
@@ -37,12 +37,12 @@ export function getWebApps() {
     }
 }
 
-export function createProject({type, template, name, description, remote}: project) {
+export function createProject({ type, template, name, description, remote }: project) {
     return function(dispatch, getState) {
         dispatch(reset());
         dispatch(requestCreateWebApp());
-        
-        return createApp({type, template, name, description, remote})
+
+        return createApp({ type, template, name, description, remote })
             .then(throwError)
             .then(response => response.json())
             .then(json => convertApiWebAppData(json))
@@ -57,16 +57,16 @@ export function getProject(id: string) {
         if (id !== getState().app.id) {
             dispatch(reset());
         }
-		dispatch(requestWebApp(id));
+        dispatch(requestWebApp(id));
 
-		return fetch(`/api/webapp/${id}`)
-			.then(throwError)
-			.then(response => response.json())
-			.then(json => convertApiWebAppData(json))
-			.then(app => dispatch(receiveWebApp(app)))
+        return fetch(`/api/webapp/${id}`)
+            .then(throwError)
+            .then(response => response.json())
+            .then(json => convertApiWebAppData(json))
+            .then(app => dispatch(receiveWebApp(app)))
             .then(() => loadProject(getState))
-			.catch(error => handleAjaxError(error, dispatch))
-			.finally(() => dispatch(getNpmModules()))
+            .catch(error => handleAjaxError(error, dispatch))
+            .finally(() => dispatch(getNpmModules()))
     }
 }
 
@@ -74,24 +74,24 @@ export function deleteProject() {
     return function(dispatch, getState) {
         dispatch(requestDeleteWebApp());
         const id = getState().app.id;
-        
+
         if (!id) {
-            return dispatch(openDialog(DialogType.MESSAGE, {message: "No open project"}));
+            return dispatch(openDialog(DialogType.MESSAGE, { message: "No open project" }));
         }
-        
-	    return fetch(`/api/webapp/${id}`, {
-			method: "DELETE"
-		})
-			.then(throwError)
-			.then(() => deleteGitRepo())
-			.then(() => dispatch(reset()))
-			.catch(error => handleAjaxError(error, dispatch));
+
+        return fetch(`/api/webapp/${id}`, {
+            method: "DELETE"
+        })
+            .then(throwError)
+            .then(() => deleteGitRepo())
+            .then(() => dispatch(reset()))
+            .catch(error => handleAjaxError(error, dispatch));
     }
 }
 
 export function saveAppData() {
     return function(dispatch, getState) {
-		return fetch(`/api/webapp/${getState().app.id}`, {
+        return fetch(`/api/webapp/${getState().app.id}`, {
             method: "PATCH",
             headers,
             body: JSON.stringify({
@@ -104,16 +104,16 @@ export function saveAppData() {
 }
 
 export function compileProject() {
-	return function(dispatch, getState) {
-		dispatch(requestCompile());
+    return function(dispatch, getState) {
+        dispatch(requestCompile());
 
-		return fetch(`/api/webapp/${getState().app.id}/deploy`, {
-			method: "POST"
-		})
-			.then(throwError)
-			.catch(error => handleCompileError(error, dispatch))
-			.finally(() => dispatch(receiveCompile()));
-	};
+        return fetch(`/api/webapp/${getState().app.id}/deploy`, {
+            method: "POST"
+        })
+            .then(throwError)
+            .catch(error => handleCompileError(error, dispatch))
+            .finally(() => dispatch(receiveCompile()));
+    };
 }
 
 export function updateAppData(data) {
@@ -124,31 +124,31 @@ export function updateAppData(data) {
 }
 
 function requestMasterData() {
-	return {
-		type: Actions.REQUEST_MASTERDATA
-	};
+    return {
+        type: Actions.REQUEST_MASTERDATA
+    };
 }
 
 function receiveMasterData(data) {
-	return {
-		type: Actions.RECEIVE_MASTERDATA,
-		receivedAt: Date.now(),
-		data
-	};
+    return {
+        type: Actions.RECEIVE_MASTERDATA,
+        receivedAt: Date.now(),
+        data
+    };
 }
 
 function requestWebApps() {
-	return {
-		type: Actions.REQUEST_WEBAPPS
-	};
+    return {
+        type: Actions.REQUEST_WEBAPPS
+    };
 }
 
 function receiveWebApps(data) {
-	return {
-		type: Actions.RECEIVE_WEBAPPS,
-		receivedAt: Date.now(),
-		data
-	};
+    return {
+        type: Actions.RECEIVE_WEBAPPS,
+        receivedAt: Date.now(),
+        data
+    };
 }
 
 function requestCreateWebApp() {
@@ -179,18 +179,18 @@ function receiveWebApp(data) {
 }
 
 function requestCompile() {
-	return {
-		type: Actions.REQUEST_COMPILE
-	};
+    return {
+        type: Actions.REQUEST_COMPILE
+    };
 }
 
 function receiveCompile() {
-	return {
-		type: Actions.RECEIVE_COMPILE
-	};
+    return {
+        type: Actions.RECEIVE_COMPILE
+    };
 }
 
-function createApp({type, template, name, description, remote}: project) {
+function createApp({ type, template, name, description, remote }: project) {
     return fetch(`/api/webapp?fetch=true`, {
         method: "POST",
         headers,

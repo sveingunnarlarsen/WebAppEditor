@@ -16,7 +16,9 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
         options: monaco.languages.FormattingOptions,
         token: monaco.CancellationToken,
     // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.TextEdit[]> {        
+    ): monaco.languages.ProviderResult<monaco.languages.TextEdit[]> {      
+
+        console.log("Edit options: ", options);  
         
         if (!this.languageClient.isReady) return;
 
@@ -24,6 +26,8 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
             model.uri.path,
             model.getValue(),
         );
+
+        console.log("Formatting options: ", options);
 
         const response = await this.languageClient.getFormattingEdits(
             model.uri.path,

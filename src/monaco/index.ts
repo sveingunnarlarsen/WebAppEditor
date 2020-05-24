@@ -11,6 +11,8 @@ function onModelContentChanged(model) {
     clearTimeout(inputTimeout);
 
     inputTimeout = setTimeout(() => {
+        updateModel(model);
+        /*
         let modified = true;
         const content = model.getValue();
         if (!content) return;
@@ -21,22 +23,23 @@ function onModelContentChanged(model) {
             modified = false;
         }
 
-        store.dispatch(updateFileState({...fso, content, modified}));
-        fileUpdated({...fso, content});
+        store.dispatch(updateFileState({ ...fso, content, modified }));
+        fileUpdated({ ...fso, content });
+        */
     }, 500);
 }
 
 function disposeAllModels() {
     monaco.editor.getModels().forEach(model => {
         model.dispose();
-    });    
+    });
 }
 
 export function getModel(path) {
     return monaco.editor.getModel(monaco.Uri.parse(path));
 }
 
-export function createModel(fso: {type: 'file' | 'folder', content: string, path: string}) {
+export function createModel(fso: { type: 'file' | 'folder', content: string, path: string }) {
     if (fso.type === 'file') {
         const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
         model.onDidChangeContent(() => {
@@ -49,15 +52,31 @@ export function deleteModel(path: string) {
     monaco.editor.getModel(monaco.Uri.parse(path)).dispose();
 }
 
+export function updateModel(model) {
+    let modified = true;
+    const content = model.getValue();
+    if (!content) return;
+
+    const fso = getFileByPath(model.uri.path);
+
+    if (fso.orgContent === content) {
+        modified = false;
+    }
+
+    store.dispatch(updateFileState({ ...fso, content, modified }));
+    fileUpdated({ ...fso, content });
+}
+
 export function loadProject(getState: () => AppEditorState) {
     disposeAllModels();
-    
+
     try {
         const fileSystemObjects = getState().app.fileSystemObjects;
         fileSystemObjects.forEach(fso => {
-            if (fso.type === 'file') {                
+            if (fso.type === 'file') {
                 const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
                 model.onDidChangeContent(() => {
+                    console.log("Model content changed");
                     onModelContentChanged(model);
                 });
             }
@@ -72,4 +91,4 @@ export function setModelMarkers(path: string, data) {
     monaco.editor.setModelMarkers(model, "planet9_typescript", data);
 }
 
-export {monaco};
+export { monaco };

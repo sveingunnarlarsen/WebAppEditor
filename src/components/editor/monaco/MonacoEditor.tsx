@@ -84,15 +84,15 @@ const Editor =
         store.dispatch(showFile(file.id, null, range));
       }
 
+      window.editorRef = editorRef.current;
+
       editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
       monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
       monacoRef.current.editor.setTheme(theme);
       
       if (openFileAt) {        
-
-        console.log("Opening file at(2):", openFileAt);
-        
+        console.log("Opening file at(2):", openFileAt);        
         editorRef.current.revealRangeInCenter(openFileAt);
         editorRef.current.setSelection(openFileAt);
         store.dispatch(resetOpenAt());

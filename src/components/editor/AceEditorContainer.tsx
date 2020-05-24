@@ -13,7 +13,7 @@ import {setActiveEditor, splitEditor} from "../../actions/editor";
 import {DialogType} from "../../types/dialog";
 import {SplitDirection} from "../../types/editor";
 import {getFileLanguage} from '../../helpers/utils';
-import {fileOpened, fileUpdated} from "../../completer/index";
+import {fileOpened, fileUpdated, formatAllFiles} from "../../completer/index";
 import {getModel} from "../../monaco";
 
 const mapState = (state, ownProps) => {
@@ -95,6 +95,18 @@ class AceEditorContainer extends React.Component<EditorProps> {
 			this.props.updateFileState({...this.props.fso, content: this.editor.getValue(), modified: true});
 			this.props.save();
 		});
+
+		editor.addAction({
+			id: "format_project",
+			label: "Format Project",
+			precondition: null,
+			keybindingContext: null,
+			contextMenuGroupId: "1_modification",
+			contextMenuOrder: 3,
+			run: () => {
+				formatAllFiles();
+			}
+		})
 
 		if (this.props.editorId) {
 			editor.addAction({
