@@ -14,119 +14,119 @@ import ViewModuleOutlinedIcon from "@material-ui/icons/ViewModuleOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CallToActionIcon from "@material-ui/icons/CallToActionOutlined";
 
-import {withStyles} from "@material-ui/styles";
-import {connect} from "react-redux";
+import { withStyles } from "@material-ui/styles";
+import { connect } from "react-redux";
 
 import store from "../../store/index";
 
-import {togglePreview, openDialog, toggleCLI, switchTool} from "../../actions";
-import {closeAllTabs} from "../../actions/editor";
+import { togglePreview, openDialog, toggleCLI, switchTool } from "../../actions";
+import { closeAllTabs } from "../../actions/editor";
 
-import {Tool} from "../../types";
-import {DialogType} from "../../types/dialog";
+import { Tool } from "../../types";
+import { DialogType } from "../../types/dialog";
 
 const styles = {
-	drawer: {
-		background: "#333333",
-		border: "none",
-		zIndex: 1
-	},
-	icon: {
-		minWidth: 0
-	}
+    drawer: {
+        background: "#333333",
+        border: "none",
+        zIndex: 1
+    },
+    icon: {
+        minWidth: 0
+    }
 };
 
 function mapDispatch(dispatch) {
-	return {
-		switchTool: tool => dispatch(switchTool(tool)),
-		openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
-		togglePreview: () => dispatch(togglePreview()),
-		closeAllTabs: () => dispatch(closeAllTabs()),
-		toggleCommandLine: () => dispatch(toggleCLI()),
-	};
+    return {
+        switchTool: tool => dispatch(switchTool(tool)),
+        openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
+        togglePreview: () => dispatch(togglePreview()),
+        closeAllTabs: () => dispatch(closeAllTabs()),
+        toggleCommandLine: () => dispatch(toggleCLI()),
+    };
 }
 
 interface SideMenuProps {
-	classes: any;
-	width: any;
+    classes: any;
+    width: any;
 
-	switchTool: (tool: Tool) => void;
-	openSearch: () => void;
-	togglePreview: () => void;
-	closeAllTabs: () => void;
-	toggleCommandLine: () => void;
+    switchTool: (tool: Tool) => void;
+    openSearch: () => void;
+    togglePreview: () => void;
+    closeAllTabs: () => void;
+    toggleCommandLine: () => void;
 }
 
 class SideMenu extends React.Component<SideMenuProps> {
-	constructor(props) {
-		super(props);
-	}
+    constructor(props) {
+        super(props);
+    }
 
-	render() {
-		const {classes, width} = this.props;
-		return (
-			<Drawer variant="permanent" classes={{paper: classes.drawer}}>
-				<List style={{width, top: width}}>
-					<ListItem button onClick={() => this.props.switchTool(Tool.EXPLORER)}>
-						<Tooltip title="File explorer">
-							<ListItemIcon className={classes.icon}>
-								<DescriptionOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
-						<Tooltip title="App settings">
-							<ListItemIcon className={classes.icon}>
-								<SettingsOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
-						<Tooltip title="App modules">
-							<ListItemIcon className={classes.icon}>
-								<ViewModuleOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.openSearch()}>
-						<Tooltip title="Search">
-							<ListItemIcon className={classes.icon}>
-								<SearchOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.togglePreview()}>
-						<Tooltip title="Preview">
-							<ListItemIcon className={classes.icon}>
-								<VerticalSplitOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.closeAllTabs()}>
-						<Tooltip title="Close all tabs">
-							<ListItemIcon className={classes.icon}>
-								<CloseOutlinedIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-					<ListItem button onClick={() => this.props.toggleCommandLine()}>
-						<Tooltip title="Terminal">
-							<ListItemIcon className={classes.icon}>
-								<CallToActionIcon />
-							</ListItemIcon>
-						</Tooltip>
-					</ListItem>
-				</List>
-			</Drawer>
-		);
-	}
+    render() {
+        const { classes, width } = this.props;
+        return (
+            <Drawer variant="permanent" classes={{ paper: classes.drawer }}>
+                <List style={{ width, top: width }}>
+                    <ListItem button onClick={() => this.props.switchTool(Tool.EXPLORER)}>
+                        <Tooltip title="File explorer">
+                            <ListItemIcon className={classes.icon}>
+                                <DescriptionOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
+                        <Tooltip title="App settings">
+                            <ListItemIcon className={classes.icon}>
+                                <SettingsOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
+                        <Tooltip title="App modules">
+                            <ListItemIcon className={classes.icon}>
+                                <ViewModuleOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.openSearch()}>
+                        <Tooltip title="Search">
+                            <ListItemIcon className={classes.icon}>
+                                <SearchOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.togglePreview()}>
+                        <Tooltip title="Preview">
+                            <ListItemIcon className={classes.icon}>
+                                <VerticalSplitOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.closeAllTabs()}>
+                        <Tooltip title="Close all tabs">
+                            <ListItemIcon className={classes.icon}>
+                                <CloseOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.toggleCommandLine()}>
+                        <Tooltip title="Terminal">
+                            <ListItemIcon className={classes.icon}>
+                                <CallToActionIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                </List>
+            </Drawer>
+        );
+    }
 }
 
 SideMenu.propTypes = {
-	classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired
 };
 
 export default connect(
-	null,
-	mapDispatch
+    null,
+    mapDispatch
 )(withStyles(styles)(SideMenu));

@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
-import keydown, {Keys} from "react-keydown";
+import { connect } from "react-redux";
+import keydown, { Keys } from "react-keydown";
 
-import {withStyles} from "@material-ui/styles";
+import { withStyles } from "@material-ui/styles";
 import Dialog from "@material-ui/core/Dialog";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
@@ -25,169 +25,169 @@ import AjaxError from "./AjaxError";
 import DeleteProject from "./DeleteProject";
 import NpmInstall from "./NpmInstall";
 
-import {DialogType, DialogState} from "../../types/dialog";
-import {closeDialog} from "../../actions";
+import { DialogType, DialogState } from "../../types/dialog";
+import { closeDialog } from "../../actions";
 
-const {ESC} = Keys;
+const { ESC } = Keys;
 
 const styles = {
-	searchPaper: {
-		minHeight: "80vh",
-		maxHeight: "80vh"
-	},
-	refPaper: {
-		minHeight: "80vh",
-		maxHeight: "80vh"
-	},
-	projectsPaper: {
-		minHeight: "80vh",
-		maxHeight: "80vh"
-	}
+    searchPaper: {
+        minHeight: "80vh",
+        maxHeight: "80vh"
+    },
+    refPaper: {
+        minHeight: "80vh",
+        maxHeight: "80vh"
+    },
+    projectsPaper: {
+        minHeight: "80vh",
+        maxHeight: "80vh"
+    }
 };
 
 const mapState = state => {
-	return {dialog: state.dialog};
+    return { dialog: state.dialog };
 };
 
 function mapDispatch(dispatch) {
-	return {
-		close: () => dispatch(closeDialog())
-	};
+    return {
+        close: () => dispatch(closeDialog())
+    };
 }
 
 interface DialogContainerProps {
-	dialog: DialogState;
+    dialog: DialogState;
 }
 
 function PaperComponent(props) {
-	return (
-		<Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-			<Paper square={true} {...props} />
-		</Draggable>
-	);
+    return (
+        <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
+            <Paper square={true} {...props} />
+        </Draggable>
+    );
 }
 
 class DialogContainer extends React.Component<DialogContainerProps> {
-	constructor(props) {
-		super(props);
-	}
+    constructor(props) {
+        super(props);
+    }
 
-	@keydown(ESC)
-	autocomplete(e) {
-		this.props.close();
-	}
+    @keydown(ESC)
+    autocomplete(e) {
+        this.props.close();
+    }
 
-	getDialogContent(dialog) {
-		const {close, classes} = this.props;
-		switch (dialog.type) {
-			case DialogType.CREATE_PROJECT:
-				return (
-					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<CreateProject close={close} />
-					</Dialog>
-				);
-			case DialogType.PROJECT_LIST:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} classes={{paper: classes.projectsPaper}} open={dialog.visible}>
-						<Projects close={close} />
-					</Dialog>
-				);
-			case DialogType.CREATE_FILE:
-				return (
-					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<NewFile close={close} />
-					</Dialog>
-				);
-			case DialogType.CREATE_FOLDER:
-				return (
-					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<NewFolder close={close} />
-					</Dialog>
-				);
-			case DialogType.RENAME_FILE:
-				return (
-					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<RenameFile close={close} />
-					</Dialog>
-				);
-			case DialogType.RENAME_FOLDER:
-				return (
-					<Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<RenameFolder close={close} />
-					</Dialog>
-				);
-			case DialogType.DELETE_FILE:
-				return (
-					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<DeleteFile close={close} />
-					</Dialog>
-				);
-			case DialogType.NPM_INSTALL:
-				return (
-					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<NpmInstall close={close} />
-					</Dialog>
-				);
-			case DialogType.DELETE_PROJECT:
-				return (
-					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<DeleteProject close={close} />
-					</Dialog>
-				);
-			case DialogType.DELETE_FOLDER:
-				return (
-					<Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<DeleteFolder close={close} />
-					</Dialog>
-				);
-			case DialogType.SEARCH_APP:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.searchPaper}} open={dialog.visible}>
-						<SearchApp close={close} />
-					</Dialog>
-				);
-			case DialogType.SYNTAX_ERROR:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<SyntaxError close={close} />
-					</Dialog>
-				);
-			case DialogType.COMPILE_ERROR:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{margin: "auto"}} open={dialog.visible}>
-						<CompileError close={close} />
-					</Dialog>
-				);
-			case DialogType.MESSAGE:
-				return (
-					<Dialog maxWidth="sm" PaperComponent={PaperComponent} open={dialog.visible}>
-						<Message close={close} />
-					</Dialog>
-				);
-			case DialogType.SERVER_MESSAGE:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.refPaper}} open={dialog.visible}>
-						<ServerMessage close={close} />
-					</Dialog>
-				);
-			case DialogType.AJAX_ERROR:
-				return (
-					<Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{paper: classes.refPaper}} open={dialog.visible}>
-						<AjaxError close={close} />
-					</Dialog>
-				);
-			default:
-				return <div />;
-		}
-	}
+    getDialogContent(dialog) {
+        const { close, classes } = this.props;
+        switch (dialog.type) {
+            case DialogType.CREATE_PROJECT:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <CreateProject close={close} />
+                    </Dialog>
+                );
+            case DialogType.PROJECT_LIST:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} classes={{ paper: classes.projectsPaper }} open={dialog.visible}>
+                        <Projects close={close} />
+                    </Dialog>
+                );
+            case DialogType.CREATE_FILE:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <NewFile close={close} />
+                    </Dialog>
+                );
+            case DialogType.CREATE_FOLDER:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <NewFolder close={close} />
+                    </Dialog>
+                );
+            case DialogType.RENAME_FILE:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <RenameFile close={close} />
+                    </Dialog>
+                );
+            case DialogType.RENAME_FOLDER:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <RenameFolder close={close} />
+                    </Dialog>
+                );
+            case DialogType.DELETE_FILE:
+                return (
+                    <Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <DeleteFile close={close} />
+                    </Dialog>
+                );
+            case DialogType.NPM_INSTALL:
+                return (
+                    <Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <NpmInstall close={close} />
+                    </Dialog>
+                );
+            case DialogType.DELETE_PROJECT:
+                return (
+                    <Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <DeleteProject close={close} />
+                    </Dialog>
+                );
+            case DialogType.DELETE_FOLDER:
+                return (
+                    <Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <DeleteFolder close={close} />
+                    </Dialog>
+                );
+            case DialogType.SEARCH_APP:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.searchPaper }} open={dialog.visible}>
+                        <SearchApp close={close} />
+                    </Dialog>
+                );
+            case DialogType.SYNTAX_ERROR:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <SyntaxError close={close} />
+                    </Dialog>
+                );
+            case DialogType.COMPILE_ERROR:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                        <CompileError close={close} />
+                    </Dialog>
+                );
+            case DialogType.MESSAGE:
+                return (
+                    <Dialog maxWidth="sm" PaperComponent={PaperComponent} open={dialog.visible}>
+                        <Message close={close} />
+                    </Dialog>
+                );
+            case DialogType.SERVER_MESSAGE:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.refPaper }} open={dialog.visible}>
+                        <ServerMessage close={close} />
+                    </Dialog>
+                );
+            case DialogType.AJAX_ERROR:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.refPaper }} open={dialog.visible}>
+                        <AjaxError close={close} />
+                    </Dialog>
+                );
+            default:
+                return <div />;
+        }
+    }
 
-	render() {
-		const {dialog} = this.props;
-		return <React.Fragment>{this.getDialogContent(dialog)}</React.Fragment>;
-	}
+    render() {
+        const { dialog } = this.props;
+        return <React.Fragment>{this.getDialogContent(dialog)}</React.Fragment>;
+    }
 }
 
 export default connect(
-	mapState,
-	mapDispatch
+    mapState,
+    mapDispatch
 )(withStyles(styles)(DialogContainer));

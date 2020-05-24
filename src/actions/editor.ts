@@ -1,5 +1,5 @@
-import {EditorActions} from "../types/editor";
-import {SplitDirection} from "../types/editor";
+import { EditorActions } from "../types/editor";
+import { SplitDirection } from "../types/editor";
 
 export function resetOpenAt() {
     return {

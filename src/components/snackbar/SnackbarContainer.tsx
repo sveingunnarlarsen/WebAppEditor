@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 import CompilingStatus from "./CompilingStatus";
 import CreatingProjectStatus from "./CreatingProjectStatus";
@@ -9,21 +9,21 @@ import GitCloningStatus from "./GitCloneStatus";
 import NpmStatus from "./NpmStatus";
 
 class SnackbarContainer extends React.Component {
-	constructor(props) {
-		super(props);
-	}
+    constructor(props) {
+        super(props);
+    }
 
-	render() {
-		return (
-		    <React.Fragment>
+    render() {
+        return (
+            <React.Fragment>
                 <CompilingStatus />
                 <NpmStatus />
                 <GitCloningStatus />
-				<DeletingProjectStatus />
-				<CreatingProjectStatus />
+                <DeletingProjectStatus />
+                <CreatingProjectStatus />
             </React.Fragment>
-		);
-	}
+        );
+    }
 }
 
 export default SnackbarContainer;

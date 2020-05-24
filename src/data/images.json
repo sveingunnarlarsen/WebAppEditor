@@ -1,129 +1,129 @@
 {
-	"items": [
-		{
-			"type": "yml",
-			"name": "Webpack",
-			"image": "/public/icons/seti/yml.svg"
-		},
-		{
-			"type": "config.js",
-			"name": "Webpack",
-			"image": "/public/icons/seti/webpack.svg"
-		},
-		{
-			"type": "js",
-			"name": "JavaScript",
-			"image": "/public/icons/seti/javascript.svg"
-		},
-		{
-			"type": "folder",
-			"name": "Folder",
-			"image": ""
-		},
-		{
-			"type": "ts",
-			"name": "Typescript",
-			"image": "/public/icons/seti/typescript.svg"
-		},
-		{
-			"type": "css",
-			"name": "Stylesheet",
-			"image": "/public/icons/seti/css.svg"
-		},
-		{
-			"type": "scss",
-			"name": "scss",
-			"image": "/public/icons/seti/css.svg"
-		},
-		{
-			"type": "html",
-			"name": "HTML",
-			"image": "/public/icons/seti/html.svg"
-		},
-		{
-			"type": "gif",
-			"name": "Image",
-			"image": "/public/icons/seti/image.svg"
-		},
-		{
-			"type": "xml",
-			"name": "XML",
-			"image": "/public/icons/seti/xml.svg"
-		},
-		{
-			"type": "json",
-			"name": "JSON",
-			"image": "/public/icons/seti/json.svg"
-		},
-		{
-			"type": "md",
-			"name": "MD",
-			"image": "/public/icons/seti/info.svg"
-		},
-		{
-			"type": "gitignore",
-			"name": "GITIGNORE",
-			"image": "/public/icons/seti/git_ignore.svg"
-		},
-		{
-			"type": "jsx",
-			"name": "JSX",
-			"image": "/public/icons/seti/react.svg"
-		},
-		{
-			"type": "tsx",
-			"name": "TSX",
-			"image": "/public/icons/seti/react.svg"
-		},
-		{
-			"type": "sass",
-			"name": "sass",
-			"image": "/public/icons/seti/sass.svg"
-		},
-		{
-			"type": "less",
-			"name": "less",
-			"image": "/public/icons/seti/less.svg"
-		},
-		{
-			"type": "dockerignore",
-			"name": "dockerignore",
-			"image": "/public/icons/seti/docker.svg"
-		},
-		{
-			"type": "license",
-			"name": "license",
-			"image": "/public/icons/seti/license.svg"
-		},
-		{
-			"type": "svg",
-			"name": "Image",
-			"image": "/public/icons/seti/image.svg"
-		},
-		{
-			"type": "png",
-			"name": "Image",
-			"image": "/public/icons/seti/image.svg"
-		},
-		{
-			"type": "jpg",
-			"name": "Image",
-			"image": "/public/icons/seti/image.svg"
-		},
-		{
-			"type": "jpeg",
-			"name": "Image",
-			"image": "/public/icons/seti/image.svg"
-		},
-		{
-			"type": "vue",
-			"name": "vue",
-			"image": "/public/icons/seti/vue.svg"
-		},
-		{
-			"type": "ico",
-			"name": "Image",
-			"image": "/public/icons/seti/favicon.svg"
-		}
-	]
+    "items": [
+        {
+            "type": "yml",
+            "name": "Webpack",
+            "image": "/public/icons/seti/yml.svg"
+        },
+        {
+            "type": "config.js",
+            "name": "Webpack",
+            "image": "/public/icons/seti/webpack.svg"
+        },
+        {
+            "type": "js",
+            "name": "JavaScript",
+            "image": "/public/icons/seti/javascript.svg"
+        },
+        {
+            "type": "folder",
+            "name": "Folder",
+            "image": ""
+        },
+        {
+            "type": "ts",
+            "name": "Typescript",
+            "image": "/public/icons/seti/typescript.svg"
+        },
+        {
+            "type": "css",
+            "name": "Stylesheet",
+            "image": "/public/icons/seti/css.svg"
+        },
+        {
+            "type": "scss",
+            "name": "scss",
+            "image": "/public/icons/seti/css.svg"
+        },
+        {
+            "type": "html",
+            "name": "HTML",
+            "image": "/public/icons/seti/html.svg"
+        },
+        {
+            "type": "gif",
+            "name": "Image",
+            "image": "/public/icons/seti/image.svg"
+        },
+        {
+            "type": "xml",
+            "name": "XML",
+            "image": "/public/icons/seti/xml.svg"
+        },
+        {
+            "type": "json",
+            "name": "JSON",
+            "image": "/public/icons/seti/json.svg"
+        },
+        {
+            "type": "md",
+            "name": "MD",
+            "image": "/public/icons/seti/info.svg"
+        },
+        {
+            "type": "gitignore",
+            "name": "GITIGNORE",
+            "image": "/public/icons/seti/git_ignore.svg"
+        },
+        {
+            "type": "jsx",
+            "name": "JSX",
+            "image": "/public/icons/seti/react.svg"
+        },
+        {
+            "type": "tsx",
+            "name": "TSX",
+            "image": "/public/icons/seti/react.svg"
+        },
+        {
+            "type": "sass",
+            "name": "sass",
+            "image": "/public/icons/seti/sass.svg"
+        },
+        {
+            "type": "less",
+            "name": "less",
+            "image": "/public/icons/seti/less.svg"
+        },
+        {
+            "type": "dockerignore",
+            "name": "dockerignore",
+            "image": "/public/icons/seti/docker.svg"
+        },
+        {
+            "type": "license",
+            "name": "license",
+            "image": "/public/icons/seti/license.svg"
+        },
+        {
+            "type": "svg",
+            "name": "Image",
+            "image": "/public/icons/seti/image.svg"
+        },
+        {
+            "type": "png",
+            "name": "Image",
+            "image": "/public/icons/seti/image.svg"
+        },
+        {
+            "type": "jpg",
+            "name": "Image",
+            "image": "/public/icons/seti/image.svg"
+        },
+        {
+            "type": "jpeg",
+            "name": "Image",
+            "image": "/public/icons/seti/image.svg"
+        },
+        {
+            "type": "vue",
+            "name": "vue",
+            "image": "/public/icons/seti/vue.svg"
+        },
+        {
+            "type": "ico",
+            "name": "Image",
+            "image": "/public/icons/seti/favicon.svg"
+        }
+    ]
 }

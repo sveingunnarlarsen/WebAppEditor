@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import "../../types/monaco";
-import {LanguageClient} from "../../types/language-client";
+import { LanguageClient } from "../../types/language-client";
 
 export class SignatureHelpProvider implements monaco.languages.SignatureHelpProvider {
 
@@ -13,7 +13,7 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
     async provideSignatureHelp(
         model: monaco.editor.ITextModel,
         position: monaco.Position,
-        token: monaco.CancellationToken,    
+        token: monaco.CancellationToken,
         context: monaco.languages.SignatureHelpContext,
         // @ts-ignore
     ): monaco.languages.ProviderResult<monaco.languages.SignatureHelpResult> {
@@ -50,18 +50,18 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
                 documentation: ts.displayPartsToString(item.documentation),
                 parameters,
             };
-        });		
+        });
 
 
-		
+
         return {
-			value: {
-				signatures: signatureInformations,
-				activeSignature: response.result.selectedItemIndex,
-				activeParameter: response.result.argumentIndex,
-			},
-			dispose: function() {
-                console.log("Dispose called");       
+            value: {
+                signatures: signatureInformations,
+                activeSignature: response.result.selectedItemIndex,
+                activeParameter: response.result.argumentIndex,
+            },
+            dispose: function() {
+                console.log("Dispose called");
             }
         };
     }

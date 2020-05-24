@@ -1,5 +1,5 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -9,31 +9,31 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 const mapState = state => {
-	return {
-		data: state.dialog.data
-	};
+    return {
+        data: state.dialog.data
+    };
 };
 
 class SyntaxError extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			value: this.props.data
-		};
-	}
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: this.props.data
+        };
+    }
 
-	render() {
-		const {close} = this.props;
-		const {value} = this.state;
-		return (
-			<React.Fragment>
-				<DialogTitle>Syntax Error</DialogTitle>
-				<DialogActions>
-					<Button onClick={close}>Close</Button>
-				</DialogActions>
-			</React.Fragment>
-		);
-	}
+    render() {
+        const { close } = this.props;
+        const { value } = this.state;
+        return (
+            <React.Fragment>
+                <DialogTitle>Syntax Error</DialogTitle>
+                <DialogActions>
+                    <Button onClick={close}>Close</Button>
+                </DialogActions>
+            </React.Fragment>
+        );
+    }
 }
 
 export default connect(mapState)(SyntaxError);

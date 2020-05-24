@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import "../../types/monaco";
-import {LanguageClient as LanguageClientType} from "../../types/language-client";
+import { LanguageClient as LanguageClientType } from "../../types/language-client";
 
 export class HoverProvider implements monaco.languages.HoverProvider {
 
@@ -14,11 +14,11 @@ export class HoverProvider implements monaco.languages.HoverProvider {
         model: monaco.editor.ITextModel,
         position: monaco.Position,
         token: monaco.CancellationToken,
-    // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.Hover> {        
-    
+        // @ts-ignore
+    ): monaco.languages.ProviderResult<monaco.languages.Hover> {
+
         if (!this.languageClient.isReady) return;
-        
+
         await this.languageClient.textDocumentChanged(
             model.uri.path,
             model.getValue(),
@@ -29,19 +29,19 @@ export class HoverProvider implements monaco.languages.HoverProvider {
             position.lineNumber - 1,
             position.column - 1,
         );
-    
-        if (response.result && response.result.displayParts) {            
-            
+
+        if (response.result && response.result.displayParts) {
+
             const parts = [];
             const displayParts = '```typescript\n' +
-                                 ts.displayPartsToString(response.result.displayParts) + '\n' +
-                                 '```\n';
-            parts.push({value: displayParts});
+                ts.displayPartsToString(response.result.displayParts) + '\n' +
+                '```\n';
+            parts.push({ value: displayParts });
 
             if (response.result.documentation) {
                 const text = ts.displayPartsToString(response.result.documentation);
-                
-                parts.push({value: text});
+
+                parts.push({ value: text });
             }
 
             const hover: monaco.languages.Hover = {

@@ -1,7 +1,7 @@
-import {setModelMarkers} from "../../monaco";
+import { setModelMarkers } from "../../monaco";
 
 export function provideDiagnostics(result) {
-    const markerData = result.diagnostics.map(d => new ModelMarker({...d, path: result.path}));
+    const markerData = result.diagnostics.map(d => new ModelMarker({ ...d, path: result.path }));
     setModelMarkers(result.path, markerData);
 }
 
@@ -19,25 +19,25 @@ class ModelMarker implements monaco.editor.IMarkerData {
     endColumn: number;
     relatedInformation?: monaco.editor.IRelatedInformation[];
     tags?: monaco.MarkerTag[];
-        
-    constructor({code, path, severity, message, range, source, relatedInformation, tags}: {
+
+    constructor({ code, path, severity, message, range, source, relatedInformation, tags }: {
         code: string;
         path: string;
         severity: monaco.MarkerSeverity;
         message: string;
-		range: { start: {line: number, character: number}, end: {line: number, character: number}};
-		source?: string;
+        range: { start: { line: number, character: number }, end: { line: number, character: number } };
+        source?: string;
         relatedInformation?: monaco.editor.IRelatedInformation[];
         tags?: monaco.MarkerTag[];
-	}) {
-		this.code = {value: code, link: monaco.Uri.parse(path)};
+    }) {
+        this.code = { value: code, link: monaco.Uri.parse(path) };
         this.severity = severity;
         this.message = message;
-		this.startLineNumber = range.start.line + 1;
+        this.startLineNumber = range.start.line + 1;
         this.startColumn = range.start.character + 1;
         this.endLineNumber = range.end.line + 1;
-        this.endColumn = range.end.character + 1;    
-		this.source = source;
+        this.endColumn = range.end.character + 1;
+        this.source = source;
         this.relatedInformation = relatedInformation;
         this.tags = tags;
     }

@@ -10,22 +10,22 @@ body {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+    background: #f1f1f1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+    background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+    background: #555;
 }
 
 .webix_tree_none {
@@ -33,34 +33,34 @@ body {
 }
 
 .webix_view {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow-y: auto!important;
+    overflow-x: hidden!important;
     height: 100% !important;
     width: 100% !important;
     background-color: transparent;
 }
 
 .webix_tree_item {
-    font-family: "72", Arial, Helvetica, sans-serif;
+    font-family: "72", Arial, Helvetica, sans - serif;
     font-size: 13px;
     cursor: pointer;
     color: white;
 }
 
 .webix_tree_item.webix_selected {
-    background: #094771 !important;
+    background: #094771!important;
 }
 
 .webix_top {
     background: none;
-    background-image: linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit-linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: linear - gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit - linear - gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
 }
 
 .webix_bottom {
     background: none;
-    background-image: linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit-linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: linear - gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit - linear - gradient(bottom, orange, orange 10%, transparent 10 %, transparent 100 %);
 }
 
 .treeMarker {
@@ -78,15 +78,15 @@ body {
 }
 
 .webix_disabled {
-    color: #bb0000 !important;
+    color: #bb0000!important;
 }
 
 .webix_changed {
-    color: wheat !important;
+    color: wheat!important;
 }
 
 .webix_changed::after {
-    content: " M";
+    content: "M";
     right: 10px;
     position: absolute;
 }
@@ -107,11 +107,11 @@ body {
 .webix_drag_main,
 .webix_drag_multiple,
 .webix_drag_multiple_last {
-    background-color: #3f5161 !important;
+    background-color: #3f5161!important;
     color: white;
 }
 
-.webix_tree .webix_scroll_cont>.webix_tree_leaves {
+.webix_tree.webix_scroll_cont >.webix_tree_leaves {
     padding: 0px;
 }
 

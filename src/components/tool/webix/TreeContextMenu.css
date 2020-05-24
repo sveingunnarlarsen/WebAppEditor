@@ -6,17 +6,17 @@
 .contextMenu--option {
     padding: 6px 50px 5px 10px;
     min-width: 160px;
-    cursor: default;
+    cursor: default ;
     font-size: 12px;
 }
 
 .contextMenu--option:hover {
-    background: linear-gradient(to top, #555, #333);
+    background: linear - gradient(to top, #555, #333);
     color: white;
 }
 
 .contextMenu--option:active {
-    background: linear-gradient(to top, #555, #333);
+    background: linear - gradient(to top, #555, #333);
     color: white;
 }
 

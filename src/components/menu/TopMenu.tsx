@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
-import {withStyles} from "@material-ui/styles";
+import { connect } from "react-redux";
+import { withStyles } from "@material-ui/styles";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,91 +12,91 @@ import Typography from '@material-ui/core/Typography';
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 
-import {compileProject} from "../../actions/app";
+import { compileProject } from "../../actions/app";
 
 const styles = {
-	appBar: {
-		background: "#333333",
-		boxShadow: "none"
-	}
+    appBar: {
+        background: "#333333",
+        boxShadow: "none"
+    }
 };
 
 const mapState = state => {
-	return {
-		appName: state.app.name
-	};
+    return {
+        appName: state.app.name
+    };
 };
 
 function mapDispatch(dispatch) {
-	return {
-		compile: () => dispatch(compileProject())
-	};
+    return {
+        compile: () => dispatch(compileProject())
+    };
 }
 
 class TopMenu extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			anchorEl: null
-		};
-	}
+    constructor(props) {
+        super(props);
+        this.state = {
+            anchorEl: null
+        };
+    }
 
-	handleProjectMenuToggle(event) {
-		this.setState({
-			anchorEl: event.currentTarget
-		});
-	}
+    handleProjectMenuToggle(event) {
+        this.setState({
+            anchorEl: event.currentTarget
+        });
+    }
 
-	closeProjectMenu = () => {
-		this.setState({
-			anchorEl: null
-		});
-	}
+    closeProjectMenu = () => {
+        this.setState({
+            anchorEl: null
+        });
+    }
 
-	compileProject = () => {
-		this.props.compile();
-	}
-	
-	runPreview = () => {
-	    window.open(`/api/webapp/${store.getState().app.id}/preview`);
-	}
-	
-	runApp = () => {
-	    window.open(`/webapp/${store.getState().app.name}`);
-	}
+    compileProject = () => {
+        this.props.compile();
+    }
 
-	render() {
-		const {classes} = this.props;
-		return (
-			<AppBar className={classes.appBar}>
-				<Toolbar style={{minHeight: this.props.height, paddingLeft: this.props.height}}>
-					<Button onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
-						Project
+    runPreview = () => {
+        window.open(`/api/webapp/${store.getState().app.id}/preview`);
+    }
+
+    runApp = () => {
+        window.open(`/webapp/${store.getState().app.name}`);
+    }
+
+    render() {
+        const { classes } = this.props;
+        return (
+            <AppBar className={classes.appBar}>
+                <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
+                    <Button onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
+                        Project
 					</Button>
-					<Button onClick={this.compileProject}>
-						Compile
+                    <Button onClick={this.compileProject}>
+                        Compile
 					</Button>
-					<Button onClick={this.runPreview}>
-						Run Preview
+                    <Button onClick={this.runPreview}>
+                        Run Preview
 					</Button>
-					<Button onClick={this.runApp}>
-						Run
+                    <Button onClick={this.runApp}>
+                        Run
 					</Button>
-		            <Typography variant="h6" style={{flexGrow: 1, textAlign: 'center'}}>
+                    <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
                         {this.props.appName}
                     </Typography>
-					<ProjectMenu anchorEl={this.state.anchorEl} closeMenu={this.closeProjectMenu} />
-				</Toolbar>
-			</AppBar>
-		);
-	}
+                    <ProjectMenu anchorEl={this.state.anchorEl} closeMenu={this.closeProjectMenu} />
+                </Toolbar>
+            </AppBar>
+        );
+    }
 }
 
 TopMenu.propTypes = {
-	classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired
 };
 
 export default connect(
-	mapState,
-	mapDispatch
+    mapState,
+    mapDispatch
 )(withStyles(styles)(TopMenu));

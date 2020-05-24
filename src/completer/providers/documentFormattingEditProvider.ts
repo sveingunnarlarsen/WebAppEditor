@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import "../../types/monaco";
-import {LanguageClient as LanguageClientType} from "../../types/language-client";
-import {spanToRange} from "../utils";
+import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { spanToRange } from "../utils";
 
 export class DocumentFormattingEditorProvider implements monaco.languages.DocumentFormattingEditProvider {
 
@@ -15,11 +15,11 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
         model: monaco.editor.ITextModel,
         options: monaco.languages.FormattingOptions,
         token: monaco.CancellationToken,
-    // @ts-ignore
-    ): monaco.languages.ProviderResult<monaco.languages.TextEdit[]> {      
+        // @ts-ignore
+    ): monaco.languages.ProviderResult<monaco.languages.TextEdit[]> {
 
-        console.log("Edit options: ", options);  
-        
+        console.log("Edit options: ", options);
+
         if (!this.languageClient.isReady) return;
 
         await this.languageClient.textDocumentChanged(

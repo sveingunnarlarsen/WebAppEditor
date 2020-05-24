@@ -1,4 +1,4 @@
-import {base64ToArrayBuffer, arrayBufferToBase64, isImage} from "../helpers/utils";
+import { base64ToArrayBuffer, arrayBufferToBase64, isImage } from "../helpers/utils";
 const decoder = new TextDecoder('utf8');
 
 export async function getFileContent(pfs, filePath: string) {
@@ -16,7 +16,7 @@ export async function writeFileContent(pfs, filePath: string, content: string) {
     } else {
         await pfs.writeFile(filePath, content, "utf8");
     }
-} 
+}
 
 export async function fsExists(pfs, path) {
     try {

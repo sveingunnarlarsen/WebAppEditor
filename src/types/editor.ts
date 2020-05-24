@@ -1,5 +1,5 @@
 export enum EditorActions {
-	RESET_OPEN_AT = "RESET_OPEN_AT",	
+    RESET_OPEN_AT = "RESET_OPEN_AT",
     SHOW_FILE = "SHOW_FILE",
     CLOSE_TAB = "CLOSE_TAB",
     CLOSE_FILE = "CLOSE_FILE",
@@ -11,33 +11,33 @@ export enum EditorActions {
 }
 
 export enum SplitDirection {
-	VERTICAL = "vertical",
-	HORIZONTAL = "horizontal"
+    VERTICAL = "vertical",
+    HORIZONTAL = "horizontal"
 }
 
 export interface EditorState {
-	activeEditor: string;
-	activeContainer: string;
-	editors: Editor[];
-	containers: EditorContainer[];
-	openFileAt: any | null;
+    activeEditor: string;
+    activeContainer: string;
+    editors: Editor[];
+    containers: EditorContainer[];
+    openFileAt: any | null;
 }
 
 export interface Editor {
-	id: string;
-	activeTab: string;
-	tabs: string[];
+    id: string;
+    activeTab: string;
+    tabs: string[];
 }
 
 export interface EditorContainer {
-	id: string;
-	split: SplitDirection;
-	editor1: {
-		isContainer: boolean;
-		id: string;
-	};
-	editor2: {
-		isContainer: boolean;
-		id: string;
-	};
+    id: string;
+    split: SplitDirection;
+    editor1: {
+        isContainer: boolean;
+        id: string;
+    };
+    editor2: {
+        isContainer: boolean;
+        id: string;
+    };
 }

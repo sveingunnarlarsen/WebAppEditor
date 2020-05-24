@@ -94,24 +94,24 @@ import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution'
 
 // @ts-ignore
 self.MonacoEnvironment = {
-	getWorkerUrl: function (moduleId, label) {
-		// @ts-ignore
-		const basePath = ROOTPATH;
-		console.log("Basepath: ", basePath);
-		if (label === 'json') {
-			return `./WebAppEditor/build/json.worker.bundle.js`;
-		}
-		if (label === 'css') {
-			return `./WebAppEditor/build/css.worker.bundle.js`;
-		}
-		if (label === 'html') {
-			return `./WebAppEditor/build/html.worker.bundle.js`;
-		}
-		if (label === 'typescript' || label === 'javascript') {
-			return `./WebAppEditor/build/ts.worker.bundle.js`;
-		}
-		return `${basePath}/build/editor.worker.bundle.js`;
-	}
+    getWorkerUrl: function(moduleId, label) {
+        // @ts-ignore
+        const basePath = ROOTPATH;
+        console.log("Basepath: ", basePath);
+        if (label === 'json') {
+            return `./WebAppEditor/build/json.worker.bundle.js`;
+        }
+        if (label === 'css') {
+            return `./WebAppEditor/build/css.worker.bundle.js`;
+        }
+        if (label === 'html') {
+            return `./WebAppEditor/build/html.worker.bundle.js`;
+        }
+        if (label === 'typescript' || label === 'javascript') {
+            return `./WebAppEditor/build/ts.worker.bundle.js`;
+        }
+        return `${basePath}/build/editor.worker.bundle.js`;
+    }
 }
 
 export default monaco;

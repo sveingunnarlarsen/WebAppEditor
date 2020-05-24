@@ -9,134 +9,134 @@ import { showFile, resetOpenAt } from "../../../actions/editor";
 const noop = _ => { };
 const useMount = effect => useEffect(effect, []);
 const useUpdate = (effect, deps, applyChanges = true) => {
-  const isInitialMount = useRef(true);
+    const isInitialMount = useRef(true);
 
-  useEffect(
-    isInitialMount.current || !applyChanges
-      ? _ => { isInitialMount.current = false }
-      : effect,
-    deps
-  );
+    useEffect(
+        isInitialMount.current || !applyChanges
+            ? _ => { isInitialMount.current = false }
+            : effect,
+        deps
+    );
 };
 
 const themes = {
-  'night-dark': {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
-    colors: {
-      'editor.background': '#202124',
+    'night-dark': {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.background': '#202124',
+        },
     },
-  },
 };
 
 const Editor =
-  ({ model, viewState, openFileAt, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
-    const [isEditorReady, setIsEditorReady] = useState(false);
-    const [isMonacoMounting, setIsMonacoMounting] = useState(true);
-    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-    const monacoRef = useRef<typeof monaco>();
-    const containerRef = useRef();
+    ({ model, viewState, openFileAt, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
+        const [isEditorReady, setIsEditorReady] = useState(false);
+        const [isMonacoMounting, setIsMonacoMounting] = useState(true);
+        const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+        const monacoRef = useRef<typeof monaco>();
+        const containerRef = useRef();
 
-    useMount(_ => {
-      monacoRef.current = monaco;
-      setIsMonacoMounting(false);
+        useMount(_ => {
+            monacoRef.current = monaco;
+            setIsMonacoMounting(false);
 
-      return _ => editorRef.current ? disposeEditor() : null;
-    });
+            return _ => editorRef.current ? disposeEditor() : null;
+        });
 
-    useUpdate(_ => {
-      editorRef.current.setModel(model);
-      if (viewState) {
-        editorRef.current.restoreViewState(viewState);
-      }
-      if (openFileAt) {
-        console.log("Opening file at: ", openFileAt);
-        editorRef.current.revealRangeInCenter(openFileAt);
-        editorRef.current.setSelection(openFileAt);
-        store.dispatch(resetOpenAt());
-      }
-    }, [model, viewState, openFileAt], isEditorReady);
+        useUpdate(_ => {
+            editorRef.current.setModel(model);
+            if (viewState) {
+                editorRef.current.restoreViewState(viewState);
+            }
+            if (openFileAt) {
+                console.log("Opening file at: ", openFileAt);
+                editorRef.current.revealRangeInCenter(openFileAt);
+                editorRef.current.setSelection(openFileAt);
+                store.dispatch(resetOpenAt());
+            }
+        }, [model, viewState, openFileAt], isEditorReady);
 
-    useUpdate(_ => {
-      editorRef.current.setScrollPosition({ scrollTop: line });
-    }, [line], isEditorReady);
+        useUpdate(_ => {
+            editorRef.current.setScrollPosition({ scrollTop: line });
+        }, [line], isEditorReady);
 
-    useUpdate(_ => {
-      monacoRef.current.editor.setTheme(theme);
-    }, [theme], isEditorReady);
+        useUpdate(_ => {
+            monacoRef.current.editor.setTheme(theme);
+        }, [theme], isEditorReady);
 
-    useUpdate(_ => {
-      editorRef.current.updateOptions(options);
-    }, [options], isEditorReady);
+        useUpdate(_ => {
+            editorRef.current.updateOptions(options);
+        }, [options], isEditorReady);
 
-    const createEditor = useCallback(_ => {
+        const createEditor = useCallback(_ => {
 
-      editorRef.current = monacoRef.current.editor.create(containerRef.current, {
-        model,
-        ...options,
-      });
+            editorRef.current = monacoRef.current.editor.create(containerRef.current, {
+                model,
+                ...options,
+            });
 
-      // @ts-ignore
-      editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
-        const file = getFileByPath(resource.path);        
-        const range = options.selection; 
-        store.dispatch(showFile(file.id, null, range));
-      }
+            // @ts-ignore
+            editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
+                const file = getFileByPath(resource.path);
+                const range = options.selection;
+                store.dispatch(showFile(file.id, null, range));
+            }
 
-      window.editorRef = editorRef.current;
+            window.editorRef = editorRef.current;
 
-      editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
+            editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
-      monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
-      monacoRef.current.editor.setTheme(theme);
-      
-      if (openFileAt) {        
-        console.log("Opening file at(2):", openFileAt);        
-        editorRef.current.revealRangeInCenter(openFileAt);
-        editorRef.current.setSelection(openFileAt);
-        store.dispatch(resetOpenAt());
-      }
-      setIsEditorReady(true);
-    }, [editorDidMount, model, openFileAt, options, theme]);
+            monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
+            monacoRef.current.editor.setTheme(theme);
 
-    useEffect(_ => {
-      !isMonacoMounting && !isEditorReady && createEditor();
-    }, [isMonacoMounting, isEditorReady, createEditor]);
+            if (openFileAt) {
+                console.log("Opening file at(2):", openFileAt);
+                editorRef.current.revealRangeInCenter(openFileAt);
+                editorRef.current.setSelection(openFileAt);
+                store.dispatch(resetOpenAt());
+            }
+            setIsEditorReady(true);
+        }, [editorDidMount, model, openFileAt, options, theme]);
 
-    const disposeEditor = () => editorRef.current.dispose();
+        useEffect(_ => {
+            !isMonacoMounting && !isEditorReady && createEditor();
+        }, [isMonacoMounting, isEditorReady, createEditor]);
 
-    return <MonacoContainer
-      width={width}
-      height={height}
-      isEditorReady={isEditorReady}
-      loading={loading}
-      _ref={containerRef}
-    />;
-  };
+        const disposeEditor = () => editorRef.current.dispose();
+
+        return <MonacoContainer
+            width={width}
+            height={height}
+            isEditorReady={isEditorReady}
+            loading={loading}
+            _ref={containerRef}
+        />;
+    };
 
 Editor.propTypes = {
-  model: PropTypes.any,
-  viewState: PropTypes.any,
-  editorDidMount: PropTypes.func,
-  theme: PropTypes.string,
-  line: PropTypes.number,
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  loading: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  options: PropTypes.object,
-  openFileAt: PropTypes.object,
-  _isControlledMode: PropTypes.bool,
+    model: PropTypes.any,
+    viewState: PropTypes.any,
+    editorDidMount: PropTypes.func,
+    theme: PropTypes.string,
+    line: PropTypes.number,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    loading: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
+    options: PropTypes.object,
+    openFileAt: PropTypes.object,
+    _isControlledMode: PropTypes.bool,
 };
 
 Editor.defaultProps = {
-  editorDidMount: noop,
-  theme: 'light',
-  width: '100%',
-  height: '100%',
-  loading: 'Loading...',
-  options: {},
-  _isControlledMode: false,
+    editorDidMount: noop,
+    theme: 'light',
+    width: '100%',
+    height: '100%',
+    loading: 'Loading...',
+    options: {},
+    _isControlledMode: false,
 };
 
 export default Editor;
