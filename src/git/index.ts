@@ -2,6 +2,7 @@ import * as JsDiff from "diff";
 import * as chalk from "chalk";
 import yargs from "yargs-parser";
 
+import { FileSystemObject } from "../types";
 import { startGitCloneClone, endGitClone } from "../actions";
 import { createFsos, save, deleteFsos } from "../actions/file";
 import store from "../store";
@@ -581,14 +582,13 @@ export async function deleteGitRepo(folder = currentAppName) {
     }
 }
 
-export async function syncFile({ id, path, content, type }: { id: string; path: string; content: string, type: "file" | "folder" }) {
+export async function syncFile({ id, path, content, type }: { id: string; path: string; content: string, type: "file" | "folder" }, originalFso?: FileSystemObject) {
     try {
-        const originalFso = getFileById(id);
         if (type === "file") {
             if (originalFso && originalFso.path !== path) {
                 console.log(id, "Deleting from fs: ", originalFso.path, path);
                 await pfs.unlink(`${currentGitDir}${originalFso.path}`);
-                await git.remove({ fs, dir: currentGitDir, filepath: originalFso.path });
+                await git.remove({ fs, dir: currentGitDir, filepath: originalFso.path });                
             }
             console.log(id, "Syncing file to fs", path);
 

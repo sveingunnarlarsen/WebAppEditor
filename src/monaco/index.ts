@@ -62,7 +62,6 @@ export function loadProject(getState: () => AppEditorState) {
             if (fso.type === 'file') {
                 const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
                 model.onDidChangeContent(() => {
-                    console.log("Model content changed");
                     onModelContentChanged(model);
                 });
             }

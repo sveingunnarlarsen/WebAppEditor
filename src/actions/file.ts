@@ -1,7 +1,7 @@
 import { Actions, FileSystemObject } from "../types";
 import { DialogType } from "../types/dialog";
 import { syncFile, removeFile } from "../git";
-import { fileCreated, fileDeleted } from "../completer";
+import { fileCreated, fileDeleted, fileChanged } from "../completer";
 import { getFileById } from "../store/utils";
 
 import { closeFile } from "./editor";
@@ -26,7 +26,7 @@ export function save(filesToSave: FileSystemObject[] = []) {
         } else {
             shouldUpdateEditors = true;
         }
-        if (filesToSave.length < 1) return;
+        if (filesToSave.length < 1) return;        
 
         return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
             method: "PATCH",
@@ -39,9 +39,15 @@ export function save(filesToSave: FileSystemObject[] = []) {
             .then(response => response.json())
             .then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects)))
             .then(async files => {
-                for (let i = 0; i < files.length; i++) {
-                    await syncFile(files[i]);
-                }
+                files = files.sort((a, b) => {
+                    const aFirst = (a.path.split('/').length > b.path.split('/').length);
+                    return aFirst ? 1 : -1;
+                });
+                for (let i = 0; i < files.length; i++) {                    
+                    const originalFso = getFileById(files[i].id);                    
+                    await syncFile(files[i], originalFso);
+                    await fileChanged(files[i], originalFso);
+                }                
                 return files;
             })
             .then(files => dispatch(receiveSave(files)))
@@ -97,7 +103,8 @@ export function deleteFsos(fileSystemObjects: FileSystemObject[]) {
             .then(() => {
                 return fileSystemObjects.forEach(file => {
                     removeFile(file.id);
-                    fileDeleted(getFileById(file.id).path);
+                    const fso = getFileById(file.id);
+                    fileDeleted(fso.path, fso.type);
                 });
             })
             .then(() => dispatch(receiveDeleteFiles(fileSystemObjects)))
@@ -119,8 +126,10 @@ export function saveFso(fileSystemObject: FileSystemObject) {
             .then(throwError)
             .then(response => response.json())
             .then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
-            .then(file => {
-                syncFile(file);
+            .then(async file => {
+                const originalFso = getFileById(file.id);
+                await syncFile(file, originalFso);
+                await fileChanged(file, originalFso);
                 return file;
             })
             .then(file => dispatch(receiveSave([file])))
@@ -176,13 +185,14 @@ export function deleteFso(id?: string) {
         }
 
         dispatch(closeFile(id));
+        const fso = getFileById(id);        
 
         return fetch(`/api/webapp/${getState().app.id}/fso/${id}`, {
             method: "DELETE"
         })
             .then(throwError)
             .then(() => removeFile(id))
-            .then(() => fileDeleted(getFileById(id).path))
+            .then(() => fileDeleted(fso.path, fso.type))
             .then(() => dispatch(receiveDeleteFile(id)))
             .catch(error => handleAjaxError(error, dispatch));
     }

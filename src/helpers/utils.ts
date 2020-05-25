@@ -11,7 +11,7 @@ export function getFileTypeImageData(fileType) {
     return imageMeta ? imageMeta.image : "";
 }
 
-export function replaceNameInPath(fullPath, newName) {
+export function replaceNameInPath(fullPath, newName): string {
     const parts = fullPath.split("/");
     parts[parts.length - 1] = newName;
     return parts.join("/");

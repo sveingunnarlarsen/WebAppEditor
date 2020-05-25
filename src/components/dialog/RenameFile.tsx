@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -8,10 +7,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
+import { AppEditorState, FileSystemObject } from "../../types";
 import { save } from "../../actions/file";
 import { replaceNameInPath } from "../../helpers/utils";
 
-const mapState = state => {
+const mapState = (state: AppEditorState) => {
     const file = state.app.fileSystemObjects.find(f => f.id === state.selectedNode);
     return {
         file
@@ -24,7 +24,14 @@ function mapDispatch(dispatch) {
     };
 }
 
-class RenameFile extends React.Component {
+interface RenameFileProps {
+    file: FileSystemObject;
+
+    close: () => void;
+    saveFile: (file: FileSystemObject) => void;
+}
+
+class RenameFile extends React.Component<RenameFileProps, {value: string}> {
     constructor(props) {
         super(props);
         this.state = {

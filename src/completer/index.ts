@@ -9,8 +9,9 @@ import { DefinitionProvider } from "./providers/definitionProvider";
 import { ReferenceProvider } from "./providers/referenceProvider";
 import { DocumentFormattingEditorProvider } from "./providers/documentFormattingEditProvider";
 
-import { spanToRange } from "./utils";
+import { FileSystemObject } from "../types";
 import { updateModel } from "../monaco";
+import { spanToRange } from "./utils";
 
 let appId;
 //@ts-ignore
@@ -85,12 +86,19 @@ export async function formatAllFiles() {
                 range: spanToRange(e.span, model.uri),
             }));
 
-            console.log("Applying edits: ", textEdits);
             model.applyEdits(textEdits);
             updateModel(model);
         })
     }
 }
+
+export async function fileChanged(newFso: FileSystemObject, oldFso: FileSystemObject) {
+    if (newFso.path !== oldFso.path) {
+        console.log("Deleting and creating fso with path: ", oldFso.path, newFso.path);
+        await fileDeleted(oldFso.path, oldFso.type);
+        await fileCreated(newFso.path, newFso.type, newFso.content);
+    }
+} 
 
 export async function fileUpdated({ path, content }: { path: string, content: string }) {
     if (client.isReady) {
@@ -106,32 +114,39 @@ export async function fileUpdated({ path, content }: { path: string, content: st
     }
 }
 
-export async function fileDeleted(path: string) {
+export async function fileDeleted(path: string, type: 'file' | 'folder') {
     if (client.isReady) {
         try {
             await client.textDocumentDeleted(path);
-            deleteModel(path);
+            console.log("File with path deleted: ", path);
         } catch (e) {
             console.log("Language client error", e);
         }
     }
+    if (type === 'file') {
+        await deleteModel(path);
+    }    
 }
 
 export async function fileCreated(path: string, type: 'file' | 'folder' = 'file', content: string = "") {
     if (client.isReady) {
         try {
             await client.textDocumentCreated(path, type, content);
-            createModel({ path, type, content });
+            console.log("File with path created: ", path);
         } catch (e) {
             console.log("Language client error", e);
         }
     }
+    if (type === 'file') {
+        await createModel({ path, type, content });
+    }    
 }
 
 export async function fileOpened(path: string) {
     if (client.isReady) {
         try {
             await client.textDocumentOpened(path);
+            console.log("File with path opened: ", path);
         } catch (e) {
             console.log("Language client error: ", e);
         }

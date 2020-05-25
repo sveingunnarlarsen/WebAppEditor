@@ -139,6 +139,12 @@ class AceEditorContainer extends React.Component<EditorProps> {
         const { fso, viewState } = this.props;
 
         const model = getModel(this.props.fso.path);
+
+        if (!model) {
+            console.log("No model could be found for path: ", this.props.fso.path);
+            return;
+        }
+
         if (fso.content) {
             model.setValue(fso.content);
         }
