@@ -12,20 +12,6 @@ function onModelContentChanged(model) {
 
     inputTimeout = setTimeout(() => {
         updateModel(model);
-        /*
-        let modified = true;
-        const content = model.getValue();
-        if (!content) return;
-
-        const fso = getFileByPath(model.uri.path);
-
-        if (fso.orgContent === content) {
-            modified = false;
-        }
-
-        store.dispatch(updateFileState({ ...fso, content, modified }));
-        fileUpdated({ ...fso, content });
-        */
     }, 500);
 }
 

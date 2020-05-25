@@ -1,5 +1,4 @@
 import * as ts from 'typescript';
-import "../../types/monaco";
 import { LanguageClient as LanguageClientType } from "../../types/language-client";
 import { spanToRange } from "../utils";
 

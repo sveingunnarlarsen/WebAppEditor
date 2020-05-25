@@ -1,5 +1,4 @@
 import * as ts from 'typescript';
-import "../../types/monaco";
 import { LanguageClient } from "../../types/language-client";
 
 export class SignatureHelpProvider implements monaco.languages.SignatureHelpProvider {
