@@ -1,7 +1,8 @@
 import produce from "immer";
-import { combineReducers } from "redux";
+import { combineReducers, Action } from "redux";
 import { AppEditorState, Tool, Actions } from "../types";
 import { DialogAction } from "../types/dialog";
+import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 
 import { initState as appInitState, app } from "./app";
 import { initState as editorInitState, editor } from "./editor";
@@ -49,7 +50,7 @@ function doneFetching(state, data = {}) {
     });
 }
 
-function selectedNode(state = initialState.selectedNode, action) {
+function selectedNode(state: string = initialState.selectedNode, action: SetSelectedNodeAction): string {
     if (action.type === Actions.SET_SELECTED_NODE) {
         return action.id;
     } else if (action.type === Actions.RESET) {
@@ -58,7 +59,7 @@ function selectedNode(state = initialState.selectedNode, action) {
     return state;
 }
 
-function visibleTool(state = initialState.visibleTool, action) {
+function visibleTool(state: Tool = initialState.visibleTool, action: SwitchToolAction): Tool {
     if (action.type == Actions.SWITCH_TOOL) {
         return action.tool;
     } else if (action.type === Actions.RESET) {
@@ -67,7 +68,7 @@ function visibleTool(state = initialState.visibleTool, action) {
     return state;
 }
 
-function previewVisible(state = initialState.previewVisible, action) {
+function previewVisible(state: boolean = initialState.previewVisible, action): boolean {
     if (action.type === Actions.TOGGLE_PREVIEW) {
         return !state;
     } else if (action.type === Actions.RESET) {

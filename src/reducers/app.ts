@@ -5,7 +5,7 @@ export const initState: AppState = {
     id: "",
     name: "",
     description: "",
-    type: "",
+    type: null,
     settings: {
         entryPoint: {
             javascript: "",

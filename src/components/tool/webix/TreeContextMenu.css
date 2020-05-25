@@ -11,12 +11,12 @@
 }
 
 .contextMenu--option:hover {
-    background: linear - gradient(to top, #555, #333);
+    background: linear-gradient(to top, #555, #333);
     color: white;
 }
 
 .contextMenu--option:active {
-    background: linear - gradient(to top, #555, #333);
+    background: linear-gradient(to top, #555, #333);
     color: white;
 }
 

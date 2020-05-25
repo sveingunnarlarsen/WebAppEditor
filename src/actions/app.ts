@@ -1,4 +1,4 @@
-import { Actions, project } from "../types";
+import { Actions, AppSettings, project } from "../types";
 import { DialogType } from "../types/dialog";
 import { cloneGitRepo, deleteGitRepo } from "../git";
 import { loadProject } from "../monaco"
@@ -116,7 +116,7 @@ export function compileProject() {
     };
 }
 
-export function updateAppData(data) {
+export function updateAppData(data: {name: string, description: string, type: 'react' | 'vue', settings: AppSettings}) {
     return {
         type: Actions.UPDATE_APP_DATA,
         data,

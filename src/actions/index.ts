@@ -1,4 +1,5 @@
-import { Actions } from "../types";
+import { Actions, Tool } from "../types";
+import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 import { DialogAction, DialogType } from "../types/dialog";
 
 import { getWebApps } from "./app";
@@ -9,7 +10,7 @@ export function reset() {
     }
 }
 
-export function switchTool(tool) {
+export function switchTool(tool: Tool): SwitchToolAction {
     return {
         type: Actions.SWITCH_TOOL,
         tool
@@ -79,7 +80,7 @@ export function closeDialog() {
     };
 }
 
-export function setSelectedNode(id) {
+export function setSelectedNode(id): SetSelectedNodeAction {
     return {
         type: Actions.SET_SELECTED_NODE,
         id

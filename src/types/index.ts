@@ -71,19 +71,27 @@ export interface DateProps {
     createdBy: string;
 }
 
+export interface ServerFso extends DateProps {
+    id: string;
+    webAppId: string;
+    type: FsoType;
+    path: string;
+    content: string;
+}
+
 export interface FileSystemObject extends DateProps {
     id: string;
     name: string;
     value: string;
     path: string;
     content: string;
-    orgContent: string;
+    orgContent?: string;
     type: FsoType;
     disabled: boolean;
     image: string;
     parentId: string;
     webAppId: string;
-    modified: boolean;
+    modified?: boolean;
 }
 
 export interface AppSettings {
@@ -102,7 +110,7 @@ export interface ListApp extends DateProps {
     id: string;
     name: string;
     description: string;
-    type: string;
+    type: 'react' | 'vue' | null;
     settings: AppSettings;
 }
 

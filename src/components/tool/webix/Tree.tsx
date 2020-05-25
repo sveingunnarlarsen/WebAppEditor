@@ -56,6 +56,10 @@ function mapDispatch(dispatch) {
 class WebixTree extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            filter: "",
+        }
     }
 
     collapseAll() {
@@ -100,7 +104,10 @@ class WebixTree extends React.Component {
     }
 
     handleFilterChange = e => {
-        this.ui.filter("#value", e.target.value);
+        this.setState({
+            filter: e.target.value,
+        })
+        //this.ui.filter("#value", e.target.value);
     };
 
     render() {
@@ -158,6 +165,9 @@ class WebixTree extends React.Component {
             }
         }
         this.appId = prevProps.app.id;
+        if (this.state.filter) {
+            this.ui.filter("#value", this.state.filter);
+        }
     }
 
     componentDidMount(props) {

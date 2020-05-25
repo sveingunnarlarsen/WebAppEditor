@@ -41,7 +41,7 @@ body {
 }
 
 .webix_tree_item {
-    font-family: "72", Arial, Helvetica, sans - serif;
+    font-family: "72", Arial, Helvetica, sans-serif;
     font-size: 13px;
     cursor: pointer;
     color: white;
@@ -53,14 +53,14 @@ body {
 
 .webix_top {
     background: none;
-    background-image: linear - gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit - linear - gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit-linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
 }
 
 .webix_bottom {
     background: none;
-    background-image: linear - gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit - linear - gradient(bottom, orange, orange 10%, transparent 10 %, transparent 100 %);
+    background-image: linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit-linear-gradient(bottom, orange, orange 10%, transparent 10 %, transparent 100 %);
 }
 
 .treeMarker {

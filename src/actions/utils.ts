@@ -1,7 +1,7 @@
-import { AppEditorState } from "../types";
+import { ServerFso, FileSystemObject, AppEditorState } from "../types";
 import { getFileTypeImageData } from "../helpers/utils";
 
-export function convertApiWebAppData(json) {
+export function convertApiWebAppData(json: AppEditorState) {
     const app = json.app;
     const fsos = app.fileSystemObjects.map((f, i, array) => extractFileMeta(f, array));
     const folders = fsos.filter(f => f.type === "folder").sort((a, b) => (a.name > b.name ? 1 : -1));
@@ -11,53 +11,44 @@ export function convertApiWebAppData(json) {
     return app;
 }
 
-export function extractFileMeta(item, fsos, updatedFsos = []) {
+export function extractFileMeta(fso: ServerFso, fsos: FileSystemObject[], updatedFsos: FileSystemObject[] = []): FileSystemObject {
     let parentId;
-    try {
-        //Split path and remove first /, i.e. /folder/subFolder/file.txt
-        const parts = item.path.split("/");
-        parts.shift();
-        const name = parts.pop();
-        const parentPath = "/" + parts.join("/");
-        if (parentPath.length === 1) {
-            parentId = "1";
+    //Split path and remove first /, i.e. /folder/subFolder/file.txt
+    const parts = fso.path.split("/");
+    parts.shift();
+    const name = parts.pop();
+    const parentPath = "/" + parts.join("/");
+    if (parentPath.length === 1) {
+        parentId = "1";
+    } else {
+        const parent = updatedFsos.filter(f => f.path === parentPath)[0];
+        if (parent) {
+            parentId = parent.id
         } else {
-            const parent = updatedFsos.filter(f => f.path === parentPath)[0];
-            if (parent) {
-                parentId = parent.id
-            } else {
-                parentId = fsos.filter(f => f.path === parentPath)[0].id;
-            }
+            parentId = fsos.filter(f => f.path === parentPath)[0].id;
         }
-        if (item.type === "file") {
-            const splitFile = name.split(".");
-            const fileType = splitFile.pop();
-            const image = getFileTypeImageData(fileType);
-            return Object.assign(item, {
-                name,
-                value: name,
-                fileType,
-                parentId,
-                image,
-                disabled: false,
-                orgContent: item.content,
-                modified: false
-            });
-        } else {
-            return Object.assign(item, {
-                name,
-                value: name,
-                parentId,
-                image: "",
-                disabled: false
-            });
-        }
-    } catch (e) {
-        return Object.assign(item, {
-            value: "Error",
-            parentId: parentId > 0 ? parentId : "1",
-            name: "Error extracting file meta",
-            error: e.message
+    }
+    if (fso.type === "file") {
+        const splitFile = name.split(".");
+        const fileType = splitFile.pop();
+        const image = getFileTypeImageData(fileType);
+        return Object.assign(fso, {
+            name,
+            value: name,
+            fileType,
+            parentId,
+            image,
+            disabled: false,
+            orgContent: fso.content,
+            modified: false
+        });
+    } else {
+        return Object.assign(fso, {
+            name,
+            value: name,
+            parentId,
+            image: "",
+            disabled: false
         });
     }
 }
@@ -66,11 +57,11 @@ export function getFolderPathFromSelectedNode(getState: () => AppEditorState) {
     const id = getState().selectedNode;
     const fsos = getState().app.fileSystemObjects;
 
-    const item = fsos.find(f => f.id === id);
-    if (item && item.type === "folder") {
-        return item.path + "/";
-    } else if (item && item.type === "file") {
-        const parts = item.path.split("/");
+    const fso = fsos.find(f => f.id === id);
+    if (fso && fso.type === "folder") {
+        return fso.path + "/";
+    } else if (fso && fso.type === "file") {
+        const parts = fso.path.split("/");
         parts.shift();
         parts.pop();
         return "/" + parts.join("/") + "/";
