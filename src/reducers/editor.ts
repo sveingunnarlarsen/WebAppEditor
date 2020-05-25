@@ -160,7 +160,8 @@ const splitEditor = produce((draft, direction, editorId, fileId) => {
     const containerId = editor.containerId;
     const container = draft.containers.find(c => c.id === containerId);
 
-    const newEditorId = uuid(); //draft.editors.length + 1;
+    const newEditorId = uuid();
+    container.split = direction;
 
     if (container.editor1 && container.editor2) {
         console.log("Should create a new container");
@@ -200,8 +201,6 @@ export function editor(state = initState, action) {
             return splitEditor(state, action.direction, action.editorId, action.fileId);
         case EditorActions.SET_ACTIVE_EDITOR:
             return setActiveEditor(state, action.id);
-        case EditorActions.CLOSE_SIGNATURE_HELP:
-            return closeSignatureHelp(state);
         default:
             return state;
     }

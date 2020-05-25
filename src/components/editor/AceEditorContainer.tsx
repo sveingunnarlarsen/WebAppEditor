@@ -115,6 +115,18 @@ class AceEditorContainer extends React.Component<EditorProps> {
                 precondition: null,
                 keybindingContext: null,
                 contextMenuGroupId: '2_splitting',
+                contextMenuOrder: 1,
+                run: (editor) => {
+                    this.props.splitEditor(SplitDirection.VERTICAL, this.props.editorId, this.props.fso.id)
+                }
+            });
+            editor.addAction({
+                id: "split_horizontally",
+                label: "Split Horizontally",
+                precondition: null,
+                keybindingContext: null,
+                contextMenuGroupId: '2_splitting',
+                contextMenuOrder: 2,
                 run: (editor) => {
                     this.props.splitEditor(SplitDirection.HORIZONTAL, this.props.editorId, this.props.fso.id)
                 }

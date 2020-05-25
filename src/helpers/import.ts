@@ -73,18 +73,27 @@ async function readFile(file) {
     });
 }
 
-function extractFileData(fileContent, meta) {
-    console.log(fileContent);
+function extractFileData(fileContent, meta) {    
+    console.log(fileContent);    
     fileContent = fileContent.slice(5);
     var type = fileContent.split(";")[0];
     fileContent = fileContent.slice(type.length + 1);
     var encoding = fileContent.split(",")[0];
     fileContent = fileContent.slice(encoding.length + 1);
 
+    let content;
+    if (isImage(meta.name)) {
+        content = fileContent;
+    } else {
+        content = atob(fileContent); 
+    }
+
+    console.log(content);
+
     return {
         name: meta.name,
         path: meta.path ? meta.path : undefined,
         type: 'file',
-        content: atob(fileContent),
+        content,
     };
 }

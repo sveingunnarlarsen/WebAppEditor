@@ -56,14 +56,18 @@ const styles = theme => ({
 });
 
 window.importFileInTree = async function(e) {
-    console.log(e);
-    const files = await importFiles(e);
+    
+    // console.log(e);
+    
+    const files = await importFiles(e);    
+    
     console.log("Files to import: ", files);
 
     for (let i = 0; i < files.length; i++) {
         store.dispatch(createFso(files[i]));
     }
     document.getElementById("importFileInTree").value = "";
+
 };
 
 class TreeContextMenu extends React.Component {

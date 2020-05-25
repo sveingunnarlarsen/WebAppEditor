@@ -42,9 +42,9 @@ class EditorContainer extends React.Component<EditorContainerProps> {
 
     createEditor(editor) {
         if (editor.isContainer) {
-            return <EditorTop containerId={editor.id} />;
+            return <div style={{ width: "100%", height: "100%" }}><EditorTop containerId={editor.id} /></div>;
         } else {
-            return <EditorTabs editorId={editor.id} />;
+            return <div style={{ width: "100%", height: "100%" }}><EditorTabs editorId={editor.id} /></div>;
         }
     }
 
