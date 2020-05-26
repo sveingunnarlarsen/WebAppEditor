@@ -78,7 +78,13 @@ export function createFsos(fileSystemObjects: FileSystemObject[]) {
             .then(async response => {
                 try {
                     const json = await response.json();
-                    const files = json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects));
+                    const files = json.fileSystemObjects
+                        .map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects))
+                        .sort((a, b) => {
+                            const aFirst = (a.path.split('/').length > b.path.split('/').length);
+                            return aFirst ? 1 : -1;
+                        });
+
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
                         await syncFile(file);
@@ -169,7 +175,7 @@ export function createFso({ type = 'file', content, path, name }: { type: 'file'
 
         if (!path) {
             path = `${getFolderPathFromSelectedNode(getState)}${name}`;
-        }        
+        }
 
         if (getState().app.fileSystemObjects.find(f => f.path === path)) {
             return dispatch(openDialog(DialogType.MESSAGE, { message: "File already exists" }));

@@ -27,32 +27,32 @@ export async function importFolderZip(event, zipOrFolder) {
     });
 
     const createdFolders = [];
-    for (let i = 0; i < filesToCreate.length; i++) {
+
+    for (let i = 0; i < filesToCreate.length; i++) {        
         const file = filesToCreate[i];
         const parts = file.path.split("/");
-        for (let y = 0; y < parts.length; y++) {
+        for (let y = 1; y < parts.length; y++) {
             const folderPath = parts.slice(0, y).join("/");
-            if (createdFolders.indexOf(folderPath) < 0 && !fsos.find(f => f.path === `/${folderPath}`)) {
-                createdFolders.push(folderPath);
-                filesToCreate.push({
-                    path: "/" + folderPath,
+            if (folderPath && createdFolders.indexOf(folderPath) < 0 && !fsos.find(f => f.path === `${folderPath}`)) {
+                createdFolders.push(folderPath);                
+                foldersToCreate.push({
+                    path: folderPath,
                     type: 'folder',
                 })
             }
         }
     }
 
+    console.log(foldersToCreate);
     console.log(filesToCreate);
     console.log(filesToSave);
 
-    /*
-    if (filesToCreate.length > 0) {
-        store.dispatch(createFsos(filesToCreate));
+    if (filesToCreate.length > 0 || foldersToCreate.length > 0) {
+        store.dispatch(createFsos(filesToCreate.concat(foldersToCreate)));
     }
     if (filesToSave.length > 0) {
         store.dispatch(save(filesToSave));
-    } 
-    */   
+    }
 }
 
 export async function importFiles(event) {
