@@ -22,6 +22,7 @@ import SearchApp from "./SearchApp";
 import Message from "./Message";
 import ServerMessage from "./ServerMessage";
 import AjaxError from "./AjaxError";
+import ClientError from "./ClientError";
 import DeleteProject from "./DeleteProject";
 import NpmInstall from "./NpmInstall";
 
@@ -174,6 +175,12 @@ class DialogContainer extends React.Component<DialogContainerProps> {
                 return (
                     <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.refPaper }} open={dialog.visible}>
                         <AjaxError close={close} />
+                    </Dialog>
+                );
+            case DialogType.CLIENT_ERROR:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.refPaper }} open={dialog.visible}>
+                        <ClientError close={close} />
                     </Dialog>
                 );
             default:

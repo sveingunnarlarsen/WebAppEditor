@@ -1,11 +1,11 @@
-import { Actions, FileSystemObject } from "../types";
+import { Actions, AppEditorState, FileSystemObject } from "../types";
 import { DialogType } from "../types/dialog";
 import { syncFile, removeFile } from "../git";
 import { fileCreated, fileDeleted, fileChanged } from "../completer";
 import { getFileById } from "../store/utils";
 
 import { closeFile } from "./editor";
-import { throwError, handleAjaxError } from "./error";
+import { throwError, handleAjaxError, handleClientError } from "./error";
 import { extractFileMeta, destructFileServerProps, getFolderPathFromSelectedNode } from "./utils";
 
 import { openDialog, updateEditors } from "./";
@@ -26,7 +26,7 @@ export function save(filesToSave: FileSystemObject[] = []) {
         } else {
             shouldUpdateEditors = true;
         }
-        if (filesToSave.length < 1) return;        
+        if (filesToSave.length < 1) return;
 
         return fetch(`/api/webapp/${app.id}/fso?fetch=true`, {
             method: "PATCH",
@@ -36,22 +36,29 @@ export function save(filesToSave: FileSystemObject[] = []) {
             })
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects)))
-            .then(async files => {
-                files = files.sort((a, b) => {
-                    const aFirst = (a.path.split('/').length > b.path.split('/').length);
-                    return aFirst ? 1 : -1;
-                });
-                for (let i = 0; i < files.length; i++) {                    
-                    const originalFso = getFileById(files[i].id);                    
-                    await syncFile(files[i], originalFso);
-                    await fileChanged(files[i], originalFso);
-                }                
-                return files;
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const files = json.fileSystemObjects
+                        .map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects))
+                        .sort((a, b) => {
+                            const aFirst = (a.path.split('/').length > b.path.split('/').length);
+                            return aFirst ? 1 : -1;
+                        });
+
+                    for (let i = 0; i < files.length; i++) {
+                        const originalFso = getFileById(files[i].id);
+                        await syncFile(files[i], originalFso);
+                        await fileChanged(files[i], originalFso);
+                    }
+                    dispatch(receiveSave(files));
+                    if (shouldUpdateEditors) {
+                        dispatch(updateEditors());
+                    }
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(files => dispatch(receiveSave(files)))
-            .then(() => shouldUpdateEditors ? dispatch(updateEditors()) : null)
             .catch(error => handleAjaxError(error, dispatch));
     };
 }
@@ -59,8 +66,6 @@ export function save(filesToSave: FileSystemObject[] = []) {
 export function createFsos(fileSystemObjects: FileSystemObject[]) {
     return function(dispatch, getState) {
         dispatch(requestCreateFiles());
-
-        console.log("In create fsos: ", fileSystemObjects);
 
         return fetch(`/api/webapp/${getState().app.id}/fso?fetch=true`, {
             method: "POST",
@@ -70,16 +75,20 @@ export function createFsos(fileSystemObjects: FileSystemObject[]) {
             })
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects)))
-            .then(files => {
-                files.forEach(file => {
-                    syncFile(file);
-                    fileCreated(file.path, file.type, file.content);
-                });
-                return files;
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const files = json.fileSystemObjects.map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects));
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        await syncFile(file);
+                        await fileCreated(file.path, file.type, file.content);
+                    }
+                    dispatch(receiveCreateFiles(files));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(files => dispatch(receiveCreateFiles(files)))
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
@@ -100,14 +109,20 @@ export function deleteFsos(fileSystemObjects: FileSystemObject[]) {
             })
         })
             .then(throwError)
-            .then(() => {
-                return fileSystemObjects.forEach(file => {
-                    removeFile(file.id);
-                    const fso = getFileById(file.id);
-                    fileDeleted(fso.path, fso.type);
-                });
+            .then(async () => {
+                const files = fileSystemObjects;
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        await removeFile(file.id);
+                        const fso = getFileById(file.id);
+                        await fileDeleted(fso.path, fso.type);
+                    }
+                    dispatch(receiveDeleteFiles(files));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(() => dispatch(receiveDeleteFiles(fileSystemObjects)))
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
@@ -124,21 +139,26 @@ export function saveFso(fileSystemObject: FileSystemObject) {
             })
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
-            .then(async file => {
-                const originalFso = getFileById(file.id);
-                await syncFile(file, originalFso);
-                await fileChanged(file, originalFso);
-                return file;
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const file = extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects);
+
+                    const originalFso = getFileById(file.id);
+                    await syncFile(file, originalFso);
+                    await fileChanged(file, originalFso);
+
+                    dispatch(receiveSave([file]));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(file => dispatch(receiveSave([file])))
             .catch(error => handleAjaxError(error, dispatch));
     };
 }
 
 export function createFso({ type = 'file', content, path, name }: { type: 'file' | 'folder', content?: string, path?: string, name?: string }) {
-    return function(dispatch, getState) {
+    return function(dispatch, getState: () => AppEditorState) {
         dispatch(requestCreateFile());
 
         const id = getState().app.id;
@@ -149,6 +169,10 @@ export function createFso({ type = 'file', content, path, name }: { type: 'file'
 
         if (!path) {
             path = `${getFolderPathFromSelectedNode(getState)}${name}`;
+        }        
+
+        if (getState().app.fileSystemObjects.find(f => f.path === path)) {
+            return dispatch(openDialog(DialogType.MESSAGE, { message: "File already exists" }));
         }
 
         const fileSystemObject = {
@@ -165,14 +189,17 @@ export function createFso({ type = 'file', content, path, name }: { type: 'file'
             })
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects))
-            .then(file => {
-                syncFile(file);
-                fileCreated(file.path, file.type, file.content)
-                return file;
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const file = extractFileMeta(json.fileSystemObject, getState().app.fileSystemObjects);
+                    await syncFile(file);
+                    await fileCreated(file.path, file.type, file.content);
+                    dispatch(receiveCreateFile(file));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(file => dispatch(receiveCreateFile(file)))
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
@@ -185,40 +212,54 @@ export function deleteFso(id?: string) {
         }
 
         dispatch(closeFile(id));
-        const fso = getFileById(id);        
+        const fso = getFileById(id);
 
         return fetch(`/api/webapp/${getState().app.id}/fso/${id}`, {
             method: "DELETE"
         })
             .then(throwError)
-            .then(() => removeFile(id))
-            .then(() => fileDeleted(fso.path, fso.type))
-            .then(() => dispatch(receiveDeleteFile(id)))
+            .then(async () => {
+                try {
+                    await removeFile(id);
+                    await fileDeleted(fso.path, fso.type);
+                    dispatch(receiveDeleteFile(id));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
 
 export function deleteFolder() {
     return function(dispatch, getState) {
-        const selectedFolder = getFileById(getState().selectedNode);
-        const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path + "/") === 0);
-        fsos.push(selectedFolder);
+        let fsos;
+        try {
+            const selectedFolder = getFileById(getState().selectedNode);
+            fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path + "/") === 0);
+            fsos.push(selectedFolder);
+        } catch (e) {
+            return handleClientError(e, dispatch);
+        }
         return dispatch(deleteFsos(fsos));
     };
 }
 
 export function renameFolder(newName: string) {
     return function(dispatch, getState) {
-        const selectedFolder = getFileById(getState().selectedNode);
-        const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path + "/") === 0);
-        fsos.push(selectedFolder);
-        const newFolderPath = `${selectedFolder.path.split("/").slice(0, -1).join("/")}/${newName}`;
-        const updatedFsos = [];
+        let updatedFsos = [];
+        try {
+            const selectedFolder = getFileById(getState().selectedNode);
+            const fsos = getState().app.fileSystemObjects.filter(f => f.path.indexOf(selectedFolder.path + "/") === 0);
+            fsos.push(selectedFolder);
+            const newFolderPath = `${selectedFolder.path.split("/").slice(0, -1).join("/")}/${newName}`;
 
-        for (var i = 0; i < fsos.length; i++) {
-            updatedFsos.push({ ...fsos[i], path: fsos[i].path.replace(selectedFolder.path, newFolderPath) });
+            for (var i = 0; i < fsos.length; i++) {
+                updatedFsos.push({ ...fsos[i], path: fsos[i].path.replace(selectedFolder.path, newFolderPath) });
+            }
+        } catch (e) {
+            return handleClientError(e, dispatch);
         }
-
         return dispatch(save(updatedFsos));
     };
 }

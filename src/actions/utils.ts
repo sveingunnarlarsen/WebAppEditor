@@ -25,7 +25,13 @@ export function extractFileMeta(fso: ServerFso, fsos: FileSystemObject[], update
         if (parent) {
             parentId = parent.id
         } else {
-            parentId = fsos.filter(f => f.path === parentPath)[0].id;
+            const parent = fsos.filter(f => f.path === parentPath)[0];
+            if (parent) {
+                parentId = parent.id;
+            } else {
+                // The folder does not exist!!!
+                parentId = "1";
+            }
         }
     }
     if (fso.type === "file") {

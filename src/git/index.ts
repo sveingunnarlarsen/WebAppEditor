@@ -144,6 +144,8 @@ async function syncAppFilesWithGit() {
             }
         }
     }
+
+    console.log("Done syncing app files to git");
 }
 
 /*

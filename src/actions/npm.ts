@@ -3,7 +3,7 @@ import { DialogType } from "../types/dialog";
 
 import { openDialog } from "./";
 import { saveFso } from "./file";
-import { throwError, handleAjaxError } from "./error";
+import { throwError, handleAjaxError, handleClientError } from "./error";
 
 export function getNpmModules() {
     return function(dispatch, getState) {
@@ -11,8 +11,14 @@ export function getNpmModules() {
 
         return fetch(`/api/webapp/${getState().app.id}/npm`)
             .then(throwError)
-            .then(response => response.json())
-            .then(json => dispatch(receiveModules(json)))
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    dispatch(receiveModules(json))
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
             .catch(error => handleAjaxError(error, dispatch));
     };
 }
@@ -25,13 +31,17 @@ export function installNpmModules(runUpgrade: boolean = false) {
             method: "PUT"
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => {
-                updatePackageJson(json.packageJson, getState, dispatch);
-                return json;
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    await updatePackageJson(json.packageJson, getState, dispatch);
+                    dispatch(openDialog(DialogType.SERVER_MESSAGE, { type: "npm", json }))
+                    dispatch(getNpmModules())
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
             })
-            .then(json => dispatch(openDialog(DialogType.SERVER_MESSAGE, { type: "npm", json })))
-            .then(() => dispatch(getNpmModules()))
+            .catch(error => handleAjaxError(error, dispatch))
             .finally(() => dispatch(endModuleUpdate()));
     };
 }
@@ -44,8 +54,14 @@ export function deleteNpmModules() {
             method: "DELETE"
         })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => dispatch(receiveDeleteModules()))
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    dispatch(receiveDeleteModules());
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
             .catch(error => handleAjaxError(error, dispatch));
     };
 }

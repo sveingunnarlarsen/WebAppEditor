@@ -15,37 +15,28 @@ const mapState = state => {
 interface AjaxErrorProps {
     data: any;
     close: () => void;
-    value: any;
 }
 
-class AjaxError extends React.Component<AjaxErrorProps, { value: any }> {
+class AjaxError extends React.Component<AjaxErrorProps> {
     constructor(props) {
         super(props);
-        this.state = {
-            value: this.props.data
-        };
     }
 
     render() {
         const { close } = this.props;
-        const { value } = this.state;
-        const { status, json } = value;
+        const { status, error, jsonError } = this.props.data;
 
         const title = `HTTP ${status ? status : 0}`;
+
         let html;
-
         try {
-            let value;
-            if (json.status) {
-                value = json.status;
+            if (jsonError) {
+                html = JSON.stringify(jsonError).replace(/\n/g, "<br>");
             } else {
-                value = JSON.stringify(json);
+                html = error.statusText;
             }
-
-            html = value.replace(/\n/g, "<br>");
-
         } catch (e) {
-            html = "Error parsing error: " + json;
+            html = `Failed to parse error: ${e.message}`;
         }
 
         return (

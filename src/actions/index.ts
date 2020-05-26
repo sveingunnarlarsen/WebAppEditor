@@ -1,8 +1,17 @@
+import { Action } from "react-redux";
 import { Actions, Tool } from "../types";
 import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 import { DialogAction, DialogType } from "../types/dialog";
-
 import { getWebApps } from "./app";
+
+export function openDialog(dialog: DialogType, data?) {
+    return function(dispatch, getState) {
+        if (dialog === DialogType.PROJECT_LIST) {
+            dispatch(getWebApps());
+        }
+        return dispatch(openDialogAction(dialog, data));
+    };
+}
 
 export function reset() {
     return {
@@ -17,70 +26,61 @@ export function switchTool(tool: Tool): SwitchToolAction {
     };
 }
 
-export function toggleCLI() {
+export function toggleCLI(): Action {
     return {
         type: Actions.TOGGLE_CLI
     };
 }
 
-export function togglePreview() {
+export function togglePreview(): Action {
     return {
         type: Actions.TOGGLE_PREVIEW
     };
 }
 
-export function startGitCloneClone() {
+export function startGitCloneClone(): Action {
     return {
         type: Actions.START_GIT_CLONE
     };
 }
 
-export function endGitClone() {
+export function endGitClone(): Action {
     return {
         type: Actions.END_GIT_CLONE
     };
 }
 
-export function resizeTool() {
+export function resizeTool(): Action {
     return {
         type: Actions.RESIZE_TOOL,
     };
 }
 
-export function resizeEditor() {
+export function resizeEditor(): Action {
     return {
         type: Actions.RESIZE_EDITOR
     };
 }
 
-export function resizeTerminal() {
+export function resizeTerminal(): Action {
     return {
         type: Actions.RESIZE_TERMINAL
     };
 }
 
-export function updateEditors() {
+export function updateEditors(): Action {
     return {
         type: Actions.UPDATE_EDITORS
     }
 }
 
-export function openDialog(dialog: DialogType, data?) {
-    return function(dispatch, getState) {
-        if (dialog === DialogType.PROJECT_LIST) {
-            dispatch(getWebApps());
-        }
-        return dispatch(openDialogAction(dialog, data));
-    };
-}
-
-export function closeDialog() {
+export function closeDialog(): Action {
     return {
         type: DialogAction.CLOSE
     };
 }
 
-export function setSelectedNode(id): SetSelectedNodeAction {
+export function setSelectedNode(id: string): SetSelectedNodeAction {
     return {
         type: Actions.SET_SELECTED_NODE,
         id

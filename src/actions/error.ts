@@ -1,5 +1,4 @@
 import { DialogType } from "../types/dialog";
-
 import { openDialog } from "./";
 
 export function throwError(response) {
@@ -13,11 +12,16 @@ export async function handleAjaxError(error: any, dispatch) {
     console.log("In handle ajax error", error);
     const status = error.status;
     try {
-        const json = status ? await error.json() : { status: "Request failed. No connection to server." };
-        return dispatch(openDialog(DialogType.AJAX_ERROR, { status, json }));
+        const jsonError = await error.json();
+        return dispatch(openDialog(DialogType.AJAX_ERROR, { status, error, jsonError }));
     } catch (e) {
-        return dispatch(openDialog(DialogType.AJAX_ERROR, { status, json: `Error parsing error` }));
+        return dispatch(openDialog(DialogType.AJAX_ERROR, { status, error, jsonError: null }));
     }
+}
+
+export async function handleClientError(error: any, dispatch) {
+    console.log("In handle client error", error);
+    return dispatch(openDialog(DialogType.CLIENT_ERROR, { error }));
 }
 
 export async function handleCompileError(error, dispatch) {

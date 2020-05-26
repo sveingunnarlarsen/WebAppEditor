@@ -4,7 +4,7 @@ import { cloneGitRepo, deleteGitRepo } from "../git";
 import { loadProject } from "../monaco"
 
 import { getNpmModules } from "./npm";
-import { throwError, handleAjaxError, handleCompileError } from "./error";
+import { throwError, handleAjaxError, handleCompileError, handleClientError } from "./error";
 import { convertApiWebAppData, destructAppServerProps } from "./utils";
 
 import { reset, openDialog } from "./";
@@ -19,9 +19,15 @@ export function getMasterData() {
 
         return fetch(`/api/editor/data`)
             .then(throwError)
-            .then(response => response.json())
-            .then(json => dispatch(receiveMasterData(json)))
-            .catch(error => handleAjaxError(error, dispatch));
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    dispatch(receiveMasterData(json));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
     };
 }
 
@@ -31,9 +37,15 @@ export function getWebApps() {
 
         return fetch(`/api/webapp`)
             .then(throwError)
-            .then(response => response.json())
-            .then(json => dispatch(receiveWebApps(json.apps)))
-            .catch(error => handleAjaxError(error, dispatch));
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    dispatch(receiveWebApps(json.apps));              
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
     }
 }
 
@@ -44,11 +56,17 @@ export function createProject({ type, template, name, description, remote }: pro
 
         return createApp({ type, template, name, description, remote })
             .then(throwError)
-            .then(response => response.json())
-            .then(json => convertApiWebAppData(json))
-            .then(app => dispatch(receiveWebApp(app)))
-            .then(() => remote ? cloneGitRepo(remote) : loadProject(getState))
-            .catch(error => handleAjaxError(error, dispatch));
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const app = convertApiWebAppData(json);
+                    dispatch(receiveWebApp(app));
+                    remote ? cloneGitRepo(remote) : loadProject(getState);
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
     }
 }
 
@@ -61,12 +79,18 @@ export function getProject(id: string) {
 
         return fetch(`/api/webapp/${id}`)
             .then(throwError)
-            .then(response => response.json())
-            .then(json => convertApiWebAppData(json))
-            .then(app => dispatch(receiveWebApp(app)))
-            .then(() => loadProject(getState))
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    const app = convertApiWebAppData(json);
+                    dispatch(receiveWebApp(app));
+                    loadProject(getState);
+                    dispatch(getNpmModules());
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
             .catch(error => handleAjaxError(error, dispatch))
-            .finally(() => dispatch(getNpmModules()))
     }
 }
 
@@ -83,9 +107,15 @@ export function deleteProject() {
             method: "DELETE"
         })
             .then(throwError)
-            .then(() => deleteGitRepo())
-            .then(() => dispatch(reset()))
-            .catch(error => handleAjaxError(error, dispatch));
+            .then(async response => {
+                try {
+                    await deleteGitRepo();
+                    dispatch(reset());
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
     }
 }
 

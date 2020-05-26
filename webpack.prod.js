@@ -4,6 +4,7 @@ const classPropPlugin = require.resolve("@babel/plugin-proposal-class-properties
 const tsPreset = require.resolve("@babel/preset-typescript");
 const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const htmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require("webpack");
 
 module.exports = settings => ({
@@ -65,6 +66,12 @@ module.exports = settings => ({
     plugins: [
         new webpack.DefinePlugin({
             ROOTPATH: JSON.stringify(`/webapp/${settings.appName}`)
+        }),
+        new webpack.DefinePlugin({
+            BASENAME: JSON.stringify(`/webapp/${settings.appName}`)
+        }),
+        new htmlWebpackPlugin({
+            templateContent: settings.htmlTemplate
         }),
     ]
 });

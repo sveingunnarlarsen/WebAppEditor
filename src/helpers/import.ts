@@ -8,6 +8,8 @@ export async function importFolderZip(event, zipOrFolder) {
 
     const data = await importFiles(event);
 
+    const fsos = store.getState().app.fileSystemObjects;
+    const foldersToCreate = [];
     const filesToCreate = [];
     const filesToSave = [];
 
@@ -24,13 +26,33 @@ export async function importFolderZip(event, zipOrFolder) {
         }
     });
 
+    const createdFolders = [];
+    for (let i = 0; i < filesToCreate.length; i++) {
+        const file = filesToCreate[i];
+        const parts = file.path.split("/");
+        for (let y = 0; y < parts.length; y++) {
+            const folderPath = parts.slice(0, y).join("/");
+            if (createdFolders.indexOf(folderPath) < 0 && !fsos.find(f => f.path === `/${folderPath}`)) {
+                createdFolders.push(folderPath);
+                filesToCreate.push({
+                    path: "/" + folderPath,
+                    type: 'folder',
+                })
+            }
+        }
+    }
+
+    console.log(filesToCreate);
+    console.log(filesToSave);
+
+    /*
     if (filesToCreate.length > 0) {
         store.dispatch(createFsos(filesToCreate));
     }
     if (filesToSave.length > 0) {
-
-    }
-    store.dispatch(save(filesToSave));
+        store.dispatch(save(filesToSave));
+    } 
+    */   
 }
 
 export async function importFiles(event) {
@@ -39,7 +61,6 @@ export async function importFiles(event) {
     const filesMeta = [];
     const promises = [];
     for (let i = 0; i < files.length; i++) {
-        console.log(files[i]);
         filesMeta.push({
             name: files[i].name,
             path: files[i].webkitRelativePath ? files[i].webkitRelativePath : undefined,
@@ -73,8 +94,7 @@ async function readFile(file) {
     });
 }
 
-function extractFileData(fileContent, meta) {    
-    console.log(fileContent);    
+function extractFileData(fileContent, meta) {
     fileContent = fileContent.slice(5);
     var type = fileContent.split(";")[0];
     fileContent = fileContent.slice(type.length + 1);
@@ -87,8 +107,6 @@ function extractFileData(fileContent, meta) {
     } else {
         content = atob(fileContent); 
     }
-
-    console.log(content);
 
     return {
         name: meta.name,
