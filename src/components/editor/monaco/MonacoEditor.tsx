@@ -17,7 +17,7 @@ const useUpdate = (effect, deps, applyChanges = true) => {
             : effect,
         deps
     );
-};
+}
 
 const themes = {
     'night-dark': {

@@ -15,6 +15,7 @@
         "monaco-editor-webpack-plugin": "^1.9.0",
         "isomorphic-git": "^1.4.0",
         "@isomorphic-git/lightning-fs": "^4.2.2",
+        "underscore": "^1.10.2",
         "diff": "^4.0.2",
         "path": "^0.12.7",
         "react": "^16.13.1",
@@ -40,7 +41,9 @@
     "devDependencies": {
         "@types/react": "^16.9.35",
         "@types/react-dom": "^16.9.8",
-        "@types/redux-logger": "^3.0.7"
+        "@types/redux-logger": "^3.0.7",
+        "@types/diff": "^4.0.2",
+        "@types/underscore": "^1.10.0"
     },
     "author": "sveingunnarlarsen@gmail.com",
     "license": "ISC"

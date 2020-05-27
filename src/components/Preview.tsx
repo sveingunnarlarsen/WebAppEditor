@@ -13,6 +13,7 @@ interface PreviewProps {
     useClass: string;
 }
 
+
 class Preview extends React.Component<PreviewProps> {
     constructor(props) {
         super(props);

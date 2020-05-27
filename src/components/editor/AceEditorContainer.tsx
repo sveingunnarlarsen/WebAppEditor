@@ -1,8 +1,8 @@
 import React from "react";
 import { RefObject } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import * as _ from "underscore";
 
 import { FileSystemObject } from "../../types";
 import { Editor } from "../../types/editor";
@@ -15,6 +15,7 @@ import { SplitDirection } from "../../types/editor";
 import { getFileLanguage } from '../../helpers/utils';
 import { fileOpened, fileUpdated, formatAllFiles } from "../../completer/index";
 import { getModel } from "../../monaco";
+import { getFsoDeltaDecorations } from "../../git";
 
 const mapState = (state, ownProps) => {
     let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
@@ -55,6 +56,7 @@ interface EditorProps {
 class AceEditorContainer extends React.Component<EditorProps> {
 
     inputTimeout: number;
+    deltaDecorations: string[] = [];
     editor: monaco.editor.IStandaloneCodeEditor;
 
     constructor(props) {
@@ -79,15 +81,15 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
     componentDidUpdate() {
         if (this.editor) {
-            this.editor.layout();
-            fileOpened(this.props.fso.path);
-            if (this.props.viewState) {
-                setTimeout(() => {
-                    this.editor.focus();
-                }, 100);
-            }
+            this.setupEditor();
+            _.defer(() => this.editor.focus());
         }
     }
+
+    addDeltaDecorations = _.debounce(async () => {
+        const decorations = await getFsoDeltaDecorations(this.props.fso.path, this.editor.getValue());
+        this.deltaDecorations = this.editor.deltaDecorations(this.deltaDecorations, decorations);
+    }, 100);
 
     addActionsAndCommands = (editor: monaco.editor.IStandaloneCodeEditor) => {
 
@@ -139,13 +141,19 @@ class AceEditorContainer extends React.Component<EditorProps> {
         }
     }
 
-    handleEditorDidMount = (_, editor) => {
+    setupEditor = () => {
+        fileOpened(this.props.fso.path);
+        this.addDeltaDecorations();
+        _.defer(() => this.editor.layout());
+    }
+
+    handleEditorDidMount = (getValue, editor) => {
         this.editor = editor;
         this.addActionsAndCommands(this.editor);
-        setTimeout(() => {
-            fileOpened(this.props.fso.path);
-            this.editor.layout();
-        }, 10);
+        this.editor.onDidChangeModelContent(() => {
+            this.addDeltaDecorations();            
+        })
+        this.setupEditor();
     };
 
     render() {

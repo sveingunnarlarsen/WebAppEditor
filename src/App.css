@@ -126,3 +126,9 @@ body {
     height: 100%;
     width: 100%;
 }
+
+.deltaMonacoAdded {
+	background: #0C7D9D;
+	width: 3px !important;
+	margin-left: 3px;
+}

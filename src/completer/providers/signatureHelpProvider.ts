@@ -9,6 +9,8 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
         this.languageClient = languageClient;
     }
 
+    signatureHelpTriggerCharacters = ["(", ","];
+    
     async provideSignatureHelp(
         model: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -51,7 +53,7 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
             };
         });
 
-
+        console.log("Returning signature help: ", signatureInformations);
 
         return {
             value: {

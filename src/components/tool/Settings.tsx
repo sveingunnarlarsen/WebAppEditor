@@ -18,7 +18,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
-import { getConfigUser, setConfigUser } from "../../git";
+import { getConfigUser, setConfigUser, setRemoteOrigin } from "../../git";
 import { AppEditorState } from "../../types";
 
 import keydown, { Keys } from "react-keydown";
@@ -71,11 +71,14 @@ class Settings extends React.Component<SettingsProps> {
         };
     }
 
-    updateData = (e, prop, ...path) => {
+    updateData = (e, prop, ...path) => {        
         const data = $.extend(true, {}, this.props.data);
         const toUpdate = path ? path.reduce((a, c) => a[c], data) : data;
         toUpdate[prop] = e.target.value;
         this.props.updateAppData(data);
+        if (prop === "repo") {
+            setRemoteOrigin(e.target.value);
+        }
     };
 
     updateConfig = e => {

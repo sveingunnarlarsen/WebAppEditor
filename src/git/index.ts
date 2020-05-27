@@ -50,6 +50,10 @@ export async function setConfigUser(prop, value) {
     await git.setConfig({ fs, dir: currentGitDir, path: "user." + prop, value });
 }
 
+export async function setRemoteOrigin(value) {
+    await git.addRemote({ fs, dir: currentGitDir, remote: "origin", url: value, force: true });
+}
+
 async function handleChange() {
     //Switch to new project.
     if (store.getState().app.name && store.getState().app.name != currentAppName) {
@@ -598,7 +602,7 @@ export async function syncFile({ id, path, content, type }: { id: string; path: 
             if (originalFso && originalFso.path !== path) {
                 console.log(id, "Deleting from fs: ", originalFso.path, path);
                 await pfs.unlink(`${currentGitDir}${originalFso.path}`);
-                await git.remove({ fs, dir: currentGitDir, filepath: originalFso.path });                
+                await git.remove({ fs, dir: currentGitDir, filepath: originalFso.path });
             }
             console.log(id, "Syncing file to fs", path);
 
@@ -630,6 +634,64 @@ export async function removeFile(fileId: string) {
     } catch (e) {
         console.log("Error deleting file from fs or removing from git", e.message);
     }
+}
+
+export async function getFsoDeltaDecorations(filepath: string, content) : Promise<monaco.editor.IModelDeltaDecoration[]> {
+    filepath = filepath.substring(1);
+
+    console.log("Getting delta decorations for filepath: ", filepath);
+
+    const branch = await git.currentBranch({ fs, dir: currentGitDir });
+    const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });
+
+    let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8" });
+    let fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
+
+    const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD as string, content);
+
+    const deltaRanges: {type: 'added' | 'removed', start: number, end: number}[] = [];
+
+    if (diff.hunks.length > 0) {        
+        
+        let deltaCount = 0;
+        
+        for (let i = 0; i < diff.hunks.length; i++) {
+            const hunk = diff.hunks[i];
+
+            let lineIndex = 0;
+            for (let y = 0; y < hunk.lines.length; y++) {            
+                const line = hunk.lines[y];
+                if (line.charAt(0) !== "-") {
+                    lineIndex++;
+                }
+                
+                if (line.charAt(0) === "+") {
+                    if (!deltaRanges[deltaCount]) {
+                        const start = lineIndex + (hunk.newStart - 1);
+                        deltaRanges[deltaCount] = {type: "added", start, end: start+1}
+                    }
+                } else {
+                    if (deltaRanges[deltaCount]) {
+                        deltaRanges[deltaCount].end = (lineIndex - 1) + (hunk.newStart - 1);
+                        deltaCount++;
+                    }
+                }
+            }
+        }
+    }
+    
+    console.log("Ranges: ", deltaRanges);
+    
+    const deltaDecorators: monaco.editor.IModelDeltaDecoration[] = [];
+    for (let i = 0; i < deltaRanges.length; i++) {
+        const range = deltaRanges[i];
+        deltaDecorators.push({
+            range: new monaco.Range(range.start, 1, range.end, 1),
+            options: {isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded"}
+        })
+    }    
+    console.log("Decorators: ", deltaDecorators);
+    return deltaDecorators;
 }
 
 export async function renameFolderGit(oldPath, newPath) {
