@@ -143,6 +143,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         this.editor = editor;
         this.addActionsAndCommands(this.editor);
         setTimeout(() => {
+            fileOpened(this.props.fso.path);
             this.editor.layout();
         }, 10);
     };

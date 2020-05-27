@@ -40,7 +40,7 @@ export function getWebApps() {
             .then(async response => {
                 try {
                     const json = await response.json();
-                    dispatch(receiveWebApps(json.apps));              
+                    dispatch(receiveWebApps(json.apps));
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }
@@ -94,6 +94,7 @@ export function getProject(id: string) {
     }
 }
 
+
 export function deleteProject() {
     return function(dispatch, getState) {
         dispatch(requestDeleteWebApp());
@@ -146,7 +147,7 @@ export function compileProject() {
     };
 }
 
-export function updateAppData(data: {name: string, description: string, type: 'react' | 'vue', settings: AppSettings}) {
+export function updateAppData(data: { name: string, description: string, type: 'react' | 'vue', settings: AppSettings }) {
     return {
         type: Actions.UPDATE_APP_DATA,
         data,

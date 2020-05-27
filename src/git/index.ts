@@ -1,16 +1,23 @@
+import * as http from "isomorphic-git/http/web";
+import * as git from "isomorphic-git";
+import FS from "@isomorphic-git/lightning-fs";
+
 import * as JsDiff from "diff";
 import * as chalk from "chalk";
 import yargs from "yargs-parser";
 
+import store from "../store";
+import { getFileById } from "../store/utils";
 import { FileSystemObject } from "../types";
 import { startGitCloneClone, endGitClone } from "../actions";
 import { createFsos, save, deleteFsos } from "../actions/file";
-import store from "../store";
-import { getFileById } from "../store/utils";
 import { getFileContent, writeFileContent, fsExists } from "./utils";
 
-let options: any = { enabled: true, level: 2 };
-const forcedChalk = new chalk.constructor(options);
+const fs = new FS("fs");
+const pfs = fs.promises;
+
+// @ts-ignore
+const forcedChalk = new chalk.constructor({ enabled: true, level: 2 });
 
 class GitEmitter extends EventTarget {
     isInitializing: boolean;
@@ -153,7 +160,7 @@ async function syncAppFilesWithGit() {
  * and delete the files in app that does not exist
  * in fs
  */
-async function syncGitFilesWithApp(pattern) {
+async function syncGitFilesWithApp() {
     console.log("starting git sync to app, using git dir: ", currentGitDir);
     const appFsos = store.getState().app.fileSystemObjects;
     const gitFsos = await git.listFiles({ fs, dir: currentGitDir });
@@ -393,9 +400,10 @@ class GitCommand {
                 return "Switching branches is not supported yet";
                 //await git.checkout({dir: currentGitDir, ref: arg});
             } else {
-                // TODO: Check that the filepath is actually a file path.
-                // await git.fastCheckout({fs, dir: currentGitDir, force: true, filepaths: [arg]});
-                // await syncFilesFromFS(arg);
+                const unstagedFiles = await this.getUnstagedChanges();
+                const filesToCheckout = unstagedFiles.filter(f => new RegExp(args[0], "g").test(f));
+                await git.checkout({ fs, dir: currentGitDir, ref: currentBranch, filepaths: filesToCheckout, force: true });
+                await syncGitFilesWithApp();
             }
         }
     }
@@ -464,7 +472,7 @@ class GitCommand {
                 name: configUser.name,
                 email: configUser.email
             },
-            onAuth: () => ({ username: token }),
+            onAuth: () => ({ username: configUser.token }),
             onMessage: print
         });
         await syncGitFilesWithApp();

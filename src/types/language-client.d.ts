@@ -35,9 +35,12 @@ export declare class LanguageClient {
      *
      */
     private _execute;
-    private _wait;
     on(event: ClientEvent.Connected, listener: () => void): void;
-    on(event: ClientEvent.Disconnected, listener: () => void): void;
+    on(event: ClientEvent.Disconnected, listener: (event: {
+        code: number;
+        reason: string;
+        wasClean: boolean;
+    }) => void): void;
     on(event: ClientEvent.Reconnected, listener: () => void): void;
     on(event: ClientEvent.Errd, listener: (error: protocol.ResponseError) => void): void;
     on(event: ClientEvent.PublishDiagnostics, listener: (result: protocol.PublishDiagnosticsParams) => void): void;
@@ -149,4 +152,5 @@ export declare class LanguageClient {
     getSignatureHelp(path: string, line: number, character: number): Promise<protocol.ResponseMessage<protocol.GetSignatureHelpResult>>;
     getCompletionEntryDetails(path: string, line: number, symbol: string, character: number): Promise<protocol.ResponseMessage<protocol.GetCompletionEntryDetailsResult>>;
     getDefinition(path: string, line: number, character: number): Promise<protocol.ResponseMessage<protocol.GetDefinitionResult>>;
+    getFormattingEdits(path: string, insertSpaces: boolean, tabSize: number): Promise<protocol.ResponseMessage<protocol.GetFormattingEditsResult>>;
 }
