@@ -646,8 +646,10 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
     let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" });
 
     const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
+    console.log("Structured diff: ", diff);
 
     const deltaRanges: { type: 'added' | 'removed', start: number, end: number }[] = [];
+
     if (diff.hunks.length > 0) {
         let deltaCount = 0;
 
@@ -666,11 +668,11 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 // End delta decorator
                 if (deltaRanges[deltaCount]) {
                     if (deltaRanges[deltaCount].type === 'added' && firstChar !== "+") {
-                        deltaRanges[deltaCount].end = (lineIndex - 1) + (hunk.newStart - 1);
+                        deltaRanges[deltaCount].end = lineIndex + hunk.newStart;
                         deltaCount++;
                     }
                     else if (deltaRanges[deltaCount].type === 'removed' && firstChar !== "-") {
-                        deltaRanges[deltaCount].end = (lineIndex - 1) + (hunk.newStart - 1);
+                        deltaRanges[deltaCount].end = lineIndex + hunk.newStart;
                         deltaCount++;
                     }
                 }
@@ -678,18 +680,26 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 // Start delta decorator
                 if (!deltaRanges[deltaCount]) {
                     if (firstChar === '+') {
-                        const start = lineIndex + (hunk.newStart - 1);
-                        deltaRanges[deltaCount] = { type: "added", start, end: start + 1 }                        
+                        const start = lineIndex + hunk.newStart;
+                        deltaRanges[deltaCount] = { type: "added", start, end: null }                        
                     }
                     else if (firstChar === '-') {
-                        const start = lineIndex + (hunk.newStart - 1);
-                        deltaRanges[deltaCount] = { type: "removed", start, end: start + 1 }                        
+                        const start = lineIndex + hunk.newStart;
+                        deltaRanges[deltaCount] = { type: "removed", start, end: null }                        
+                    }
+                }
+
+                if (y === hunk.lines.length - 1) {
+                    if (deltaRanges[deltaCount] && !deltaRanges[deltaCount].end) {
+                        deltaRanges[deltaCount].end = lineIndex + hunk.newStart;
+                        deltaCount++;
                     }
                 }
             }
         }
     }
 
+    console.log("Delta ranges: ", deltaRanges);
     const deltaDecorators: monaco.editor.IModelDeltaDecoration[] = [];
     for (let i = 0; i < deltaRanges.length; i++) {
         const range = deltaRanges[i];
