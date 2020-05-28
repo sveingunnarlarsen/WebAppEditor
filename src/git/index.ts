@@ -691,7 +691,8 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 
                 if (y === hunk.lines.length - 1) {
                     if (deltaRanges[deltaCount] && !deltaRanges[deltaCount].end) {
-                        deltaRanges[deltaCount].end = (lineIndex + hunk.newStart) - 1;
+                        deltaRanges[deltaCount].start = deltaRanges[deltaCount].start + 1;
+                        deltaRanges[deltaCount].end = (lineIndex + hunk.newStart);
                         deltaCount++;
                     }
                 }
@@ -710,7 +711,6 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
             })
         }
     }
-    console.log("Decorators: ", deltaDecorators);
     return deltaDecorators;
 }
 
