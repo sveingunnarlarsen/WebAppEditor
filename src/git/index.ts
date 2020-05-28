@@ -636,7 +636,7 @@ export async function removeFile(fileId: string) {
     }
 }
 
-export async function getFsoDeltaDecorations(filePath: string, fileContent: string) : Promise<monaco.editor.IModelDeltaDecoration[]> {
+export async function getFsoDeltaDecorations(filePath: string, fileContent: string): Promise<monaco.editor.IModelDeltaDecoration[]> {
     // Remove the leading slash in the filepath.
     filePath = filePath.substring(1);
 
@@ -645,46 +645,61 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
 
     let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" });
 
-    const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, {ignoreWhitespace: true});
-    console.log("Structured patch: ", diff);
+    const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
 
-    const deltaRanges: {type: 'added' | 'removed', start: number, end: number}[] = [];
+    const deltaRanges: { type: 'added' | 'removed', start: number, end: number }[] = [];
     if (diff.hunks.length > 0) {
         let deltaCount = 0;
-        
+
         for (let i = 0; i < diff.hunks.length; i++) {
             const hunk = diff.hunks[i];
 
             let lineIndex = 0;
-            for (let y = 0; y < hunk.lines.length; y++) {            
+            for (let y = 0; y < hunk.lines.length; y++) {
                 const line = hunk.lines[y];
-                if (line.charAt(0) !== "-") {
+                const firstChar = line.charAt(0);
+
+                if (firstChar !== '-') {
                     lineIndex++;
                 }
-                
-                if (line.charAt(0) === "+") {
-                    if (!deltaRanges[deltaCount]) {
-                        const start = lineIndex + (hunk.newStart - 1);
-                        deltaRanges[deltaCount] = {type: "added", start, end: start+1}
-                    }
-                } else {
-                    if (deltaRanges[deltaCount]) {
+
+                // End delta decorator
+                if (deltaRanges[deltaCount]) {
+                    if (deltaRanges[deltaCount].type === 'added' && firstChar !== "+") {
                         deltaRanges[deltaCount].end = (lineIndex - 1) + (hunk.newStart - 1);
                         deltaCount++;
+                    }
+                    else if (deltaRanges[deltaCount].type === 'removed' && firstChar !== "-") {
+                        deltaRanges[deltaCount].end = (lineIndex - 1) + (hunk.newStart - 1);
+                        deltaCount++;
+                    }
+                }
+                
+                // Start delta decorator
+                if (!deltaRanges[deltaCount]) {
+                    if (firstChar === '+') {
+                        const start = lineIndex + (hunk.newStart - 1);
+                        deltaRanges[deltaCount] = { type: "added", start, end: start + 1 }                        
+                    }
+                    else if (firstChar === '-') {
+                        const start = lineIndex + (hunk.newStart - 1);
+                        deltaRanges[deltaCount] = { type: "removed", start, end: start + 1 }                        
                     }
                 }
             }
         }
     }
- 
+
     const deltaDecorators: monaco.editor.IModelDeltaDecoration[] = [];
     for (let i = 0; i < deltaRanges.length; i++) {
         const range = deltaRanges[i];
-        deltaDecorators.push({
-            range: new monaco.Range(range.start, 1, range.end, 1),
-            options: {isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded"}
-        })
-    }    
+        if (range.type === "added") {
+            deltaDecorators.push({
+                range: new monaco.Range(range.start, 1, range.end, 1),
+                options: { isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded" }
+            })
+        }
+    }
     console.log("Decorators: ", deltaDecorators);
     return deltaDecorators;
 }
