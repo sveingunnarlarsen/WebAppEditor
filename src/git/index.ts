@@ -636,23 +636,20 @@ export async function removeFile(fileId: string) {
     }
 }
 
-export async function getFsoDeltaDecorations(filepath: string, content) : Promise<monaco.editor.IModelDeltaDecoration[]> {
-    filepath = filepath.substring(1);
-
-    console.log("Getting delta decorations for filepath: ", filepath);
+export async function getFsoDeltaDecorations(filePath: string, fileContent: string) : Promise<monaco.editor.IModelDeltaDecoration[]> {
+    // Remove the leading slash in the filepath.
+    filePath = filePath.substring(1);
 
     const branch = await git.currentBranch({ fs, dir: currentGitDir });
     const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });
 
-    let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8" });
-    let fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
+    let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" });
 
-    const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD as string, content);
+    const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, {ignoreWhitespace: true});
+    console.log("Structured patch: ", diff);
 
     const deltaRanges: {type: 'added' | 'removed', start: number, end: number}[] = [];
-
-    if (diff.hunks.length > 0) {        
-        
+    if (diff.hunks.length > 0) {
         let deltaCount = 0;
         
         for (let i = 0; i < diff.hunks.length; i++) {
@@ -679,9 +676,7 @@ export async function getFsoDeltaDecorations(filepath: string, content) : Promis
             }
         }
     }
-    
-    console.log("Ranges: ", deltaRanges);
-    
+ 
     const deltaDecorators: monaco.editor.IModelDeltaDecoration[] = [];
     for (let i = 0; i < deltaRanges.length; i++) {
         const range = deltaRanges[i];
