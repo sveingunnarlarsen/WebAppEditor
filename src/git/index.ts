@@ -680,18 +680,18 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 // Start delta decorator
                 if (!deltaRanges[deltaCount]) {
                     if (firstChar === '+') {
-                        const start = lineIndex + hunk.newStart;
+                        const start = (lineIndex + hunk.newStart) - 1;
                         deltaRanges[deltaCount] = { type: "added", start, end: null }                        
                     }
                     else if (firstChar === '-') {
-                        const start = lineIndex + hunk.newStart;
+                        const start = (lineIndex + hunk.newStart) - 1;
                         deltaRanges[deltaCount] = { type: "removed", start, end: null }                        
                     }
                 }
 
                 if (y === hunk.lines.length - 1) {
                     if (deltaRanges[deltaCount] && !deltaRanges[deltaCount].end) {
-                        deltaRanges[deltaCount].end = lineIndex + hunk.newStart;
+                        deltaRanges[deltaCount].end = (lineIndex + hunk.newStart) - 1;
                         deltaCount++;
                     }
                 }
@@ -717,3 +717,4 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
 export async function renameFolderGit(oldPath, newPath) {
     await pfs.rename(`${currentGitDir}${oldPath}`, `${currentGitDir}${newPath}`);
 }
+
