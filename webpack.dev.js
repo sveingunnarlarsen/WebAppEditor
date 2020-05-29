@@ -4,60 +4,68 @@ const classPropPlugin = require.resolve("@babel/plugin-proposal-class-properties
 const tsPreset = require.resolve("@babel/preset-typescript");
 const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
 const webpack = require("webpack");
-const path = require("path");
+const htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = settings => ({
-    mode: "development",
-    devtool: "eval-source-map",
-    entry: {
-        "editor.worker": 'monaco-editor/esm/vs/editor/editor.worker.js',
-    },
-    output: {
-        globalObject: 'self',
-        filename: '[name].bundle.js',
-        path: "/build"
-    },
-    resolve: {
-        symlinks: false,
-        extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
-    },
-    module: {
-        rules: [
+	mode: "development",
+	devtool: "eval-source-map",
+	entry: {
+		"editor.worker": 'monaco-editor/esm/vs/editor/editor.worker.js',
+    	"json.worker": 'monaco-editor/esm/vs/language/json/json.worker',
+    	"css.worker": 'monaco-editor/esm/vs/language/css/css.worker',
+    	"html.worker": 'monaco-editor/esm/vs/language/html/html.worker',
+    	"ts.worker": 'monaco-editor/esm/vs/language/typescript/ts.worker',
+  	},
+	output: {
+		filename: '[name].bundle.js',
+		path: "/",
+		publicPath: `/api/webapp/${settings.appId}/preview/`
+  	},
+	resolve: {
+		symlinks: false,
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
+	},
+	module: {
+		rules: [
+			{
+				test: /\.(ts|tsx|js|jsx|d.ts)$/,
+				exclude: /node_modules/,
+				use: [{
+					loader: "babel-loader",
+					options: {
+						presets: [presetEnv, tsPreset, presetReact],
+						plugins: [[porpDecorators, {legacy: true}], [classPropPlugin, {loose: true}]]
+					}
+				}]
+			},
             {
-                test: /\.(ts|tsx|js|jsx|d.ts)$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: "babel-loader",
-                    options: {
-                        presets: [presetEnv, tsPreset, presetReact],
-                        plugins: [[porpDecorators, { legacy: true }], [classPropPlugin, { loose: true }]]
-                    }
-                }]
+            	test: /\.css$/,
+              	use: ["style-loader", "css-loader"],
             },
-            {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"],
-            },
-            {
-                test: /\.(png|jpe?g|svg|ttf)$/,
-                use: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            name(fileName) {
-                                fileName = `resource/${fileName.slice(fileName.indexOf("/", 1) + 1)}`;
-                                return fileName;
-                            },
-                            emitFile: false
-                        }
-                    }
-                ]
-            }
-        ]
-    },
-    plugins: [
-        new webpack.DefinePlugin({
-            ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
-        }),
-    ]
+			{
+				test: /\.(png|jpe?g|svg|ttf)$/,
+				use: [
+					{
+						loader: "file-loader",
+						options: {
+							name(fileName) {
+								if(fileName.includes("codicon.ttf")) {
+									return "codicon.ttf";
+								}
+								return `.${fileName}`;
+							}
+						}
+					}
+				]
+			}
+		]
+	},
+	plugins: [
+		new webpack.DefinePlugin({
+			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
+		}),
+		new htmlWebpackPlugin({
+			templateContent: settings.htmlTemplate
+		})
+	]
 });
