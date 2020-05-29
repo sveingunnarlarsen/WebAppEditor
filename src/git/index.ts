@@ -648,7 +648,7 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
     const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
     console.log("Structured diff: ", diff);
 
-    const deltaRanges: { type: 'added' | 'removed', start: number, end: number }[] = [];
+    const deltaRanges: { type: 'added' | 'removed', start: number, end: number, removedContent?: string[] }[] = [];
 
     if (diff.hunks.length > 0) {
         let deltaCount = 0;
@@ -688,7 +688,11 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                         deltaRanges[deltaCount] = { type: "removed", start, end: null }                        
                     }
                 }
-                
+
+                if (deltaRanges[deltaCount] && deltaRanges[deltaCount].type === "removed") {
+                    deltaRanges[deltaCount].removedContent.push(line);    
+                }
+
                 if (y === hunk.lines.length - 1) {
                     if (deltaRanges[deltaCount] && !deltaRanges[deltaCount].end) {
                         deltaRanges[deltaCount].start = deltaRanges[deltaCount].start + 1;

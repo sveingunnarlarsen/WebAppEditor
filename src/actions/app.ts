@@ -96,13 +96,14 @@ export function getProject(id: string) {
 
 export function deleteProject() {
     return function(dispatch, getState) {
-        dispatch(requestDeleteWebApp());
         const id = getState().app.id;
 
         if (!id) {
             return dispatch(openDialog(DialogType.MESSAGE, { message: "No open project" }));
         }
 
+        dispatch(requestDeleteWebApp());
+        
         return fetch(`/api/webapp/${id}`, {
             method: "DELETE"
         })
