@@ -479,6 +479,7 @@ class GitCommand {
             onAuth: () => ({ username: configUser.token }),
             onMessage: print
         });
+        console.log("Pull done");
         await syncGitFilesWithApp();
 
         return result;
