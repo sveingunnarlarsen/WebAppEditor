@@ -75,19 +75,21 @@ export async function formatAllFiles() {
 
         const models = monaco.editor.getModels();
         models.forEach(async model => {
-            const response = await client.getFormattingEdits(
-                model.uri.path,
-                options.insertSpaces,
-                options.tabSize,
-            );
+            if (model.uri.path.includes(".ts")) {
+                const response = await client.getFormattingEdits(
+                    model.uri.path,
+                    options.insertSpaces,
+                    options.tabSize,
+                );
 
-            const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
-                text: e.newText,
-                range: spanToRange(e.span, model.uri),
-            }));
+                const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
+                    text: e.newText,
+                    range: spanToRange(e.span, model.uri),
+                }));
 
-            model.applyEdits(textEdits);
-            updateModel(model);
+                model.applyEdits(textEdits);
+                updateModel(model);
+            }
         })
     }
 }
@@ -98,7 +100,7 @@ export async function fileChanged(newFso: FileSystemObject, oldFso: FileSystemOb
         await fileDeleted(oldFso.path, oldFso.type);
         await fileCreated(newFso.path, newFso.type, newFso.content);
     }
-} 
+}
 
 export async function fileUpdated({ path, content }: { path: string, content: string }) {
     if (client.isReady) {
@@ -125,7 +127,7 @@ export async function fileDeleted(path: string, type: 'file' | 'folder') {
     }
     if (type === 'file') {
         await deleteModel(path);
-    }    
+    }
 }
 
 export async function fileCreated(path: string, type: 'file' | 'folder' = 'file', content: string = "") {
@@ -139,7 +141,7 @@ export async function fileCreated(path: string, type: 'file' | 'folder' = 'file'
     }
     if (type === 'file') {
         await createModel({ path, type, content });
-    }    
+    }
 }
 
 export async function fileOpened(path: string) {
