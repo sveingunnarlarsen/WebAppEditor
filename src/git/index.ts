@@ -643,10 +643,18 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
     filePath = filePath.substring(1);
 
     const branch = await git.currentBranch({ fs, dir: currentGitDir });
-    const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });
 
-    let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" });
-
+    let fileHEAD = "";
+    try {
+        const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });    
+        fileHEAD = (await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" })).object as string;
+    } catch (e) {
+        // There is no commit. Mark entire file.
+        return [{
+            range: new monaco.Range(1, 1, fileContent.split('\n').length, 1),
+            options: { isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded" }}]    
+    } 
+    
     const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
     console.log("Structured diff: ", diff);
 
@@ -687,7 +695,7 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                     }
                     else if (firstChar === '-') {
                         const start = lineIndex + hunk.newStart - 1;
-                        deltaRanges[deltaCount] = { type: "removed", start, end: null }                        
+                        deltaRanges[deltaCount] = { type: "removed", start, end: null, removedContent: [] }                        
                     }
                 }
 
