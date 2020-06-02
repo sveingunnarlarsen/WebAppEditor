@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -14,7 +13,12 @@ function mapDispatch(dispatch) {
     };
 }
 
-class DeleteFile extends React.Component {
+interface DeleteFileProps {
+    close: () => void;
+    deleteProject: () => void;    
+}
+
+class DeleteFile extends React.Component<DeleteFileProps> {
     constructor(props) {
         super(props);
     }

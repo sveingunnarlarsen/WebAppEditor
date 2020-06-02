@@ -84,7 +84,7 @@ class NpmExplorer extends React.Component<NpmExplorerProps> {
                 color: "white"
             };
             if (module.package.exists) {
-                if (module.package.version.indexOf(module.version) > -1) {
+                if (module.package.satisfied) {
                     style.color = "wheat";
                 } else {
                     style.color = "red";

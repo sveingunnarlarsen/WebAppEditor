@@ -12,11 +12,16 @@ import { createFso } from "../../actions/file";
 
 function mapDispatch(dispatch) {
     return {
-        createFile: name => dispatch(createFso({ name }))
+        createFile: (name: string) => dispatch(createFso({ type: 'file', name }))
     };
 }
 
-class NewFile extends React.Component {
+interface NewFileProps {
+    close: () => void;
+    createFile: (name: string) => void;
+}
+
+class NewFile extends React.Component<NewFileProps, {value: string}> {
     constructor(props) {
         super(props);
         this.state = {

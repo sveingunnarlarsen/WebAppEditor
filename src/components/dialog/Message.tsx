@@ -9,22 +9,22 @@ import Button from "@material-ui/core/Button";
 
 const mapState = state => {
     return {
-        data: state.dialog.data
+        message: state.dialog.data.message
     };
 };
 
-class Message extends React.Component {
+interface MessageProps {
+    close: () => void;
+    message: string;
+}
+
+class Message extends React.Component<MessageProps> {
     constructor(props) {
         super(props);
-        this.state = {
-            value: this.props.data
-        };
     }
 
     render() {
-        const { close } = this.props;
-        const { value } = this.state;
-        const { message } = value;
+        const { close, message } = this.props;
 
         return (
             <React.Fragment>
