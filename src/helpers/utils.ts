@@ -46,7 +46,7 @@ export function arrayBufferToBase64(buffer) {
 }
 
 export function isImage(filepath) {
-    return filepath.toLowerCase().match(/.(bmp|cod|gif|ief|jpe|jpeg|jpg|jfif|svg|tif|tiff|ras|cmx|ico|pnm|png|pbm|pgm|ppm|rgb|xbm|xpm|xwd)$/i);
+    return filepath.toLowerCase().match(/.(bmp|cod|gif|ief|jpe|jpeg|jpg|jfif|svg|tif|tiff|ttf|ras|cmx|ico|pnm|png|pbm|pgm|ppm|rgb|xbm|xpm|xwd)$/i);
 }
 
 export function getFileLanguage(filepath: string) {
