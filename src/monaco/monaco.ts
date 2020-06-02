@@ -92,6 +92,7 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
+/*
 // @ts-ignore
 self.MonacoEnvironment = {
     getWorkerUrl: function(moduleId, label) {
@@ -112,6 +113,21 @@ self.MonacoEnvironment = {
         }
         return `${basePath}/build/editor.worker.bundle.js`;
     }
+}
+*/
+
+// @ts-ignore
+self.MonacoEnvironment = {
+	getWorkerUrl: function (moduleId, label) {
+		// @ts-ignore
+		const basePath = ROOTPATH;
+		const calcPath = (p) => `${basePath}/${p}`;
+		if(label === 'json') return calcPath('json.worker.bundle.js');
+		if(label === 'css') return calcPath('css.worker.bundle.js');
+		if(label === 'html') return calcPath('html.worker.bundle.js');
+		if(["typescript", "javascript"].includes(label)) return calcPath('typescript.worker.bundle.js');
+		return calcPath('editor.worker.bundle.js');
+	}
 }
 
 export default monaco;
