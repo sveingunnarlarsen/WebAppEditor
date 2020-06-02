@@ -469,7 +469,7 @@ class GitCommand {
             http,
             dir: currentGitDir,
             corsProxy,
-            ref,
+            //ref,
             singleBranch: true,
             fastForwardOnly: false,
             author: {
