@@ -76,7 +76,7 @@ async function handleChange() {
                 await syncAppFilesWithGit();
             } else {
                 console.log("Git dir does not exist, creating git dir: ", currentGitDir);
-                pfs.mkdir(currentGitDir);
+                await pfs.mkdir(currentGitDir);
                 await git.init({ fs, dir: currentGitDir });
                 if (app.settings.git.repo) {
                     await git.clone({
