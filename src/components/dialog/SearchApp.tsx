@@ -1,20 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
-import store from "../../store";
-import SplitPane from "react-split-pane";
+import * as _ from "underscore";
 
+import SplitPane from "react-split-pane";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 
+import store from "../../store";
 import AceEditorContainer from "../editor/AceEditorContainer";
 
 import keydown, { Keys } from "react-keydown";
@@ -38,50 +38,48 @@ class SearchApp extends React.Component {
         this.state = {
             value: "",
             searchResult: [],
-            selectedFile: null
+            selectedRow: null
         };
     }
 
     @keydown(UP)
     handleUP(e) {
         e.preventDefault();
-        this.updateSelectedFile(-1);
+        this.updateSelectedRow(-1);
     }
 
     @keydown(DOWN)
     handleDOWN(e) {
         e.preventDefault();
-        this.updateSelectedFile(1);
+        this.updateSelectedRow(1);
     }
 
     @keydown(ENTER)
     handleENTER(e) {
-        if (this.state.selectedFile) {
+        if (this.state.selectedRow) {
             this.props.close();
-            this.props.showFile(this.state.selectedFile.id);
+            this.props.showFile(this.state.selectedRow.id, null, null/*Should be the range*/);
         }
     }
 
     handleTextFieldKeyDown = e => {
         if (e.key === "ArrowDown") {
-            this.updateSelectedFile(1);
+            this.updateSelectedRow(1);
         } else if (e.key === "ArrowUp") {
-            this.updateSelectedFile(-1);
+            this.updateSelectedRow(-1);
         } else if (e.key === "Escape") {
             this.props.close();
         }
     };
 
-    updateSelectedFile(next) {
-        let index = this.state.searchResult.indexOf(this.state.selectedFile);
-        if (index < 0) {
-            index = 0;
-        }
-        const file = this.state.searchResult[index + next];
-        if (file) {
+    updateSelectedRow = next => {
+        let index = this.state.searchResult.indexOf(this.state.selectedRow);
+        index = index < 0 ? 0: index;
+        const row = this.state.searchResult[index + next];
+        if (row) {
             this.setState({
-                selectedFile: file
-            });
+                selectedRow: row,
+            })
         }
     }
 
@@ -90,53 +88,54 @@ class SearchApp extends React.Component {
         this.setState({
             value: e.target.value
         });
-
-        clearTimeout(this.inputTimeout);
-        const value = e.target.value;
-
-        this.inputTimeout = setTimeout(() => {
-            console.log("Updating search result: ", value);
-            this.updateSearchResult(value);
-        }, 500);
+        if (e.target.value && e.target.value.length > 1) {
+            this.updateSearchResult(e.target.value);
+        } else {
+            this.setState({
+                searchResult: [],
+            })
+        }
     }
 
-    updateSearchResult = value => {
+    updateSearchResult = _.debounce(async (value) => {
         const appFiles = store.getState().app.fileSystemObjects;
         const searchResult = appFiles.reduce((acc, file) => {
             if (!file.content) return acc;
 
+            const match = file.content.match(new RegExp(value, 'g'));
             // File contains search word. Find all occurences.
-            const firstIndex = file.content.indexOf(value);
-            if (firstIndex > -1) {
-                let index = firstIndex;
+            if (match) {            
+                let index = file.content.toLowerCase().indexOf(value.toLowerCase());                  
                 while (index > -1) {
                     acc.push({
                         id: file.id,
                         path: file.path,
                         index,
                         ...getLineAndContentByChar(file.content, index)
-                    });
-                    index = file.content.indexOf(index, value);
+                    });                    
+
+                    index = file.content.toLowerCase().indexOf(value.toLowerCase(), index + 1);
                 }
             }
-            return acc;
+            return acc;            
         }, []);
+
         this.setState({
             searchResult
         });
-    };
+    }, 500);
 
     handleClick = row => {
         this.clickUsed = true;
         this.setState({
-            selectedFile: row
+            selectedRow: row
         });
     };
 
     handleDoubleClick = row => {
-        if (this.state.selectedFile) {
+        if (this.state.selectedRow) {
             this.props.close();
-            this.props.showFile(this.state.selectedFile.id);
+            this.props.showFile(this.state.selectedRow.id, null, null/*Should be range*/);
         }
     };
 
@@ -148,28 +147,19 @@ class SearchApp extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.selectedRef && !this.clickUsed) {
-            this.selectedRef.scrollIntoView(false);
-        } else {
-            this.clickUsed = false;
-        }
-        if (this.aceRef && this.aceRef.current) {
-            const editor = this.aceRef.current.editor;
-            const file = this.selectedFile;
-            editor.gotoLine(file.lineNumber, 0, true);
-            editor.findAll(this.state.value);
-        }
+
     }
 
-    getEditorForFile = selectedFile => {
-        if (selectedFile) {
+    getEditorForFile = selectedRow => {
+        if (selectedRow) {
+            console.log("selectedRow: ", selectedRow);
             return (
                 <React.Fragment>
                     <AceEditorContainer
-                        fileId={selectedFile.id}
-                        handle={ref => {
-                            this.aceRef = ref;
-                        }}
+                        fileId={selectedRow.id}
+                        isSearch={true}
+                        showLineNumber={selectedRow.lineNumber}
+                        key={selectedRow.lineNumber}
                     />
                 </React.Fragment>
             );
@@ -182,9 +172,9 @@ class SearchApp extends React.Component {
         const { close } = this.props;
         const { value, searchResult } = this.state;
 
-        this.selectedFile = this.state.selectedFile;
-        if (!this.selectedFile && searchResult.length > 0) {
-            this.selectedFile = searchResult[0];
+        this.selectedRow = this.state.selectedRow;
+        if (!this.selectedRow && searchResult.length > 0) {
+            this.selectedRow = searchResult[0];
         }
 
         let alreadySelected = false;
@@ -226,9 +216,8 @@ class SearchApp extends React.Component {
                             <TableBody>
                                 {searchResult.map((row, index) => {
                                     let selected = false;
-                                    if (this.selectedFile.id === row.id && !alreadySelected) {
+                                    if (this.selectedRow.id === row.id && this.selectedRow.index === row.index) {
                                         selected = true;
-                                        alreadySelected = true;
                                     }
                                     return (
                                         <TableRow onDoubleClick={() => this.handleDoubleClick(row)} ref={ref => (selected ? (this.selectedRef = ref) : null)} tabIndex={index} key={index} selected={selected} onClick={() => this.handleClick(row)}>
@@ -242,7 +231,7 @@ class SearchApp extends React.Component {
                                 })}
                             </TableBody>
                         </Table>
-                        {this.getEditorForFile(this.selectedFile)}
+                        {this.getEditorForFile(this.selectedRow)}
                     </SplitPane>
                 </DialogContent>
                 <DialogActions>

@@ -89,7 +89,6 @@ class AceEditorContainer extends React.Component<EditorProps> {
     componentDidUpdate() {
         if (this.editor) {
             this.setupEditor();
-            _.defer(() => this.editor.focus());
         }
     }
 
@@ -150,8 +149,16 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
     setupEditor = () => {
         fileOpened(this.props.fso.path);
-        this.addDeltaDecorations();
+        this.addDeltaDecorations();      
         _.defer(() => this.editor.layout());
+        if (!this.props.isSearch) {
+            _.defer(() => this.editor.focus());
+        } else {
+            console.log("Showing line number: ", this.props.showLineNumber);
+            const lineNumber = this.props.showLineNumber;
+            _.defer(() => this.editor.revealLineInCenter(lineNumber));
+            _.defer(() => this.editor.setSelection({startLineNumber: lineNumber, endLineNumber: lineNumber, startColumn: 1, endColumn: 9999}));
+        }        
     }
 
     handleEditorDidMount = (getValue, editor) => {
