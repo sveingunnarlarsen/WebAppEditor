@@ -65,7 +65,14 @@ module.exports = settings => ({
 			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
 		}),
 		new htmlWebpackPlugin({
-			templateContent: settings.htmlTemplate
+			templateContent: settings.htmlTemplate,
+			excludeChunks: [
+				'editor.worker',
+				'json.worker',
+				'css.worker',
+				'html.worker',
+				'ts.worker'
+			]
 		})
 	]
 });
