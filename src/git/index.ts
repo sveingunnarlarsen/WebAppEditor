@@ -143,7 +143,6 @@ async function syncAppFilesWithGit() {
     }
 
     // Update all files in git
-    console.log("Updating all files in git", appFiles);
     for (let i = 0; i < appFiles.length; i++) {
         try {
             await writeFileContent(pfs, `${currentGitDir}${appFiles[i].path}`, appFiles[i].content);
@@ -152,7 +151,6 @@ async function syncAppFilesWithGit() {
             console.log("Message: ", e.message);
         }
     }
-    console.log("Done updating all files in git");
 
     // Check if there are any files in git that does not exist in app.
     for (let i = 0; i < gitFsos.length; i++) {
@@ -469,6 +467,8 @@ class GitCommand {
             force: opts.force ? true : false
         });
 
+        console.log("Git push result: ", result);
+
         let message = ``;
         if (result.ok && result.ok.length > 0) {
             message = result.ok.map(m => m).join("\n");
@@ -660,7 +660,7 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
     // Remove the leading slash in the filepath.
     filePath = filePath.substring(1);
 
-    const branch = await git.currentBranch({ fs, dir: currentGitDir });
+    const branch = await git.currentBranch({ fs, dir: currentGitDir }) as string;
 
     let fileHEAD = "";
     try {
@@ -675,7 +675,6 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
     }
 
     const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
-    console.log("Structured diff: ", diff);
 
     const deltaRanges: { type: 'added' | 'removed', start: number, end: number, removedContent?: string[] }[] = [];
 
@@ -733,7 +732,6 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
         }
     }
 
-    console.log("Delta ranges: ", deltaRanges);
     const deltaDecorators: monaco.editor.IModelDeltaDecoration[] = [];
     for (let i = 0; i < deltaRanges.length; i++) {
         const range = deltaRanges[i];
