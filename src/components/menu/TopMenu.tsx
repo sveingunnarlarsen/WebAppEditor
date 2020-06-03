@@ -35,7 +35,7 @@ function mapDispatch(dispatch) {
     };
 }
 
-class TopMenu extends React.Component {
+class TopMenu extends React.Component<ReturnType<typeof mapDispatch>> {
     constructor(props) {
         super(props);
         this.state = {
