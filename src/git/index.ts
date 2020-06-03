@@ -71,7 +71,7 @@ async function handleChange() {
             currentAppName = app.name;
             currentGitDir = `/${currentAppName}`;
 
-            if (fsExists(pfs, `${currentGitDir}/.git`)) {
+            if (await fsExists(pfs, `${currentGitDir}/.git`)) {
                 console.log("Git dir exists");
                 await syncAppFilesWithGit();
             } else {
