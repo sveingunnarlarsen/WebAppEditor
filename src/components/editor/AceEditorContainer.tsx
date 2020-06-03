@@ -9,7 +9,7 @@ import { Editor } from "../../types/editor";
 import MonacoEditor from "./monaco/MonacoEditor";
 import { updateFileState, save } from "../../actions/file";
 import { openDialog } from "../../actions";
-import { setActiveEditor, splitEditor } from "../../actions/editor";
+import { setActiveEditor, splitEditor, resetOpenAt } from "../../actions/editor";
 import { DialogType } from "../../types/dialog";
 import { SplitDirection } from "../../types/editor";
 import { getFileLanguage } from '../../helpers/utils';
@@ -33,7 +33,8 @@ function mapDispatch(dispatch) {
         save: () => dispatch(save()),
         setActiveEditor: id => dispatch(setActiveEditor(id)),
         openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
-        splitEditor: (direction, editorId, fileId) => dispatch(splitEditor(direction, editorId, fileId))
+        splitEditor: (direction, editorId, fileId) => dispatch(splitEditor(direction, editorId, fileId)),
+        resetOpenAt: () => dispatch(resetOpenAt()),
     };
 }
 
@@ -51,6 +52,7 @@ interface EditorProps {
     splitEditor: (direction: SplitDirection, editorId: string, fileId: string) => void;
     keepEditorState: (editor: monaco.editor.ICodeEditor) => void | null;
     setActiveEditor: (id: string) => void;
+    resetOpenAt: () => void;
 }
 
 class AceEditorContainer extends React.Component<EditorProps> {
@@ -70,11 +72,16 @@ class AceEditorContainer extends React.Component<EditorProps> {
             }
             return true;
         }
-        if (this.props.updateEditors != nextProps.updateEditors) {
+        if (this.props.updateEditors !== nextProps.updateEditors) {
             return true;
         }
-        if (this.props.editorResized != nextProps.editorResized) {
+        if (this.props.editorResized !== nextProps.editorResized) {
             this.editor.layout();
+        }
+        if (nextProps.openFileAt) {
+            this.editor.revealRangeInCenter(nextProps.openFileAt);
+            this.editor.setSelection(nextProps.openFileAt);
+            this.props.resetOpenAt();
         }
         return false;
     }
@@ -151,7 +158,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         this.editor = editor;
         this.addActionsAndCommands(this.editor);
         this.editor.onDidChangeModelContent(() => {
-            this.addDeltaDecorations();            
+            this.addDeltaDecorations();
         })
         this.setupEditor();
     };

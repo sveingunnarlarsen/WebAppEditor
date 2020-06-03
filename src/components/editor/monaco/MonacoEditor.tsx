@@ -92,7 +92,6 @@ const Editor =
             monacoRef.current.editor.setTheme(theme);
 
             if (openFileAt) {
-                console.log("Opening file at(2):", openFileAt);
                 editorRef.current.revealRangeInCenter(openFileAt);
                 editorRef.current.setSelection(openFileAt);
                 store.dispatch(resetOpenAt());
