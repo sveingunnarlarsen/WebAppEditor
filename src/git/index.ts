@@ -37,9 +37,14 @@ const gitEmitter = new GitEmitter();
 // TODO: Should use planet 9 proxy.
 const corsProxy = "https://cors.isomorphic-git.org";
 
-let currentAppName: string;
-let currentGitDir: string;
-let configUser = {};
+let currentAppName: string = "";
+let currentGitDir: string = "";
+
+let configUser: {name: string; email: string; token: string} = {
+    name: "",
+    email: "",
+    token: "",
+};
 
 export function getConfigUser() {
     return configUser;
@@ -55,40 +60,53 @@ export async function setRemoteOrigin(value) {
 }
 
 async function handleChange() {
-    //Switch to new project.
-    if (store.getState().app.name && store.getState().app.name != currentAppName) {
-        gitEmitter.start();
-        currentAppName = store.getState().app.name;
-        currentGitDir = `/${currentAppName}`;
+    try {
+        const app = store.getState().app;
+        //Switch to new project.
+        if (app.name && app.name != currentAppName) {
+            gitEmitter.start();
 
-        try {
-            console.log("Initializing git: ", currentGitDir);
-            await pfs.readdir(`${currentGitDir}/.git`);
-            await syncAppFilesWithGit();
-        } catch (e) {
-            if (e.message.indexOf("ENOENT") > -1) {
-                console.log("Git dir does not exist");
+            currentAppName = app.name;
+            currentGitDir = `/${currentAppName}`;
+
+            if (fsExists(pfs, `${currentGitDir}/.git`)) {
+                console.log("Git dir exists");
+                await syncAppFilesWithGit();
+            } else {
+                console.log("Git dir does not exist, creating git dir: ", currentGitDir);
                 pfs.mkdir(currentGitDir);
                 await git.init({ fs, dir: currentGitDir });
+                if (app.settings.git.repo) {
+                    await git.clone({
+                        fs,
+                        http,
+                        dir: currentGitDir,
+                        corsProxy,
+                        url: app.settings.git.repo,
+                        singleBranch: false,
+                        noCheckout: false,
+                        depth: 100
+                    });
+                }
                 await syncAppFilesWithGit();
-                console.log("Git initialized");
-            } else {
-                console.log("Failed to initialize git", e.message);
             }
+            console.log("Git initialized");
+
+            configUser = {
+                name: await git.getConfig({ fs, dir: currentGitDir, path: "user.name" }),
+                email: await git.getConfig({ fs, dir: currentGitDir, path: "user.email" }),
+                token: await git.getConfig({ fs, dir: currentGitDir, path: "user.token" })
+            };
+            gitEmitter.end();
+        } else if (!app.name) {
+            currentAppName = "";
+            currentGitDir = "";
         }
-        configUser = {
-            name: await git.getConfig({ fs, dir: currentGitDir, path: "user.name" }),
-            email: await git.getConfig({ fs, dir: currentGitDir, path: "user.email" }),
-            token: await git.getConfig({ fs, dir: currentGitDir, path: "user.token" })
-        };
-        gitEmitter.end();
-    } else if (!store.getState().app.name) {
-        currentAppName = "";
-        currentGitDir = "";
+    } catch (e) {
+        console.error("Failed to init git", e);
     }
 }
 
-console.log("Store: ", store);
 store.subscribe(handleChange);
 
 /*
@@ -298,7 +316,7 @@ class GitCommand {
 
     static async diff(args, opts, print) {
         const branch = await git.currentBranch({ fs, dir: currentGitDir });
-        const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });
+        const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch as string });
         let diffFiles;
         if (opts.cached) {
             diffFiles = await this.getStagedChanges();
@@ -316,7 +334,7 @@ class GitCommand {
             let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8" });
             let fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
 
-            const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD, fileWORKDIR);
+            const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD as string, fileWORKDIR);
 
             ret += forcedChalk.yellow("diff --git a/" + filepath + " b/" + filepath);
             ret +=
@@ -391,7 +409,7 @@ class GitCommand {
         if (!args.length) {
             return;
         } else if (args.length === 1 && args[0] === ".") {
-            await git.checkout({ fs, dir: currentGitDir, ref: currentBranch, force: true });
+            await git.checkout({ fs, dir: currentGitDir, ref: currentBranch as string, force: true });
             await syncGitFilesWithApp();
         } else if (args.length === 1) {
             // Is this a branch or a file path.
@@ -406,7 +424,7 @@ class GitCommand {
             } else {
                 const unstagedFiles = await this.getUnstagedChanges();
                 const filesToCheckout = unstagedFiles.filter(f => new RegExp(args[0], "g").test(f));
-                await git.checkout({ fs, dir: currentGitDir, ref: currentBranch, filepaths: filesToCheckout, force: true });
+                await git.checkout({ fs, dir: currentGitDir, ref: currentBranch as string, filepaths: filesToCheckout, force: true });
                 await syncGitFilesWithApp();
             }
         }
@@ -421,7 +439,7 @@ class GitCommand {
     }
 
     static async push(args, opts, print) {
-        const branch = await git.currentBranch({ fs, dir: currentGitDir });
+        const branch = await git.currentBranch({ fs, dir: currentGitDir }) as string;
         console.log("Git push: ", branch, args, opts);
         let remote;
         if (!args[0]) {
@@ -646,15 +664,16 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
 
     let fileHEAD = "";
     try {
-        const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });    
+        const sha = await git.resolveRef({ fs, dir: currentGitDir, ref: branch });
         fileHEAD = (await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath: filePath, encoding: "utf8" })).object as string;
     } catch (e) {
         // There is no commit. Mark entire file.
         return [{
             range: new monaco.Range(1, 1, fileContent.split('\n').length, 1),
-            options: { isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded" }}]    
-    } 
-    
+            options: { isWholeLine: true, linesDecorationsClassName: "deltaMonacoAdded" }
+        }]
+    }
+
     const diff = JsDiff.structuredPatch(filePath, filePath, fileHEAD as string, fileContent, null, null, { ignoreWhitespace: true });
     console.log("Structured diff: ", diff);
 
@@ -679,7 +698,7 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 if (deltaRanges[deltaCount]) {
                     if (deltaRanges[deltaCount].type === 'added' && firstChar !== "+") {
                         deltaRanges[deltaCount].end = (lineIndex + hunk.newStart) - 2;
-                        deltaCount++;                        
+                        deltaCount++;
                     }
                     else if (deltaRanges[deltaCount].type === 'removed' && firstChar !== "-") {
                         deltaRanges[deltaCount].end = (lineIndex + hunk.newStart) - 2;
@@ -691,16 +710,16 @@ export async function getFsoDeltaDecorations(filePath: string, fileContent: stri
                 if (!deltaRanges[deltaCount]) {
                     if (firstChar === '+') {
                         const start = lineIndex + hunk.newStart - 1;
-                        deltaRanges[deltaCount] = { type: "added", start, end: null }                        
+                        deltaRanges[deltaCount] = { type: "added", start, end: null }
                     }
                     else if (firstChar === '-') {
                         const start = lineIndex + hunk.newStart - 1;
-                        deltaRanges[deltaCount] = { type: "removed", start, end: null, removedContent: [] }                        
+                        deltaRanges[deltaCount] = { type: "removed", start, end: null, removedContent: [] }
                     }
                 }
 
                 if (deltaRanges[deltaCount] && deltaRanges[deltaCount].type === "removed") {
-                    deltaRanges[deltaCount].removedContent.push(line);    
+                    deltaRanges[deltaCount].removedContent.push(line);
                 }
 
                 if (y === hunk.lines.length - 1) {
