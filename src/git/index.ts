@@ -15,6 +15,8 @@ import { getFileContent, writeFileContent, fsExists } from "./utils";
 
 const fs = new FS("fs");
 const pfs = fs.promises;
+window.pfs = pfs;
+window.git = git;
 
 // @ts-ignore
 const forcedChalk = new chalk.constructor({ enabled: true, level: 2 });
