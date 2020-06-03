@@ -8,11 +8,12 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 
-import { compileProject } from "../../actions/app";
+import { compileProject, compilePreview } from "../../actions/app";
 
 const styles = {
     appBar: {
@@ -29,7 +30,8 @@ const mapState = state => {
 
 function mapDispatch(dispatch) {
     return {
-        compile: () => dispatch(compileProject())
+        compile: () => dispatch(compileProject()),
+        compilePreview: () => dispatch(compilePreview())
     };
 }
 
@@ -57,6 +59,10 @@ class TopMenu extends React.Component {
         this.props.compile();
     }
 
+    compilePreview = () => {
+        this.props.compilePreview();
+    }
+
     runPreview = () => {
         window.open(`/api/webapp/${store.getState().app.id}/preview`);
     }
@@ -76,11 +82,15 @@ class TopMenu extends React.Component {
                     <Button onClick={this.compileProject}>
                         Compile
 					</Button>
-                    <Button onClick={this.runPreview}>
-                        Run Preview
-					</Button>
                     <Button onClick={this.runApp}>
                         Run
+					</Button>
+                    <Divider orientation="vertical" flexItem />
+                    <Button onClick={this.compilePreview}>
+                        Compile Preview
+					</Button>
+                    <Button onClick={this.runPreview}>
+                        Run Preview
 					</Button>
                     <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
                         {this.props.appName}

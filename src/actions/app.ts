@@ -147,6 +147,19 @@ export function compileProject() {
     };
 }
 
+export function compilePreview() {
+    return function(dispatch, getState) {
+        dispatch(requestCompile());
+
+        return fetch(`/api/webapp/${getState().app.id}/preview`, {
+            method: "POST"
+        })
+            .then(throwError)
+            .catch(error => handleCompileError(error, dispatch))
+            .finally(() => dispatch(receiveCompile()));
+    };
+}
+
 export function updateAppData(data: { name: string, description: string, type: 'react' | 'vue', settings: AppSettings }) {
     return {
         type: Actions.UPDATE_APP_DATA,
