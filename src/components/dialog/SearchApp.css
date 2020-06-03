@@ -1,4 +1,4 @@
-.MuiDialog-root.Resizer.horizontal {
+.MuiDialog-root .Resizer.horizontal {
     height: 0px;
     border: 0;
 }
