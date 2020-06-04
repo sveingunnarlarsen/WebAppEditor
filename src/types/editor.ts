@@ -1,5 +1,6 @@
 export enum EditorActions {
     RESET_OPEN_AT = "RESET_OPEN_AT",
+    RESET_SET_SEARCH = "RESET_SET_SEARCH",
     SHOW_FILE = "SHOW_FILE",
     CLOSE_TAB = "CLOSE_TAB",
     CLOSE_FILE = "CLOSE_FILE",
@@ -21,6 +22,7 @@ export interface EditorState {
     editors: Editor[];
     containers: EditorContainer[];
     openFileAt: any | null;
+    setSearch: any | null;
 }
 
 export interface Editor {

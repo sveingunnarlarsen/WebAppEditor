@@ -7,12 +7,19 @@ export function resetOpenAt() {
     }
 }
 
-export function showFile(fileId: string, editorId?: string, openFileAt?: monaco.IRange) {
+export function resetSetSearch() {
+    return {
+        type: EditorActions.RESET_SET_SEARCH,
+    }
+}
+
+export function showFile(fileId: string, editorId?: string, openFileAt?: monaco.IRange, setSearch?: string) {
     return {
         type: EditorActions.SHOW_FILE,
         fileId,
         editorId,
         openFileAt,
+        setSearch,
     }
 }
 

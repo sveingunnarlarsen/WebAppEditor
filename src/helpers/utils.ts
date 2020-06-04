@@ -17,7 +17,7 @@ export function replaceNameInPath(fullPath, newName): string {
     return parts.join("/");
 }
 
-export function getLineAndContentByChar(text, char) {
+export function getLineAndContentByChar(text, char): {lineNumber: number; lineContent: string} {
     const tempText = text.substring(0, char);
     const lineNumber = tempText.split("\n").length;
     const lineContent = text.split("\n")[lineNumber - 1];

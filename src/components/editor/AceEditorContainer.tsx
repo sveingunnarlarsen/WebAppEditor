@@ -4,26 +4,26 @@ import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import * as _ from "underscore";
 
-import { FileSystemObject } from "../../types";
-import { Editor } from "../../types/editor";
 import MonacoEditor from "./monaco/MonacoEditor";
-import { updateFileState, save } from "../../actions/file";
-import { openDialog } from "../../actions";
-import { setActiveEditor, splitEditor, resetOpenAt } from "../../actions/editor";
+import { FileSystemObject, AppEditorState } from "../../types";
+import { Editor, SplitDirection } from "../../types/editor";
 import { DialogType } from "../../types/dialog";
-import { SplitDirection } from "../../types/editor";
+import { openDialog } from "../../actions";
+import { updateFileState, save } from "../../actions/file";
+import { setActiveEditor, splitEditor, resetOpenAt, resetSetSearch } from "../../actions/editor";
 import { getFileLanguage } from '../../helpers/utils';
 import { fileOpened, fileUpdated, formatAllFiles } from "../../completer/index";
 import { getModel } from "../../monaco";
 import { getFsoDeltaDecorations } from "../../git";
 
-const mapState = (state, ownProps) => {
+const mapState = (state: AppEditorState, ownProps) => {
     let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
     return {
         fso,
         editorResized: state.editorResized,
         updateEditors: state.updateEditors,
         openFileAt: state.editor.openFileAt,
+        setSearch: state.editor.setSearch,
     }
 };
 
@@ -35,24 +35,17 @@ function mapDispatch(dispatch) {
         openSearch: () => dispatch(openDialog(DialogType.SEARCH_APP)),
         splitEditor: (direction, editorId, fileId) => dispatch(splitEditor(direction, editorId, fileId)),
         resetOpenAt: () => dispatch(resetOpenAt()),
+        resetSetSearch: () => dispatch(resetSetSearch()),
     };
 }
 
-interface EditorProps {
-    fso: FileSystemObject;
+interface EditorProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
     viewState: monaco.editor.ICodeEditorViewState | null;
     editorId: string | null;
-    openFileAt: any;
+    isSearch: boolean;
+    showLineNumber: number;
 
-    editorResized: number;
-    updateEditors: number;
-
-    save: () => void;
-    updateFileState: (fso: FileSystemObject) => void;
-    splitEditor: (direction: SplitDirection, editorId: string, fileId: string) => void;
     keepEditorState: (editor: monaco.editor.ICodeEditor) => void | null;
-    setActiveEditor: (id: string) => void;
-    resetOpenAt: () => void;
 }
 
 class AceEditorContainer extends React.Component<EditorProps> {
@@ -65,7 +58,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         super(props);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps: EditorProps, nextState) {
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
@@ -83,19 +76,24 @@ class AceEditorContainer extends React.Component<EditorProps> {
             this.editor.setSelection(nextProps.openFileAt);
             this.props.resetOpenAt();
         }
+        if (nextProps.setSearch) {
+            const searchString = nextProps.setSearch;
+            this.editor.getAction('actions.find').run();
+            const findController = this.editor.getContribution("editor.contrib.findController");
+            _.defer(() => {
+                findController.setSearchString(searchString);
+                this.props.resetSetSearch();
+            });
+        }
+        if (this.props.isSearch && this.props.showLineNumber !== nextProps.showLineNumber) {
+            return true;
+        }
         return false;
     }
 
     componentDidUpdate() {
-        if (this.editor) {
-            this.setupEditor();
-        }
+        this.setupEditor();
     }
-
-    addDeltaDecorations = _.debounce(async () => {
-        const decorations = await getFsoDeltaDecorations(this.props.fso.path, this.editor.getValue());
-        this.deltaDecorations = this.editor.deltaDecorations(this.deltaDecorations, decorations);
-    }, 100);
 
     addActionsAndCommands = (editor: monaco.editor.IStandaloneCodeEditor) => {
 
@@ -147,18 +145,25 @@ class AceEditorContainer extends React.Component<EditorProps> {
         }
     }
 
+    addDeltaDecorations = _.debounce(async () => {
+        const decorations = await getFsoDeltaDecorations(this.props.fso.path, this.editor.getValue());
+        this.deltaDecorations = this.editor.deltaDecorations(this.deltaDecorations, decorations);
+    }, 100);
+
     setupEditor = () => {
         fileOpened(this.props.fso.path);
-        this.addDeltaDecorations();      
+        this.addDeltaDecorations();
         _.defer(() => this.editor.layout());
-        if (!this.props.isSearch) {
+
+        if (this.props.editorId) {
             _.defer(() => this.editor.focus());
-        } else {
-            console.log("Showing line number: ", this.props.showLineNumber);
+        } else if (this.props.isSearch) {
             const lineNumber = this.props.showLineNumber;
-            _.defer(() => this.editor.revealLineInCenter(lineNumber));
-            _.defer(() => this.editor.setSelection({startLineNumber: lineNumber, endLineNumber: lineNumber, startColumn: 1, endColumn: 9999}));
-        }        
+            _.defer(() => {
+                this.editor.revealLineInCenter(lineNumber);
+                this.editor.setSelection({ startLineNumber: lineNumber, endLineNumber: lineNumber, startColumn: 1, endColumn: 9999 })
+            });
+        }
     }
 
     handleEditorDidMount = (getValue, editor) => {
