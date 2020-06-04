@@ -53,6 +53,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
     inputTimeout: number;
     deltaDecorations: string[] = [];
     editor: monaco.editor.IStandaloneCodeEditor;
+    dontFocus: boolean = false;
 
     constructor(props) {
         super(props);
@@ -66,6 +67,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
             return true;
         }
         if (this.props.updateEditors !== nextProps.updateEditors) {
+            this.dontFocus = true;
             return true;
         }
         if (this.props.editorResized !== nextProps.editorResized) {
@@ -155,7 +157,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         this.addDeltaDecorations();
         _.defer(() => this.editor.layout());
 
-        if (this.props.editorId) {
+        if (this.props.editorId  && !this.dontFocus) {
             _.defer(() => this.editor.focus());
         } else if (this.props.isSearch) {
             const lineNumber = this.props.showLineNumber;
@@ -164,6 +166,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
                 this.editor.setSelection({ startLineNumber: lineNumber, endLineNumber: lineNumber, startColumn: 1, endColumn: 9999 })
             });
         }
+        this.dontFocus = false;
     }
 
     handleEditorDidMount = (getValue, editor) => {
