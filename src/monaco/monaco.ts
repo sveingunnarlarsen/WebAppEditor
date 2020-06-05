@@ -118,16 +118,16 @@ self.MonacoEnvironment = {
 
 // @ts-ignore
 self.MonacoEnvironment = {
-	getWorkerUrl: function (moduleId, label) {
-		// @ts-ignore
-		const basePath = ROOTPATH;
-		const calcPath = (p) => `${basePath}/${p}`;
-		if(label === 'json') return calcPath('json.worker.bundle.js');
-		if(label === 'css') return calcPath('css.worker.bundle.js');
-		if(label === 'html') return calcPath('html.worker.bundle.js');
-		if(["typescript", "javascript"].includes(label)) return calcPath('typescript.worker.bundle.js');
-		return calcPath('editor.worker.bundle.js');
-	}
+    getWorkerUrl: function(moduleId, label) {
+        // @ts-ignore
+        const basePath = ROOTPATH;
+        const calcPath = (p) => `${basePath}/${p}`;
+        if (label === 'json') return calcPath('json.worker.bundle.js');
+        if (label === 'css') return calcPath('css.worker.bundle.js');
+        if (label === 'html') return calcPath('html.worker.bundle.js');
+        if (["typescript", "javascript"].includes(label)) return calcPath('typescript.worker.bundle.js');
+        return calcPath('editor.worker.bundle.js');
+    }
 }
 
 export default monaco;

@@ -10,7 +10,7 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
     }
 
     signatureHelpTriggerCharacters = ["(", ","];
-    
+
     async provideSignatureHelp(
         model: monaco.editor.ITextModel,
         position: monaco.Position,

@@ -28,13 +28,13 @@ export async function importFolderZip(event, zipOrFolder) {
 
     const createdFolders = [];
 
-    for (let i = 0; i < filesToCreate.length; i++) {        
+    for (let i = 0; i < filesToCreate.length; i++) {
         const file = filesToCreate[i];
         const parts = file.path.split("/");
         for (let y = 1; y < parts.length; y++) {
             const folderPath = parts.slice(0, y).join("/");
             if (folderPath && createdFolders.indexOf(folderPath) < 0 && !fsos.find(f => f.path === `${folderPath}`)) {
-                createdFolders.push(folderPath);                
+                createdFolders.push(folderPath);
                 foldersToCreate.push({
                     path: folderPath,
                     type: 'folder',
@@ -105,7 +105,7 @@ function extractFileData(fileContent, meta) {
     if (isImage(meta.name)) {
         content = fileContent;
     } else {
-        content = atob(fileContent); 
+        content = atob(fileContent);
     }
 
     return {

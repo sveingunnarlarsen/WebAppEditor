@@ -1,7 +1,7 @@
 import { DialogType } from "../types/dialog";
 import { openDialog } from "./";
 
-export function throwError(response) {
+export function throwError(response: Response): Response {
     if (!response.ok) {
         throw response;
     }

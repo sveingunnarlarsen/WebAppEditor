@@ -31,7 +31,7 @@ interface RenameFileProps {
     saveFile: (file: FileSystemObject) => void;
 }
 
-class RenameFile extends React.Component<RenameFileProps, {value: string}> {
+class RenameFile extends React.Component<RenameFileProps, { value: string }> {
     constructor(props) {
         super(props);
         this.state = {

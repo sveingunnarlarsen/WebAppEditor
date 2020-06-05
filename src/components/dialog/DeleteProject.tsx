@@ -15,7 +15,7 @@ function mapDispatch(dispatch) {
 
 interface DeleteFileProps {
     close: () => void;
-    deleteProject: () => void;    
+    deleteProject: () => void;
 }
 
 class DeleteFile extends React.Component<DeleteFileProps> {

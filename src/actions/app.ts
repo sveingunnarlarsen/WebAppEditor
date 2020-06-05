@@ -1,4 +1,4 @@
-import { Actions, AppSettings, project } from "../types";
+import { Actions, AppSettings, project, CompilationDetails } from "../types";
 import { DialogType } from "../types/dialog";
 import { cloneGitRepo, deleteGitRepo } from "../git";
 import { loadProject } from "../monaco"
@@ -85,6 +85,7 @@ export function getProject(id: string) {
                     dispatch(receiveWebApp(app));
                     loadProject(getState);
                     dispatch(getNpmModules());
+                    dispatch(getCompilationDetails());
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }
@@ -103,7 +104,7 @@ export function deleteProject() {
         }
 
         dispatch(requestDeleteWebApp());
-        
+
         return fetch(`/api/webapp/${id}`, {
             method: "DELETE"
         })
@@ -144,6 +145,18 @@ export function compileProject() {
             .then(throwError)
             .catch(error => handleCompileError(error, dispatch))
             .finally(() => dispatch(receiveCompile()));
+    };
+}
+
+export function getCompilationDetails() {
+    return function(dispatch, getState) {
+        return fetch(`/api/webapp/${getState().app.id}/stats`, {
+            method: "GET"
+        })
+            .then(throwError)
+            .then(r => <CompilationDetails><unknown>r.json())
+            .then((response) => dispatch(receiveDevCompilationStats(response)))
+            .catch(error => handleAjaxError(error, dispatch))
     };
 }
 
@@ -232,6 +245,13 @@ function receiveCompile() {
     return {
         type: Actions.RECEIVE_COMPILE
     };
+}
+
+function receiveDevCompilationStats(compilationDetails: CompilationDetails) {
+    return {
+        type: Actions.RECEIVE_DEV_COMPILATION_DETAILS,
+        compilationDetails: compilationDetails
+    }
 }
 
 function createApp({ type, template, name, description, remote }: project) {

@@ -13,6 +13,8 @@ import VerticalSplitOutlinedIcon from "@material-ui/icons/VerticalSplitOutlined"
 import ViewModuleOutlinedIcon from "@material-ui/icons/ViewModuleOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CallToActionIcon from "@material-ui/icons/CallToActionOutlined";
+import RowingIcon from "@material-ui/icons/rowing";
+
 
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
@@ -78,6 +80,13 @@ class SideMenu extends React.Component<SideMenuProps> {
                         <Tooltip title="App settings">
                             <ListItemIcon className={classes.icon}>
                                 <SettingsOutlinedIcon />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                    <ListItem button onClick={() => this.props.switchTool(Tool.COMPILATION_DETAILS)}>
+                        <Tooltip title="Compilation Details">
+                            <ListItemIcon className={classes.icon}>
+                                <RowingIcon />
                             </ListItemIcon>
                         </Tooltip>
                     </ListItem>

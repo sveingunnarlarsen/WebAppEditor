@@ -1,6 +1,6 @@
 import produce from "immer";
 import { combineReducers, Action } from "redux";
-import { AppEditorState, Tool, Actions } from "../types";
+import { AppEditorState, Tool, Actions, CompilationDetails } from "../types";
 import { DialogAction } from "../types/dialog";
 import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 
@@ -36,6 +36,9 @@ const initialState: AppEditorState = {
         data: null
     },
     editor: editorInitState,
+    compilationDetails: {
+        assets: []
+    },
 };
 
 function fetching(state, data = {}) {
@@ -122,6 +125,15 @@ function modules(state = initialState.modules, action) {
 
     } else if (action.type === Actions.RECEIVE_DELETE_MODULES) {
         return [];
+    }
+    return state;
+}
+
+function compilationDetails(state = initialState.compilationDetails, action: Action & {compilationDetails: CompilationDetails}): CompilationDetails {
+    switch(action.type) {
+        case Actions.RECEIVE_DEV_COMPILATION_DETAILS: {
+            return action.compilationDetails;
+        }
     }
     return state;
 }
@@ -238,7 +250,8 @@ const rootReducer = combineReducers<AppEditorState>({
     app,
     apps,
     dialog,
-    editor
+    editor,
+    compilationDetails,
 });
 
 export default rootReducer;

@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import FileExplorer from "./FileExplorer";
 import NpmExplorer from "./NpmExplorer";
 import Settings from "./Settings";
+import CompilationDetails from "./CompilationDetails";
 
 import { Tool } from "../../types";
 
@@ -42,6 +43,7 @@ class ToolContent extends React.Component<ToolContentProps> {
                 <FileExplorer show={visibleTool === Tool.EXPLORER ? true : false} />
                 <Settings show={visibleTool === Tool.SETTINGS ? true : false} />
                 <NpmExplorer show={visibleTool === Tool.NPM ? true : false} />
+                <CompilationDetails show={ visibleTool === Tool.COMPILATION_DETAILS } />
             </div>
         );
     }

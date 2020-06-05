@@ -71,7 +71,7 @@ class Settings extends React.Component<SettingsProps> {
         };
     }
 
-    updateData = (e, prop, ...path) => {        
+    updateData = (e, prop, ...path) => {
         const data = $.extend(true, {}, this.props.data);
         const toUpdate = path ? path.reduce((a, c) => a[c], data) : data;
         toUpdate[prop] = e.target.value;

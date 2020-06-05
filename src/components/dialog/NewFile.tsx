@@ -21,7 +21,7 @@ interface NewFileProps {
     createFile: (name: string) => void;
 }
 
-class NewFile extends React.Component<NewFileProps, {value: string}> {
+class NewFile extends React.Component<NewFileProps, { value: string }> {
     constructor(props) {
         super(props);
         this.state = {

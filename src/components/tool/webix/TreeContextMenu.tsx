@@ -56,11 +56,11 @@ const styles = theme => ({
 });
 
 window.importFileInTree = async function(e) {
-    
+
     // console.log(e);
-    
-    const files = await importFiles(e);    
-    
+
+    const files = await importFiles(e);
+
     console.log("Files to import: ", files);
 
     for (let i = 0; i < files.length; i++) {

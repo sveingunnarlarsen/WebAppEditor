@@ -1,4 +1,4 @@
-import {Actions, Tool} from "./"
+import { Actions, Tool } from "./"
 
 export interface SetSelectedNodeAction {
     type: typeof Actions.SET_SELECTED_NODE,

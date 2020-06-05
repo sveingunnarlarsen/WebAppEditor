@@ -42,7 +42,7 @@ const corsProxy = "https://cors.isomorphic-git.org";
 let currentAppName: string = "";
 let currentGitDir: string = "";
 
-let configUser: {name: string; email: string; token: string} = {
+let configUser: { name: string; email: string; token: string } = {
     name: "",
     email: "",
     token: "",

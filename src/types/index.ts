@@ -24,7 +24,7 @@ export enum Actions {
     END_MODULE_UPDATE = "END_MODULE_UPDATE",
     REQUEST_MODULES = "REQUEST_MODULES",
     RECEIVE_MODULES = "RECEIVE_MODULES",
-    
+
     REQUEST_DELETE_MODULES = "REQUEST_DELETE_MODULE",
     RECEIVE_DELETE_MODULES = "RECEIVE_DELETE_MODULE",
     REQUEST_COMPILE = "REQUEST_COMPILE",
@@ -42,6 +42,8 @@ export enum Actions {
     SET_SELECTED_NODE = "SET_SELECTED_NODE",
     UPDATE_FILE_STATE = "UPDATE_FILE_STATE",
     UPDATE_APP_DATA = "UPDATE_APP_DATA",
+
+    RECEIVE_DEV_COMPILATION_DETAILS = 'RECEIVE_DEV_COMPILATION_DETAILS',
 }
 
 export enum Tool {
@@ -50,6 +52,7 @@ export enum Tool {
     NPM = "NPM",
     SETTINGS = "SETTINGS",
     GIT = "GIT",
+    COMPILATION_DETAILS = 'COMPILATION_DETAILS',
 }
 
 export enum FsoType {
@@ -122,6 +125,10 @@ export interface AppState extends ListApp {
     isSaving: boolean;
 }
 
+export interface CompilationDetails {
+    assets: string[]
+}
+
 export interface AppEditorState {
     visibleTool: Tool;
     selectedNode: string;
@@ -146,4 +153,5 @@ export interface AppEditorState {
     editor: EditorState;
     dialog: DialogState;
     snackbar?: any;
+    compilationDetails: CompilationDetails;
 }
