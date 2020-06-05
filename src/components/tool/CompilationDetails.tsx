@@ -1,8 +1,11 @@
 import React from 'react';
 import { withStyles, WithStyles } from "@material-ui/styles";
 import { connect } from 'react-redux';
-import {AppEditorState} from '../../types/index'
-import {Link} from '@material-ui/core';
+import { AppEditorState } from '../../types/index'
+import FolderIcon from '@material-ui/icons/Folder'
+import { Link, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { getFileTypeImageData } from '../../helpers/utils';
+import { extname } from 'path';
 
 function mapState(state: AppEditorState) {
     return {
@@ -22,6 +25,9 @@ const styles: any = {
         height: "93%",
         overflowY: "auto",
         overflowX: "hidden"
+    },
+    icon: {
+        height: '30px'
     }
 }
 
@@ -38,23 +44,25 @@ class CompilationDetails extends React.Component<Props>{
 
     createList = (paths: string[]) => {
         const baseLink = `${location.origin}/api/webapp/${this.props.appId}/preview`;
-        const {classes} = this.props;
+        const { classes } = this.props;
         return paths.map(path => (
-            <li className={classes.listItem} key={path}>
-                <Link href={baseLink + path} target="_blank">{path}</Link>
-            </li>
+            <ListItem key={path} button onClick={ () => window.open(baseLink+ path, "_blank") }>
+                <ListItemIcon>
+                    <img className={classes.icon} src={getFileTypeImageData(extname(path).substr(1))} />
+                </ListItemIcon>
+                <ListItemText primary={path} />
+            </ListItem>
         ));
     }
 
     render() {
         const display = this.props.show ? "" : "none";
-        const {assets} = this.props.compilationDetails;
+        const { assets } = this.props.compilationDetails;
         return (
-            <div style={{display}}>
-                <p> If Jørgen could code, then this is where your assets would be! </p>
-                <ul>
+            <div style={{ display }}>
+                <List dense={true}>
                     {this.createList(assets)}
-                </ul>
+                </List>
             </div>
         );
     }
