@@ -9,6 +9,7 @@ export const initState: EditorState = {
     editors: [],
     containers: [],
     openFileAt: null,
+    setSearch: null,
 };
 
 function initEditor(draft, fileId) {
@@ -44,9 +45,16 @@ const resetOpenAt = produce((draft) => {
     draft.openFileAt = null;
 });
 
-const showFile = produce((draft, fileId, editorId, openFileAt?) => {
+const resetSetSearch = produce((draft) => {
+    draft.setSearch = null;
+});
+
+const showFile = produce((draft, fileId, editorId, openFileAt?, setSearch?) => {
     if (openFileAt) {
         draft.openFileAt = openFileAt;
+    }
+    if (setSearch) {
+        draft.setSearch = setSearch;
     }
 
     if (!draft.activeEditor) {
@@ -189,8 +197,10 @@ export function editor(state = initState, action) {
             return reset(state);
         case EditorActions.RESET_OPEN_AT:
             return resetOpenAt(state);
+        case EditorActions.RESET_SET_SEARCH:
+            return resetSetSearch(state);
         case EditorActions.SHOW_FILE:
-            return showFile(state, action.fileId, action.editorId, action.openFileAt);
+            return showFile(state, action.fileId, action.editorId, action.openFileAt, action.setSearch);
         case EditorActions.CLOSE_TAB:
             return closeTab(state, action.fileId, action.editorId);
         case EditorActions.CLOSE_FILE:
