@@ -16,6 +16,7 @@ const initialState: AppEditorState = {
     editorResized: 0,
     terminalResized: 0,
     updateEditors: 0,
+    recalculateEditorWidth: 0,
     isCreating: false,
     isCompiling: false,
     isDeleting: false,
@@ -210,6 +211,15 @@ function terminalResized(state = initialState.terminalResized, action) {
     return state;
 }
 
+function recalculateEditorWidth(state = initialState.recalculateEditorWidth, action) {
+    if (action.type === Actions.RECALCULATE_EDITOR_WIDTH) {
+        return state + 1;
+    } else if (action.type === Actions.RESET) {
+        return initialState.recalculateEditorWidth;
+    }
+    return state;
+}
+
 function updateEditors(state = initialState.updateEditors, action) {
     if (action.type === Actions.UPDATE_EDITORS) {
         return state + 1;
@@ -227,6 +237,7 @@ const rootReducer = combineReducers<AppEditorState>({
     toolResized,
     editorResized,
     terminalResized,
+    recalculateEditorWidth,
     updateEditors,
     isCreating,
     isCompiling,

@@ -17,7 +17,7 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
         // @ts-ignore
     ): monaco.languages.ProviderResult<monaco.languages.TextEdit[]> {
 
-        console.log("Edit options: ", options);
+        console.log("Formatting options: ", options);
 
         if (!this.languageClient.isReady) return;
 
@@ -25,8 +25,6 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
             model.uri.path,
             model.getValue(),
         );
-
-        console.log("Formatting options: ", options);
 
         const response = await this.languageClient.getFormattingEdits(
             model.uri.path,

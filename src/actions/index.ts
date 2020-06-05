@@ -68,6 +68,12 @@ export function resizeTerminal(): Action {
     };
 }
 
+export function recalculateEditorWidth(): Action {
+    return {
+        type: Actions.RECALCULATE_EDITOR_WIDTH,
+    }
+}
+
 export function updateEditors(): Action {
     return {
         type: Actions.UPDATE_EDITORS

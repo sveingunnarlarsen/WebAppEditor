@@ -2,8 +2,10 @@ import React from "react";
 import SplitPane from "react-split-pane";
 import { connect } from "react-redux";
 import { withStyles, Styles } from "@material-ui/styles";
+import * as _ from "underscore";
 
 import { resizeEditor } from "../../actions";
+import { AppEditorState } from "../../types";
 import { EditorContainer as EditorContainerType } from "../../types/editor";
 import EditorTop from "./EditorTop";
 import EditorTabs from "./EditorTabs";
@@ -23,9 +25,12 @@ function mapDispatch(dispatch) {
         resizeEditor: () => dispatch(resizeEditor()),
     };
 }
-const mapState = (state, ownProps) => {
+const mapState = (state: AppEditorState, ownProps) => {
     const container: EditorContainerType = state.editor.containers.find(c => c.id === ownProps.containerId);
-    return { container };
+    return {
+        container,
+        recalculateEditorWidth: state.recalculateEditorWidth,
+    };
 };
 
 interface EditorContainerProps {
@@ -36,8 +41,24 @@ interface EditorContainerProps {
 }
 
 class EditorContainer extends React.Component<EditorContainerProps> {
+    paneRef;
     constructor(props) {
         super(props);
+    }
+
+    componentDidUpdate() {
+        this.recalculateWidth();
+    }
+
+    recalculateWidth() {
+        if (this.paneRef) {
+            _.defer(() => {
+                const parentWidth = this.paneRef.splitPane.offsetWidth;
+                const pane2Width = parentWidth - this.paneRef.pane1.offsetWidth;
+                this.paneRef.pane2.style.width = (pane2Width - 5) + 'px';
+                this.props.resizeEditor();
+            })
+        }
     }
 
     createEditor(editor) {
@@ -55,8 +76,9 @@ class EditorContainer extends React.Component<EditorContainerProps> {
         let content;
         if (editor1 && editor2) {
             content = (
-                <SplitPane split={split} defaultSize={"50%"} onDragFinished={() => {
-                    this.props.resizeEditor();
+                <SplitPane ref={ref => { this.paneRef = ref }} split={split} defaultSize={"50%"} onDragFinished={() => {
+                    console.log("Editor container drag finished, recalculating");
+                    this.recalculateWidth();
                 }}>
                     {this.createEditor(editor1)}
                     {this.createEditor(editor2)}
