@@ -124,6 +124,11 @@
             "type": "ico",
             "name": "Image",
             "image": "/public/icons/seti/favicon.svg"
+        },
+        {
+            "type": "ttf",
+            "name": "font",
+            "image": "/public/icons/seti/font.svg"
         }
     ]
 }

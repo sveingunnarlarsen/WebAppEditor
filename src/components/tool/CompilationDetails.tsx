@@ -24,7 +24,7 @@ const styles: any = {
     list: {
         height: "93%",
         overflowY: "auto",
-        overflowX: "hidden"
+        overflowX: "hidden",
     },
     icon: {
         height: '30px'
@@ -56,14 +56,12 @@ class CompilationDetails extends React.Component<Props>{
     }
 
     render() {
-        const display = this.props.show ? "" : "none";
         const { assets } = this.props.compilationDetails;
+        const {classes} = this.props;
         return (
-            <div style={{ display }}>
-                <List dense={true}>
-                    {this.createList(assets)}
-                </List>
-            </div>
+            <List hidden={!this.props.show} className={classes.list} dense={true}>
+                {this.createList(assets)}
+            </List>
         );
     }
 
