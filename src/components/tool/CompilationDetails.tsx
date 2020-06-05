@@ -9,7 +9,7 @@ import { extname } from 'path';
 
 function mapState(state: AppEditorState) {
     return {
-        appId: state.app.id,
+        app: state.app,
         compilationDetails: state.compilationDetails
     }
 }
@@ -22,7 +22,7 @@ function mapDispatch(dispatch) {
 
 const styles: any = {
     list: {
-        height: "93%",
+        height: "40%",
         overflowY: "auto",
         overflowX: "hidden",
     },
@@ -42,26 +42,37 @@ class CompilationDetails extends React.Component<Props>{
         super(props);
     }
 
-    createList = (paths: string[]) => {
-        const baseLink = `${location.origin}/api/webapp/${this.props.appId}/preview`;
+    createList = (paths: string[], production: boolean) => {
+        let baseLink = `${location.origin}/api/webapp/${this.props.app.id}/preview`;
+        if(production) baseLink = `${location.origin}/webapp/${this.props.app.name}`;
         const { classes } = this.props;
-        return paths.map(path => (
-            <ListItem key={path} button onClick={ () => window.open(baseLink+ path, "_blank") }>
-                <ListItemIcon>
-                    <img className={classes.icon} src={getFileTypeImageData(extname(path).substr(1))} />
-                </ListItemIcon>
-                <ListItemText primary={path} />
-            </ListItem>
-        ));
+        return paths.map(path => {
+            const link = baseLink + path;
+            return(
+                <ListItem key={path} button onClick={ () => window.open(link, "_blank") }>
+                    <ListItemIcon>
+                        <img className={classes.icon} src={getFileTypeImageData(extname(path).substr(1))} />
+                    </ListItemIcon>
+                    <ListItemText primary={path} />
+                </ListItem>
+            )
+        });
     }
 
     render() {
-        const { assets } = this.props.compilationDetails;
+        const { production, development } = this.props.compilationDetails;
         const {classes} = this.props;
         return (
-            <List hidden={!this.props.show} className={classes.list} dense={true}>
-                {this.createList(assets)}
-            </List>
+            <div hidden={!this.props.show} >
+                <p> Development </p>
+                <List className={classes.list} dense={true}>
+                    {this.createList(development.assets, false)}
+                </List>
+                <p> Production </p>
+                <List className={classes.list} dense={true}>
+                    {this.createList(production.assets, true)}
+                </List>
+            </div>
         );
     }
 

@@ -155,7 +155,7 @@ export function getCompilationDetails() {
         })
             .then(throwError)
             .then(r => <CompilationDetails><unknown>r.json())
-            .then((response) => dispatch(receiveDevCompilationStats(response)))
+            .then((response) => dispatch(receiveCompilationDetails(response)))
             .catch(error => handleAjaxError(error, dispatch))
     };
 }
@@ -247,7 +247,7 @@ function receiveCompile() {
     };
 }
 
-function receiveDevCompilationStats(compilationDetails: CompilationDetails) {
+function receiveCompilationDetails(compilationDetails: CompilationDetails) {
     return {
         type: Actions.RECEIVE_DEV_COMPILATION_DETAILS,
         compilationDetails: compilationDetails

@@ -37,7 +37,12 @@ const initialState: AppEditorState = {
     },
     editor: editorInitState,
     compilationDetails: {
-        assets: []
+        development: {
+            assets: []
+        },
+        production: {
+            assets: []
+        }
     },
 };
 

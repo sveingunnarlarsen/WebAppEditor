@@ -126,7 +126,12 @@ export interface AppState extends ListApp {
 }
 
 export interface CompilationDetails {
-    assets: string[]
+    development: {
+        assets: string[]
+    }
+    production: {
+        assets: string[]
+    }
 }
 
 export interface AppEditorState {
