@@ -5,6 +5,7 @@ import MonacoContainer from './MonacoContainer';
 import { monaco } from "../../../monaco";
 import { getFileByPath } from "../../../store/utils";
 import { showFile, resetOpenAt } from "../../../actions/editor";
+import { themeDark, setTokensProvider } from "../../../monaco/textmate";
 
 const noop = _ => { };
 const useMount = effect => useEffect(effect, []);
@@ -18,17 +19,6 @@ const useUpdate = (effect, deps, applyChanges = true) => {
         deps
     );
 }
-
-const themes = {
-    'night-dark': {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.background': '#202124',
-        },
-    },
-};
 
 const Editor =
     ({ model, viewState, openFileAt, editorDidMount, theme, line, width, height, loading, options, _isControlledMode }) => {
@@ -70,12 +60,16 @@ const Editor =
             editorRef.current.updateOptions(options);
         }, [options], isEditorReady);
 
-        const createEditor = useCallback(_ => {
+        const createEditor = useCallback(async _ => {
 
             editorRef.current = monacoRef.current.editor.create(containerRef.current, {
                 model,
                 ...options,
             });
+
+            // const {registry, grammars} = getRegistryAndGrammars();
+            setTokensProvider(editorRef.current, model);
+            //await wireTmGrammars(monaco, registry, grammars, editorRef.current);
 
             // @ts-ignore
             editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {
@@ -88,7 +82,7 @@ const Editor =
 
             editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
 
-            monacoRef.current.editor.defineTheme('dark', themes['night-dark']);
+            monacoRef.current.editor.defineTheme('dark', themeDark);
             monacoRef.current.editor.setTheme(theme);
 
             if (openFileAt) {

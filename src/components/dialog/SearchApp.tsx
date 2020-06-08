@@ -204,7 +204,7 @@ class SearchApp extends React.Component<SearchAppProps, SearchAppState> {
         return (
             <React.Fragment>
                 <DialogTitle>Search</DialogTitle>
-                <DialogContent
+                <DialogContent                
                     ref={ref => {
                         this.contentRef = ref;
                     }}

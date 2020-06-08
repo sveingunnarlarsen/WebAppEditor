@@ -9,6 +9,10 @@ import Content from "./components/Content";
 import DialogContainer from "./components/dialog/DialogContainer";
 import SnackbarContainer from "./components/snackbar/SnackbarContainer";
 
+import { initTextMate } from "./monaco/textmate";
+
+initTextMate();
+
 import "./App.css"; //TODO: Clean up css
 
 const menuWidth = "3.5rem";
