@@ -43,7 +43,7 @@ class ToolContent extends React.Component<ToolContentProps> {
                 <FileExplorer show={visibleTool === Tool.EXPLORER ? true : false} />
                 <Settings show={visibleTool === Tool.SETTINGS ? true : false} />
                 <NpmExplorer show={visibleTool === Tool.NPM ? true : false} />
-                <CompilationDetails show={ visibleTool === Tool.COMPILATION_DETAILS } />
+                <CompilationDetails show={visibleTool === Tool.COMPILATION_DETAILS} />
             </div>
         );
     }

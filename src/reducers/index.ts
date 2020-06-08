@@ -135,8 +135,8 @@ function modules(state = initialState.modules, action) {
     return state;
 }
 
-function compilationDetails(state = initialState.compilationDetails, action: Action & {compilationDetails: CompilationDetails}): CompilationDetails {
-    switch(action.type) {
+function compilationDetails(state = initialState.compilationDetails, action: Action & { compilationDetails: CompilationDetails }): CompilationDetails {
+    switch (action.type) {
         case Actions.RECEIVE_DEV_COMPILATION_DETAILS: {
             return action.compilationDetails;
         }

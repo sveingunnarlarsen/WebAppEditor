@@ -21,7 +21,7 @@ export function getModel(path) {
 }
 
 export function createModel(fso: { type: 'file' | 'folder', content: string, path: string }) {
-    if (fso.type === 'file') {        
+    if (fso.type === 'file') {
         const language: string | null = fso.path.endsWith(".tsx") ? "typescript_react" : fso.path.endsWith(".ts") ? "typescript" : null;
         const model = monaco.editor.createModel(fso.content, language, monaco.Uri.parse(fso.path));
         model.onDidChangeContent(() => {

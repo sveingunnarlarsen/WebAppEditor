@@ -33,8 +33,8 @@ export async function initTextMate() {
 let tokensProviderSet: boolean = false;
 let editorRef;
 
-export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {    
-    
+export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
+
     editorRef = editor;
     if (tokensProviderSet) return;
 

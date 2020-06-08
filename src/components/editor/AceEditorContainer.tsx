@@ -77,11 +77,11 @@ class AceEditorContainer extends React.Component<EditorProps> {
             console.log("Component should update because isSearch is true and line numbers are different");
             return true;
         }
-        if (this.props.editorResized !== nextProps.editorResized) {            
+        if (this.props.editorResized !== nextProps.editorResized) {
             console.log("Calling editor layout");
             console.log(this.props.editorResized);
             console.log(nextProps.editorResized);
-            this.editor.layout();            
+            this.editor.layout();
         }
         if (nextProps.openFileAt) {
             console.log("Open file at");
@@ -166,7 +166,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         this.addDeltaDecorations();
         _.defer(() => this.editor.layout());
 
-        if (this.props.editorId  && !this.dontFocus) {
+        if (this.props.editorId && !this.dontFocus) {
             _.defer(() => this.editor.focus());
         } else if (this.props.isSearch) {
             const lineNumber = this.props.showLineNumber;

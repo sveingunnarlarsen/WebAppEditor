@@ -44,12 +44,12 @@ class CompilationDetails extends React.Component<Props>{
 
     createList = (paths: string[], production: boolean) => {
         let baseLink = `${location.origin}/api/webapp/${this.props.app.id}/preview`;
-        if(production) baseLink = `${location.origin}/webapp/${this.props.app.name}`;
+        if (production) baseLink = `${location.origin}/webapp/${this.props.app.name}`;
         const { classes } = this.props;
         return paths.map(path => {
             const link = baseLink + path;
-            return(
-                <ListItem key={path} button onClick={ () => window.open(link, "_blank") }>
+            return (
+                <ListItem key={path} button onClick={() => window.open(link, "_blank")}>
                     <ListItemIcon>
                         <img className={classes.icon} src={getFileTypeImageData(extname(path).substr(1))} />
                     </ListItemIcon>
@@ -61,7 +61,7 @@ class CompilationDetails extends React.Component<Props>{
 
     render() {
         const { production, development } = this.props.compilationDetails;
-        const {classes} = this.props;
+        const { classes } = this.props;
         return (
             <div hidden={!this.props.show} >
                 <p> Development </p>

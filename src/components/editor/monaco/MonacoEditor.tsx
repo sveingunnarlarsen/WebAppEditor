@@ -61,7 +61,7 @@ const Editor =
             editorRef.current.updateOptions(options);
         }, [options], isEditorReady);
 
-        const createEditor = useCallback(async _ => {            
+        const createEditor = useCallback(async _ => {
 
             editorRef.current = monacoRef.current.editor.create(containerRef.current, {
                 model,

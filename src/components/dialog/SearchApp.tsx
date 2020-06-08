@@ -60,7 +60,7 @@ class SearchApp extends React.Component<SearchAppProps, SearchAppState> {
             searchResult: [],
             selectedRow: null
         };
-    }    
+    }
 
     handleClick = row => {
         this.setState({
@@ -186,7 +186,7 @@ class SearchApp extends React.Component<SearchAppProps, SearchAppState> {
     }
 
     componentDidUpdate() {
-        if (this.selectedRef) {            
+        if (this.selectedRef) {
             this.selectedRef.scrollIntoViewIfNeeded();
         }
     }
@@ -204,7 +204,7 @@ class SearchApp extends React.Component<SearchAppProps, SearchAppState> {
         return (
             <React.Fragment>
                 <DialogTitle>Search</DialogTitle>
-                <DialogContent                
+                <DialogContent
                     ref={ref => {
                         this.contentRef = ref;
                     }}
