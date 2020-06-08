@@ -30,25 +30,44 @@ export async function initTextMate() {
     console.log("Onigams loaded");
 }
 
-export async function setTokensProvider(editor: monaco.editor.ICodeEditor, model: monaco.editor.ITextModel) {
+let tokensProviderSet: boolean = false;
+let editorRef;
 
-    let grammar;
-    if (model.uri.path.endsWith(".tsx")) {
-        grammar = await registry.loadGrammar("source.tsx");
-    } else {
-        grammar = await registry.loadGrammar("source.ts");
-    }
+export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {    
+    
+    editorRef = editor;
+    if (tokensProviderSet) return;
+
+    const grammarTypeScript = await registry.loadGrammar("source.ts");
+    const grammarTypeScriptReact = await registry.loadGrammar("source.tsx");
 
     monaco.languages.setTokensProvider("typescript", {
         getInitialState: () => new TokenizerState(INITIAL),
         tokenize: (line: string, state: TokenizerState) => {
-            const res = grammar.tokenizeLine(line, state.ruleStack)
+            console.log("Using typescript tokens");
+            const res = grammarTypeScript.tokenizeLine(line, state.ruleStack)
             return {
                 endState: new TokenizerState(res.ruleStack),
                 tokens: res.tokens.map(token => ({
                     ...token,
                     // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
-                    scopes: TMToMonacoToken(editor, token.scopes),
+                    scopes: TMToMonacoToken(token.scopes),
+                })),
+            }
+        }
+    });
+
+    monaco.languages.setTokensProvider("typescript_react", {
+        getInitialState: () => new TokenizerState(INITIAL),
+        tokenize: (line: string, state: TokenizerState) => {
+            console.log("Using typescript react tokens");
+            const res = grammarTypeScriptReact.tokenizeLine(line, state.ruleStack)
+            return {
+                endState: new TokenizerState(res.ruleStack),
+                tokens: res.tokens.map(token => ({
+                    ...token,
+                    // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
+                    scopes: TMToMonacoToken(token.scopes),
                 })),
             }
         }
@@ -81,7 +100,7 @@ class TokenizerState implements monaco.languages.IState {
     }
 }
 
-const TMToMonacoToken = (editor: monaco.editor.ICodeEditor, scopes: string[]) => {
+const TMToMonacoToken = (scopes: string[]) => {
     let scopeName = "";
     // get the scope name. Example: cpp , java, haskell
     for (let i = scopes[0].length - 1; i >= 0; i -= 1) {
@@ -117,12 +136,12 @@ const TMToMonacoToken = (editor: monaco.editor.ICodeEditor, scopes: string[]) =>
             if (char === ".") {
                 const token = scope.slice(0, i);
                 if (
-                    editor['_themeService'].getTheme()._tokenTheme._match(token + "." + scopeName)._foreground >
+                    editorRef['_themeService'].getTheme()._tokenTheme._match(token + "." + scopeName)._foreground >
                     1
                 ) {
                     return token + "." + scopeName;
                 }
-                if (editor['_themeService'].getTheme()._tokenTheme._match(token)._foreground > 1) {
+                if (editorRef['_themeService'].getTheme()._tokenTheme._match(token)._foreground > 1) {
                     return token;
                 }
             }

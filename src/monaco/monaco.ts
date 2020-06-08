@@ -90,31 +90,7 @@ import 'monaco-editor/esm/vs/basic-languages/vb/vb.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/xml/xml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
-import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
-
-/*
-// @ts-ignore
-self.MonacoEnvironment = {
-    getWorkerUrl: function(moduleId, label) {
-        // @ts-ignore
-        const basePath = ROOTPATH;
-        console.log("Basepath: ", basePath);
-        if (label === 'json') {
-            return `./WebAppEditor/build/json.worker.bundle.js`;
-        }
-        if (label === 'css') {
-            return `./WebAppEditor/build/css.worker.bundle.js`;
-        }
-        if (label === 'html') {
-            return `./WebAppEditor/build/html.worker.bundle.js`;
-        }
-        if (label === 'typescript' || label === 'javascript') {
-            return `./WebAppEditor/build/ts.worker.bundle.js`;
-        }
-        return `${basePath}/build/editor.worker.bundle.js`;
-    }
-}
-*/
+//import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
 // @ts-ignore
 self.MonacoEnvironment = {
@@ -129,5 +105,8 @@ self.MonacoEnvironment = {
         return calcPath('editor.worker.bundle.js');
     }
 }
+
+monaco.languages.register({ id: 'typescript' });
+monaco.languages.register({ id: 'typescript_react' });
 
 export default monaco;

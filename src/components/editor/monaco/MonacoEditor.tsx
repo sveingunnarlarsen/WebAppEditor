@@ -36,7 +36,7 @@ const Editor =
         });
 
         useUpdate(_ => {
-            setTokensProvider(editorRef.current, model);
+            setTokensProvider(editorRef.current);
             editorRef.current.setModel(model);
             if (viewState) {
                 editorRef.current.restoreViewState(viewState);
@@ -61,16 +61,14 @@ const Editor =
             editorRef.current.updateOptions(options);
         }, [options], isEditorReady);
 
-        const createEditor = useCallback(async _ => {
+        const createEditor = useCallback(async _ => {            
 
             editorRef.current = monacoRef.current.editor.create(containerRef.current, {
                 model,
                 ...options,
             });
 
-            // const {registry, grammars} = getRegistryAndGrammars();
-            setTokensProvider(editorRef.current, model);
-            //await wireTmGrammars(monaco, registry, grammars, editorRef.current);
+            setTokensProvider(editorRef.current);
 
             // @ts-ignore
             editorRef.current._codeEditorService.openCodeEditor = ({ resource, options }) => {

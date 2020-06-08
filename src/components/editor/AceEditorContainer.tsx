@@ -60,18 +60,25 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState) {
+        console.log("Checking if editor should update", this.props, nextProps);
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
             }
+            console.log("Component should update because fso.id is different");
             return true;
         }
         if (this.props.updateEditors !== nextProps.updateEditors) {
             this.dontFocus = true;
+            console.log("Component should update because updateEditors is true");
+            return true;
+        }
+        if (this.props.isSearch && this.props.showLineNumber !== nextProps.showLineNumber) {
+            console.log("Component should update because isSearch is true and line numbers are different");
             return true;
         }
         if (this.props.editorResized !== nextProps.editorResized) {
-            this.editor.layout();
+            this.editor.layout();            
         }
         if (nextProps.openFileAt) {
             this.editor.revealRangeInCenter(nextProps.openFileAt);
@@ -83,12 +90,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
             this.editor.getAction('actions.find').run();
             const findController = this.editor.getContribution("editor.contrib.findController");
             _.defer(() => {
+                // @ts-ignore
                 findController.setSearchString(searchString);
                 this.props.resetSetSearch();
             });
-        }
-        if (this.props.isSearch && this.props.showLineNumber !== nextProps.showLineNumber) {
-            return true;
         }
         return false;
     }

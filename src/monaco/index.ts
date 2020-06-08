@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 import store from "../store";
 import monaco from "./monaco";
 import { FileSystemObject, AppEditorState } from "../types";
@@ -5,15 +6,9 @@ import { updateFileState } from "../actions/file";
 import { getFileByPath } from "../store/utils";
 import { fileUpdated } from "../completer";
 
-let inputTimeout: number;
-
-function onModelContentChanged(model) {
-    clearTimeout(inputTimeout);
-
-    inputTimeout = setTimeout(() => {
-        updateModel(model);
-    }, 500);
-}
+const onModelContentChanged = _.debounce((model: monaco.editor.ITextModel) => {
+    updateModel(model);
+}, 500);
 
 function disposeAllModels() {
     monaco.editor.getModels().forEach(model => {
@@ -26,8 +21,9 @@ export function getModel(path) {
 }
 
 export function createModel(fso: { type: 'file' | 'folder', content: string, path: string }) {
-    if (fso.type === 'file') {
-        const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+    if (fso.type === 'file') {        
+        const language: string | null = fso.path.endsWith(".tsx") ? "typescript_react" : fso.path.endsWith(".ts") ? "typescript" : null;
+        const model = monaco.editor.createModel(fso.content, language, monaco.Uri.parse(fso.path));
         model.onDidChangeContent(() => {
             onModelContentChanged(model);
         });
@@ -60,7 +56,8 @@ export function loadProject(getState: () => AppEditorState) {
         const fileSystemObjects = getState().app.fileSystemObjects;
         fileSystemObjects.forEach(fso => {
             if (fso.type === 'file') {
-                const model = monaco.editor.createModel(fso.content, null, monaco.Uri.parse(fso.path));
+                const language: string | null = fso.path.endsWith(".tsx") ? "typescript_react" : fso.path.endsWith(".ts") ? "typescript" : null;
+                const model = monaco.editor.createModel(fso.content, language, monaco.Uri.parse(fso.path));
                 model.onDidChangeContent(() => {
                     onModelContentChanged(model);
                 });

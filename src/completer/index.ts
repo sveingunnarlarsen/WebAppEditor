@@ -44,12 +44,21 @@ const client: LanguageClientType = new LanguageClient();
         store.subscribe(handleChange);
     }
 
-    monaco.languages.registerCompletionItemProvider('typescript', new CompletionItemProvider(client));
-    monaco.languages.registerSignatureHelpProvider('typescript', new SignatureHelpProvider(client));
-    monaco.languages.registerHoverProvider('typescript', new HoverProvider(client));
-    monaco.languages.registerDefinitionProvider('typescript', new DefinitionProvider(client));
-    monaco.languages.registerReferenceProvider('typescript', new ReferenceProvider(client));
-    monaco.languages.registerDocumentFormattingEditProvider('typescript', new DocumentFormattingEditorProvider(client));
+    const completionItemProvider = new CompletionItemProvider(client);
+    const signatureHelpProvider = new SignatureHelpProvider(client);
+    const hoverProvider = new HoverProvider(client);
+    const definitionProvider = new DefinitionProvider(client);
+    const referenceProvider = new ReferenceProvider(client);
+    const documentFormattingEditProvider = new DocumentFormattingEditorProvider(client);
+
+    ["typescript", "typescript_react"].forEach(languageId => {
+        monaco.languages.registerCompletionItemProvider(languageId, completionItemProvider);
+        monaco.languages.registerSignatureHelpProvider(languageId, signatureHelpProvider);
+        monaco.languages.registerHoverProvider(languageId, hoverProvider);
+        monaco.languages.registerDefinitionProvider(languageId, definitionProvider);
+        monaco.languages.registerReferenceProvider(languageId, referenceProvider);
+        monaco.languages.registerDocumentFormattingEditProvider(languageId, documentFormattingEditProvider);
+    });
 
     // @ts-ignore
     client.on('publishDiagnostics', (result) => {
