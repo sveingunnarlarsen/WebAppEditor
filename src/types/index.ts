@@ -7,6 +7,7 @@ export enum Actions {
     RESIZE_TOOL = "RESIZE_TOOL",
     RESIZE_EDITOR = "RESIZE_EDITOR",
     RESIZE_TERMINAL = "RESIZE_TERMINAL",
+    RECALCULATE_EDITOR_WIDTH = "RECALCULATE_EDITOR_WIDTH",
     UPDATE_EDITORS = "UPDATE_EDITORS",
     TOGGLE_PREVIEW = "TOGGLE_PREVIEW",
     TOGGLE_CLI = "TOGGLE_CLI",
@@ -142,6 +143,7 @@ export interface AppEditorState {
     toolResized: number;
     editorResized: number;
     terminalResized: number;
+    recalculateEditorWidth: number;
     updateEditors: number;
     isCreating: boolean;
     isCompiling: boolean;

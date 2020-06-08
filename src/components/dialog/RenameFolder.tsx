@@ -11,7 +11,6 @@ import Button from "@material-ui/core/Button";
 import { renameFolder } from "../../actions/file";
 
 const mapState = state => {
-    console.log(state.selectedNode);
     const file = state.app.fileSystemObjects.find(f => f.id === state.selectedNode);
     return {
         file
@@ -27,7 +26,6 @@ function mapDispatch(dispatch) {
 class RenameFolder extends React.Component {
     constructor(props) {
         super(props);
-        console.log("rename folder constructor: ", props.file);
         this.state = {
             value: props.file.name
         };
@@ -47,7 +45,6 @@ class RenameFolder extends React.Component {
     };
 
     render() {
-        console.log("In dial rename folder");
         const { close } = this.props;
         const { value } = this.state;
         return (

@@ -141,7 +141,6 @@ class AceEditorContainer extends React.Component<EditorProps> {
             });
 
             editor.onDidFocusEditorWidget(() => {
-                console.log("Editor focused");
                 this.props.setActiveEditor(this.props.editorId);
             });
         }

@@ -4,7 +4,7 @@ import SplitPane from "react-split-pane";
 import { connect } from "react-redux";
 import { withStyles } from "@material-ui/styles";
 
-import { resizeTool, resizeEditor, resizeTerminal } from "../actions";
+import { resizeTool, resizeEditor, resizeTerminal, recalculateEditorWidth } from "../actions";
 
 import ToolContent from "./tool/ToolContent";
 import EditorTop from "./editor/EditorTop";
@@ -34,21 +34,18 @@ function mapDispatch(dispatch) {
     return {
         resizeTool: () => dispatch(resizeTool()),
         resizeEditor: () => dispatch(resizeEditor()),
-        resizeTerminal: () => dispatch(resizeTerminal())
+        resizeTerminal: () => dispatch(resizeTerminal()),
+        recalculateEditorWidth: () => dispatch(recalculateEditorWidth()),
     };
 }
 
-interface ContentProps {
+interface ContentProps extends ReturnType<typeof mapDispatch> {
     classes: any;
     top: any;
     left: any;
     previewVisible: any;
     commandLineVisible: any;
     topContainerId: string | null;
-
-    resizeTool: () => void;
-    resizeEditor: () => void;
-    resizeTerminal: () => void;
 }
 
 interface ContentState {
@@ -85,6 +82,7 @@ class Content extends React.Component<ContentProps, ContentState> {
                         })
                     }}
                     onDragFinished={() => {
+                        console.log("Resize preview ended");
                         this.setState({
                             isDragging: false,
                         })
@@ -99,6 +97,7 @@ class Content extends React.Component<ContentProps, ContentState> {
                         className={splitPaneContentSize}
                         pane2Style={{ background: "#000000" }}
                         onDragFinished={() => {
+                            console.log("Resize command line ended");
                             this.props.resizeTool();
                             this.props.resizeEditor();
                             this.props.resizeTerminal();
@@ -108,8 +107,9 @@ class Content extends React.Component<ContentProps, ContentState> {
                             split="vertical"
                             defaultSize={"15%"}
                             onDragFinished={() => {
+                                console.log("Resize tool ended");
                                 this.props.resizeTool();
-                                this.props.resizeEditor();
+                                this.props.recalculateEditorWidth();
                             }}
                         >
                             <ToolContent />
