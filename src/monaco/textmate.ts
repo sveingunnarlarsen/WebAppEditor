@@ -1,7 +1,5 @@
 import { loadWASM } from 'onigasm'; // peer dependency of 'monaco-textmate'
 import { Registry, INITIAL, StackElement } from 'monaco-textmate'; // peer dependency
-import { wireTmGrammars } from 'monaco-editor-textmate';
-import { convertTheme } from 'monaco-vscode-textmate-theme-converter';
 import monaco from "./monaco";
 
 let registry;
@@ -32,9 +30,14 @@ export async function initTextMate() {
     console.log("Onigams loaded");
 }
 
-export async function setTokensProvider(editor, model) {
+export async function setTokensProvider(editor: monaco.editor.ICodeEditor, model: monaco.editor.ITextModel) {
 
-    const grammar = await registry.loadGrammar("source.tsx");
+    let grammar;
+    if (model.uri.path.endsWith(".tsx")) {
+        grammar = await registry.loadGrammar("source.tsx");
+    } else {
+        grammar = await registry.loadGrammar("source.ts");
+    }
 
     monaco.languages.setTokensProvider("typescript", {
         getInitialState: () => new TokenizerState(INITIAL),

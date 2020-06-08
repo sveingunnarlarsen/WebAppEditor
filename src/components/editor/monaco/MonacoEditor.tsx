@@ -36,6 +36,7 @@ const Editor =
         });
 
         useUpdate(_ => {
+            setTokensProvider(editorRef.current, model);
             editorRef.current.setModel(model);
             if (viewState) {
                 editorRef.current.restoreViewState(viewState);
