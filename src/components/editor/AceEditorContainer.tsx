@@ -77,15 +77,20 @@ class AceEditorContainer extends React.Component<EditorProps> {
             console.log("Component should update because isSearch is true and line numbers are different");
             return true;
         }
-        if (this.props.editorResized !== nextProps.editorResized) {
+        if (this.props.editorResized !== nextProps.editorResized) {            
+            console.log("Calling editor layout");
+            console.log(this.props.editorResized);
+            console.log(nextProps.editorResized);
             this.editor.layout();            
         }
         if (nextProps.openFileAt) {
+            console.log("Open file at");
             this.editor.revealRangeInCenter(nextProps.openFileAt);
             this.editor.setSelection(nextProps.openFileAt);
             this.props.resetOpenAt();
         }
         if (nextProps.setSearch) {
+            console.log("Setting editor search");
             const searchString = nextProps.setSearch;
             this.editor.getAction('actions.find').run();
             const findController = this.editor.getContribution("editor.contrib.findController");

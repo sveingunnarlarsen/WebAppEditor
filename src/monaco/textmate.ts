@@ -38,13 +38,14 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
     editorRef = editor;
     if (tokensProviderSet) return;
 
+    console.log("Creating token providers");
+
     const grammarTypeScript = await registry.loadGrammar("source.ts");
     const grammarTypeScriptReact = await registry.loadGrammar("source.tsx");
 
     monaco.languages.setTokensProvider("typescript", {
         getInitialState: () => new TokenizerState(INITIAL),
         tokenize: (line: string, state: TokenizerState) => {
-            console.log("Using typescript tokens");
             const res = grammarTypeScript.tokenizeLine(line, state.ruleStack)
             return {
                 endState: new TokenizerState(res.ruleStack),
@@ -60,7 +61,6 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
     monaco.languages.setTokensProvider("typescript_react", {
         getInitialState: () => new TokenizerState(INITIAL),
         tokenize: (line: string, state: TokenizerState) => {
-            console.log("Using typescript react tokens");
             const res = grammarTypeScriptReact.tokenizeLine(line, state.ruleStack)
             return {
                 endState: new TokenizerState(res.ruleStack),
@@ -72,6 +72,7 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
             }
         }
     });
+    tokensProviderSet = true;
 }
 
 class TokenizerState implements monaco.languages.IState {

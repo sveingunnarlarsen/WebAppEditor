@@ -211,7 +211,7 @@ function toolResized(state = initialState.toolResized, action) {
 }
 
 function editorResized(state = initialState.editorResized, action) {
-    if (action.type === Actions.RESIZE_EDITOR || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
+    if (action.type === Actions.RESIZE_EDITOR || action.type === Actions.TOGGLE_CLI || action.type === Actions.TOGGLE_PREVIEW) {
         return state + 1;
     } else if (action.type === Actions.RESET) {
         return initialState.editorResized;
