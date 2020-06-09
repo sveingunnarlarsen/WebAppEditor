@@ -37,7 +37,7 @@ class GitEmitter extends EventTarget {
 
 const gitEmitter = new GitEmitter();
 // TODO: Should use planet 9 proxy.
-const corsProxy = "https://cors.isomorphic-git.org";
+const corsProxy = `${location.origin}/gitProxy`;
 
 let currentAppName: string = "";
 let currentGitDir: string = "";
@@ -63,7 +63,7 @@ export async function setRemoteOrigin(value) {
 
 async function handleChange() {
     try {
-        const app = store.getState().app;
+        const app = store.getState().app;        
         //Switch to new project.
         if (app.name && app.name != currentAppName) {
             gitEmitter.start();
@@ -78,7 +78,9 @@ async function handleChange() {
                 console.log("Git dir does not exist, creating git dir: ", currentGitDir);
                 await pfs.mkdir(currentGitDir);
                 await git.init({ fs, dir: currentGitDir });
-                if (app.settings.git.repo) {
+                console.log("Git init done");
+                if (app.settings.git.repo && !store.getState().isCloning) {
+                    console.log("Cloning because project contains repo");
                     await git.clone({
                         fs,
                         http,
