@@ -21,10 +21,9 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 import { getConfigUser, setConfigUser, setRemoteOrigin } from "../../git";
 import { AppEditorState } from "../../types";
 
-import keydown, { Keys } from "react-keydown";
-const { ENTER } = Keys;
-
 import { updateAppData, saveAppData } from "../../actions/app";
+
+import { KeyCodes } from "../../types/keyCodes";
 
 const mapState = (state: AppEditorState) => {
     const { name, description, type, settings } = state.app;
@@ -87,7 +86,7 @@ class Settings extends React.Component<SettingsProps> {
     };
 
     handleSubmit = e => {
-        if (e.keyCode === 13) {
+        if (e.keyCode === KeyCodes.Enter) {
             this.props.saveAppData();
         }
     };
@@ -100,7 +99,7 @@ class Settings extends React.Component<SettingsProps> {
         return (
             <div style={{ display }} className={classes.container}>
                 <InputLabel shrink>Type</InputLabel>
-                <Select fullWidth value={type} onChange={e => this.updateData(e, "type")}>
+                <Select fullWidth value={type || "react"} onChange={e => this.updateData(e, "type")}>
                     <MenuItem value={"react"}>React</MenuItem>
                     <MenuItem value={"vue"}>Vue</MenuItem>
                 </Select>

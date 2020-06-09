@@ -5,20 +5,20 @@ import monaco from "./monaco";
 let registry;
 
 export async function initTextMate() {
-    await loadWASM(`../public/tokenization/onigasm.wasm`);
+    await loadWASM(`${location.origin}/public/tokenization/onigasm.wasm`);
 
     registry = new Registry({
         getGrammarDefinition: async (scopeName) => {
             if (scopeName === "source.ts") {
                 return {
                     format: 'json',
-                    content: await (await fetch(`../public/tokenization/TypeScript.tmLanguage.json`)).text()
+                    content: await (await fetch(`${location.origin}/public/tokenization/TypeScript.tmLanguage.json`)).text()
                 }
             }
             if (scopeName === "source.tsx") {
                 return {
                     format: 'json',
-                    content: await (await fetch(`../public/tokenization/TypeScriptReact.tmLanguage.json`)).text()
+                    content: await (await fetch(`${location.origin}/public/tokenization/TypeScriptReact.tmLanguage.json`)).text()
                 }
             }
         }

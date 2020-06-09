@@ -80,7 +80,7 @@ async function handleChange() {
                 await git.init({ fs, dir: currentGitDir });
                 console.log("Git init done");
                 if (app.settings.git.repo && !store.getState().isCloning) {
-                    console.log("Cloning because project contains repo");
+                    console.log("Cloning because project contains repo but not initialized in browser");
                     await git.clone({
                         fs,
                         http,
