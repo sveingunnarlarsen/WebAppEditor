@@ -23,7 +23,11 @@ function mapDispatch(dispatch) {
     };
 }
 
-class RenameFolder extends React.Component {
+interface RenameFolderProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
+    close: () => void;
+}
+
+class RenameFolder extends React.Component<RenameFolderProps> {
     constructor(props) {
         super(props);
         this.state = {

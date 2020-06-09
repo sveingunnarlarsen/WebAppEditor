@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
@@ -16,7 +15,11 @@ const mapState = state => {
     };
 };
 
-class CompilingStatus extends React.Component {
+interface CompilingStatusProps extends ReturnType<typeof mapState> {
+    classes: any;
+}
+
+class CompilingStatus extends React.Component<CompilingStatusProps> {
     constructor(props) {
         super(props);
     }
@@ -36,9 +39,5 @@ class CompilingStatus extends React.Component {
         );
     }
 }
-
-CompilingStatus.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState)(withStyles(styles)(CompilingStatus));

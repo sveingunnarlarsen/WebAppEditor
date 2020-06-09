@@ -19,6 +19,12 @@ function mapDispatch(dispatch) {
 }
 
 class TerminalLocal extends React.Component {
+    terminalRef: HTMLElement;
+
+    terminal: Terminal;
+    fitAddon: FitAddon;
+    localEcho: LocalEchoController;    
+
     constructor(props) {
         super(props);
         this.terminal = new Terminal({

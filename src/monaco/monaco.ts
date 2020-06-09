@@ -92,6 +92,8 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 //import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
+import {themeDarkPlus} from "./themes";
+
 // @ts-ignore
 self.MonacoEnvironment = {
     getWorkerUrl: function(moduleId, label) {
@@ -108,5 +110,9 @@ self.MonacoEnvironment = {
 
 monaco.languages.register({ id: 'typescript' });
 monaco.languages.register({ id: 'typescript_react' });
+
+// @ts-ignore
+monaco.editor.defineTheme("dark", themeDarkPlus);
+monaco.editor.setTheme("dark");
 
 export default monaco;

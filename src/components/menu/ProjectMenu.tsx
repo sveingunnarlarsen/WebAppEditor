@@ -24,7 +24,11 @@ function mapDispatch(dispatch) {
     };
 }
 
-class ProjectMenu extends React.Component {
+interface ProjectMenuProps extends ReturnType<typeof mapDispatch> {
+    closeMenu: () => void;
+}
+
+class ProjectMenu extends React.Component<ProjectMenuProps> {
     constructor(props) {
         super(props);
     }

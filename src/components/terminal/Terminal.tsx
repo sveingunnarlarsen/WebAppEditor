@@ -6,6 +6,11 @@ import LocalEchoController from '../../local-echo/LocalEchoController';
 import "xterm/css/xterm.css";
 
 class XTerminal extends React.Component {
+    terminalRef: HTMLElement;
+    terminal: Terminal;
+    fitAddon: FitAddon;
+    localEcho: LocalEchoController;
+    
     constructor(props) {
         super(props);
         this.terminal = new Terminal({

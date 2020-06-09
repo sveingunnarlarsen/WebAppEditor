@@ -13,7 +13,11 @@ const mapState = state => {
     };
 };
 
-class ServerMessage extends React.Component {
+interface ServerMessageProps extends ReturnType<typeof mapState> {
+    close: () => void;
+}
+
+class ServerMessage extends React.Component<ServerMessageProps, {value: string}> {
     constructor(props) {
         super(props);
         this.state = {

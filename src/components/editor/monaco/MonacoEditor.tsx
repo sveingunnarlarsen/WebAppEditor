@@ -77,12 +77,10 @@ const Editor =
                 store.dispatch(showFile(file.id, null, range));
             }
 
+            // @ts-ignore
             window.editorRef = editorRef.current;
 
             editorDidMount(editorRef.current.getValue.bind(editorRef.current), editorRef.current);
-
-            monacoRef.current.editor.defineTheme('dark', themeDark);
-            monacoRef.current.editor.setTheme(theme);
 
             if (openFileAt) {
                 editorRef.current.revealRangeInCenter(openFileAt);

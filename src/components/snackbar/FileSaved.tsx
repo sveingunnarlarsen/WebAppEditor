@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
-import { closeSnackbar } from "../../actions";
+//import { closeSnackbar } from "../../actions";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -21,17 +20,21 @@ const mapStateToProp = state => {
 
 function mapDispatchToProp(dispatch) {
     return {
-        close: () => dispatch(closeSnackbar())
+        //close: () => dispatch(closeSnackbar())
     }
 }
 
-class FileSaved extends React.Component {
+interface FileSavedProps extends ReturnType<typeof mapDispatchToProp>, ReturnType<typeof mapStateToProp> {
+    classes: any;
+}
+
+class FileSaved extends React.Component<FileSavedProps> {
     constructor(props) {
         super(props);
     }
 
     handleClose(e) {
-        this.props.close();
+        //this.props.close();
     }
 
     render() {
@@ -55,9 +58,5 @@ class FileSaved extends React.Component {
         );
     }
 }
-
-FileSaved.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(mapStateToProp, mapDispatchToProp)(withStyles(styles)(FileSaved));

@@ -96,6 +96,7 @@ export async function formatAllFiles() {
                     range: spanToRange(e.span, model.uri),
                 }));
 
+                // @ts-ignore
                 model.applyEdits(textEdits);
                 updateModel(model);
             }

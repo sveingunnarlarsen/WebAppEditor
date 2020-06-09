@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
@@ -16,7 +15,11 @@ const mapState = state => {
     };
 };
 
-class NpmStatus extends React.Component {
+interface NpmStatusProps extends ReturnType<typeof mapState> {
+    classes: any;
+}
+
+class NpmStatus extends React.Component<NpmStatusProps> {
     constructor(props) {
         super(props);
     }
@@ -36,9 +39,5 @@ class NpmStatus extends React.Component {
         );
     }
 }
-
-NpmStatus.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState)(withStyles(styles)(NpmStatus));

@@ -15,7 +15,11 @@ function mapDispatch(dispatch) {
     };
 }
 
-class NewFolder extends React.Component {
+interface NewFolderProps extends ReturnType<typeof mapDispatch> {
+    close: () => void;
+}
+
+class NewFolder extends React.Component<NewFolderProps, {value: string}> {
     constructor(props) {
         super(props);
         this.state = {

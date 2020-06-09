@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import keydown, { Keys } from "react-keydown";
 
 import { withStyles } from "@material-ui/styles";
 import Dialog from "@material-ui/core/Dialog";
@@ -29,7 +28,7 @@ import NpmInstall from "./NpmInstall";
 import { DialogType, DialogState } from "../../types/dialog";
 import { closeDialog } from "../../actions";
 
-const { ESC } = Keys;
+import { KeyCodes } from "../../types/keyCodes";
 
 const styles = {
     searchPaper: {
@@ -56,8 +55,9 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface DialogContainerProps {
+interface DialogContainerProps extends ReturnType<typeof mapDispatch> {
     dialog: DialogState;
+    classes: any;
 }
 
 function PaperComponent(props) {
@@ -73,9 +73,20 @@ class DialogContainer extends React.Component<DialogContainerProps> {
         super(props);
     }
 
-    @keydown(ESC)
-    autocomplete(e) {
-        this.props.close();
+    handleComponentKeyDown = e => {
+        switch (e.keyCode) {
+            case KeyCodes.Escape:
+                this.props.close();
+                break;
+        }
+    }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleComponentKeyDown, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleComponentKeyDown, false);
     }
 
     getDialogContent(dialog) {

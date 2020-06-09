@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withStyles } from "@material-ui/styles";
 
@@ -35,7 +34,12 @@ function mapDispatch(dispatch) {
     };
 }
 
-class TopMenu extends React.Component<ReturnType<typeof mapDispatch>> {
+interface TopMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
+    classes: any;
+    height: any;
+}
+
+class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
     constructor(props) {
         super(props);
         this.state = {
@@ -101,10 +105,6 @@ class TopMenu extends React.Component<ReturnType<typeof mapDispatch>> {
         );
     }
 }
-
-TopMenu.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(
     mapState,

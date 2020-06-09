@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -48,15 +47,9 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface SideMenuProps {
+interface SideMenuProps extends ReturnType<typeof mapDispatch> {
     classes: any;
     width: any;
-
-    switchTool: (tool: Tool) => void;
-    openSearch: () => void;
-    togglePreview: () => void;
-    closeAllTabs: () => void;
-    toggleCommandLine: () => void;
 }
 
 class SideMenu extends React.Component<SideMenuProps> {
@@ -130,10 +123,6 @@ class SideMenu extends React.Component<SideMenuProps> {
         );
     }
 }
-
-SideMenu.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(
     null,

@@ -58,6 +58,8 @@ class EditorContainer extends React.Component<EditorContainerProps> {
                 this.paneRef.pane2.style.width = (pane2Width - 5) + 'px';
                 this.props.resizeEditor();
             })
+        } else {
+            this.props.resizeEditor();
         }
     }
 

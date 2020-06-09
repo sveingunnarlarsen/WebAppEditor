@@ -16,7 +16,8 @@ const styles = {
     }
 }
 
-class TerminalContainer extends React.Component {
+class TerminalContainer extends React.Component<{classes: any}, {visibleCommandLine: 'Git' | 'Server'}> {
+    containerRef: HTMLElement;
     constructor(props) {
         super(props);
         this.state = {

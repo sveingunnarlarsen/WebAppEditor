@@ -170,7 +170,7 @@ class WebixTree extends React.Component {
         }
     }
 
-    componentDidMount(props) {
+    componentDidMount() {
         this.ui = webix.ui(
             treeUtils.options(ReactDOM.findDOMNode(this.refs.root), {
                 type: {

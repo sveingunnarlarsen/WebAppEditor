@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import { connect } from "react-redux";
 
@@ -16,7 +15,11 @@ const mapState = state => {
     };
 };
 
-class GitCloneStatus extends React.Component {
+interface GitCloneStatusProps extends ReturnType<typeof mapState> {
+    classes: any;
+}
+
+class GitCloneStatus extends React.Component<GitCloneStatusProps> {
     constructor(props) {
         super(props);
     }
@@ -36,9 +39,5 @@ class GitCloneStatus extends React.Component {
         );
     }
 }
-
-GitCloneStatus.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(mapState)(withStyles(styles)(GitCloneStatus));

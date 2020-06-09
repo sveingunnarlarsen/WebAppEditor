@@ -60,7 +60,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState) {
-        console.log("Checking if editor should update", this.props, nextProps);
+        //console.log("Checking if editor should update", this.props, nextProps);
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
