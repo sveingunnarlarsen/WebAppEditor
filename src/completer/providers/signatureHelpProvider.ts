@@ -26,11 +26,17 @@ export class SignatureHelpProvider implements monaco.languages.SignatureHelpProv
             model.getValue(),
         );
 
-        const response = await this.languageClient.getSignatureHelp(
+        const request = this.languageClient.getSignatureHelp(
             model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
-        ).catch(exception => { console.error(exception); throw exception; });
+        )
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        })
+
+        const response = await request.wait();
 
         if (!response) return undefined;
 

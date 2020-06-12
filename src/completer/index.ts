@@ -84,11 +84,13 @@ export async function formatAllFiles() {
         const models = monaco.editor.getModels();
         models.forEach(async model => {
             if (model.uri.path.includes(".ts")) {
-                const response = await client.getFormattingEdits(
+                const request = await client.getFormattingEdits(
                     model.uri.path,
                     options.insertSpaces,
                     options.tabSize,
                 );
+
+                const response = await request.wait();
 
                 const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
                     text: e.newText,

@@ -10,12 +10,15 @@ export interface ConnectResult {
     success: boolean;
     error?: any;
 }
-declare type Id = string | number;
+export interface Cancellable<T> {
+    cancel: () => Promise<void>;
+    wait: () => Promise<T>;
+}
 /**
  * Operates on one project at a time.
  */
 export declare class LanguageClient {
-    private _requestCounter;
+    private _msgCounter;
     private _socket;
     private _projectId;
     private _eventEmitter;
@@ -36,6 +39,8 @@ export declare class LanguageClient {
      *
      */
     private _execute;
+    private _executeCancellable;
+    private _cancel;
     on(event: ClientEvent.Connected, listener: () => void): void;
     on(event: ClientEvent.Disconnected, listener: (event: {
         code: number;
@@ -122,7 +127,7 @@ export declare class LanguageClient {
      * @param line 0-based linenumber
      * @param character 0-based character index
      */
-    getCompletions(path: string, line: number, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetCompletionsResult>>;
+    getCompletions(path: string, line: number, character: number): Cancellable<protocol.ResponseMessage<protocol.GetCompletionsResult>>;
     /**
      * Request a list of references for
      * the symbol specified at line and character.
@@ -130,7 +135,7 @@ export declare class LanguageClient {
      * @param line 0-based linenumber
      * @param character 0-based character index
      */
-    findReferences(path: string, line: number, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.FindReferencesResult>>;
+    findReferences(path: string, line: number, character: number): Cancellable<protocol.ResponseMessage<protocol.FindReferencesResult>>;
     /**
      * Request information at the specified
      * line and character.
@@ -138,17 +143,15 @@ export declare class LanguageClient {
      * @param line 0-based linenumber
      * @param character 0-based character index
      */
-    getQuickInfo(path: string, line: number, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetQuickInfoResult>>;
+    getQuickInfo(path: string, line: number, character: number): Cancellable<protocol.ResponseMessage<protocol.GetQuickInfoResult>>;
     /**
      * Request signature information at the specified cursor location
      * @param path Path to the file
      * @param line 0-based line number
      * @param character 0-based character index
      */
-    getSignatureHelp(path: string, line: number, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetSignatureHelpResult>>;
-    getCompletionEntryDetails(path: string, line: number, symbol: string, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetCompletionEntryDetailsResult>>;
-    getDefinition(path: string, line: number, character: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetDefinitionResult>>;
-    getFormattingEdits(path: string, insertSpaces: boolean, tabSize: number, cancellationToken?: Id): Promise<protocol.ResponseMessage<protocol.GetFormattingEditsResult>>;
-    cancelRequest(cancellationToken: Id): Promise<void>;
+    getSignatureHelp(path: string, line: number, character: number): Cancellable<protocol.ResponseMessage<protocol.GetSignatureHelpResult>>;
+    getCompletionEntryDetails(path: string, line: number, symbol: string, character: number): Cancellable<protocol.ResponseMessage<protocol.GetCompletionEntryDetailsResult>>;
+    getDefinition(path: string, line: number, character: number): Cancellable<protocol.ResponseMessage<protocol.GetDefinitionResult>>;
+    getFormattingEdits(path: string, insertSpaces: boolean, tabSize: number): Cancellable<protocol.ResponseMessage<protocol.GetFormattingEditsResult>>;
 }
-export {};

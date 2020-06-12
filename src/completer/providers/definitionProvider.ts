@@ -10,7 +10,6 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
     constructor(languageClient) {
         this.languageClient = languageClient;
     }
-
     async provideDefinition(
         model: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -25,11 +24,17 @@ export class DefinitionProvider implements monaco.languages.DefinitionProvider {
             model.getValue()
         );
 
-        const response = await this.languageClient.getDefinition(
+        const request = this.languageClient.getDefinition(
             model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
         );
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        })
+
+        const response = await request.wait();
 
         if (response.result) {
             const locations = response.result.map<monaco.languages.Location>(r => {

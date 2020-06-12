@@ -186,7 +186,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
         })
         this.setupEditor();
     };
-
+    
     render() {
         const { fso, viewState } = this.props;
 

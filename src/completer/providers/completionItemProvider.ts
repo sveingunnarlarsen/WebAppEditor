@@ -25,11 +25,17 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
             model.getValue()
         );
 
-        const list = await this.languageClient.getCompletions(
+        const request = this.languageClient.getCompletions(
             model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
-        ).catch(exception => { console.error(exception); throw exception; });
+        );
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        })
+
+        const list = await request.wait();
 
         if (!list.result) {
             console.log('Result not found');
@@ -76,12 +82,18 @@ export class CompletionItemProvider implements monaco.languages.CompletionItemPr
                 return item;
             }
 
-            const response = await this.languageClient.getCompletionEntryDetails(
+            const request = this.languageClient.getCompletionEntryDetails(
                 item.model.uri.path,
                 item.position.lineNumber - 1,
                 item.label,
                 item.position.column - 1,
             );
+
+            token.onCancellationRequested(async e => {
+                await request.cancel();
+            });
+
+            const response = await request.wait();
 
             if (response.result) {
                 const result = response.result;
