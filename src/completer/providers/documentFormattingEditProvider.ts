@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
 import { spanToRange } from "../utils";
 
 export class DocumentFormattingEditorProvider implements monaco.languages.DocumentFormattingEditProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
-    constructor(languageClient: LanguageClientType) {
+    constructor(languageClient: LanguageClient) {
         this.languageClient = languageClient;
     }
 

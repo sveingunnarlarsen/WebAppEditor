@@ -1,11 +1,11 @@
 import * as ts from 'typescript';
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
 
 export class HoverProvider implements monaco.languages.HoverProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
-    constructor(languageClient: LanguageClientType) {
+    constructor(languageClient: LanguageClient) {
         this.languageClient = languageClient;
     }
 

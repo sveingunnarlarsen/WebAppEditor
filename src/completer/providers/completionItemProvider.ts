@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
 import * as pather from 'path';
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
 
 export class CompletionItemProvider implements monaco.languages.CompletionItemProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
     constructor(languageClient) {
         this.languageClient = languageClient;
