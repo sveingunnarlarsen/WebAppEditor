@@ -6,6 +6,37 @@ export function convertFlatToNested(n, r, t) {
     return a;
 }
 
+export function extend(...args: any[]) {
+    let extended = {};
+    let deep = false;
+    let i = 0;
+    let length = args.length;
+
+    if (Object.prototype.toString.call(args[0]) === '[object Boolean]') {
+        deep = args[0];
+        i++;
+    }
+
+    const merge = function(obj) {
+        for (var prop in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+                if (deep && Object.prototype.toString.call(obj[prop]) === '[object Object]') {
+                    extended[prop] = extend(true, extended[prop], obj)
+                } else {
+                    extended[prop] = obj[prop];
+                }
+            }
+        }
+    }
+
+    for (; i < length; i++) {
+        let obj = arguments[i];
+        merge(obj);
+    }
+
+    return extended;
+}
+
 export function getFileTypeImageData(fileType) {
     const imageMeta = imageData.items.filter(i => i.type === fileType)[0];
     return imageMeta ? imageMeta.image : "";

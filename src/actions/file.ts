@@ -270,6 +270,19 @@ export function renameFolder(newName: string) {
     };
 }
 
+export function createTemplateFile(name) {
+    return function(dispatch, getState) {
+
+        return fetch(`/api/webapp/template/${name}`, {
+            method: "GET"
+        })
+            .then(throwError)
+            .then(async response => response.json())
+            .then(json => dispatch(createFso(json.fileSystemObject)))
+            .catch(error => handleAjaxError(error, dispatch));
+    }
+}
+
 export function updateFileState(file) {
     return {
         type: Actions.UPDATE_FILE_STATE,

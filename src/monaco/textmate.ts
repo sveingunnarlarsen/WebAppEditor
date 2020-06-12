@@ -27,7 +27,7 @@ export async function initTextMate() {
     await registry.loadGrammar("source.ts");
     await registry.loadGrammar("source.tsx");
 
-    console.log("Onigams loaded");
+    console.log("Onigasm loaded");
 }
 
 let tokensProviderSet: boolean = false;

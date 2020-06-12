@@ -9,9 +9,12 @@ import Content from "./components/Content";
 import DialogContainer from "./components/dialog/DialogContainer";
 import SnackbarContainer from "./components/snackbar/SnackbarContainer";
 
+import { getMasterData } from "./actions/app";
 import { initTextMate } from "./monaco/textmate";
+import store from "./store";
 
 initTextMate();
+store.dispatch(getMasterData());
 
 import "./App.css"; //TODO: Clean up css
 

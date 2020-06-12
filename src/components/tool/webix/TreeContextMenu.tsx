@@ -17,31 +17,40 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 
 import { makeStyles } from "@material-ui/core/styles";
 
+import { AppEditorState } from "../../../types";
 import store from "../../../store";
 import { getFileById } from "../../../store/utils";
 import { openDialog } from "../../../actions";
-import { createFso } from "../../../actions/file";
+import { createFso, createTemplateFile } from "../../../actions/file";
 import { DialogType } from "../../../types/dialog";
 import { importFiles } from "../../../helpers/import";
 import { calculateContextPos } from "../../../helpers/utils";
 
 import "./TreeContextMenu.css";
 
-const mapState = state => {
-    return { selectedId: state.selectedNode };
+const mapState = (state: AppEditorState) => {
+    const fsos = state.app.fileSystemObjects;
+    const packageJson = fsos.find(f => f.path === "/package.json");
+    const webpackDevJs = fsos.find(f => f.path === "/webpack.dev.js");
+    const webpackProdJs = fsos.find(f => f.path === "/webpack.prod.js");
+    return { selectedId: state.selectedNode, packageJson, webpackDevJs, webpackProdJs };
 };
 
 function mapDispatch(dispatch) {
-    return {
+    return {    
         newFile: () => dispatch(openDialog(DialogType.CREATE_FILE)),
         newFolder: () => dispatch(openDialog(DialogType.CREATE_FOLDER)),
         deleteFile: () => dispatch(openDialog(DialogType.DELETE_FILE)),
         renameFile: () => dispatch(openDialog(DialogType.RENAME_FILE)),
         deleteFolder: () => dispatch(openDialog(DialogType.DELETE_FOLDER)),
         renameFolder: () => dispatch(openDialog(DialogType.RENAME_FOLDER)),
+        createPackageJson: () => dispatch(createTemplateFile("package.json")),
+        createWebpackDevJs: () => dispatch(createTemplateFile("webpack.dev.js")),
+        createWebpackProdJs: () => dispatch(createTemplateFile("webpack.prod.js")),
     };
 }
 
@@ -55,6 +64,8 @@ const styles = theme => ({
     }
 });
 
+
+// @ts-ignore
 window.importFileInTree = async function(e) {
 
     const files = await importFiles(e);
@@ -68,7 +79,16 @@ window.importFileInTree = async function(e) {
 
 };
 
-class TreeContextMenu extends React.Component {
+interface TreeContextMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
+    container: any;
+    classes: any;
+}
+
+class TreeContextMenu extends React.Component<TreeContextMenuProps, { visible: boolean }> {
+
+    private keepOpen: boolean;
+    root: HTMLDivElement;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -138,7 +158,7 @@ class TreeContextMenu extends React.Component {
 
     render() {
         const { visible } = this.state;
-        const { classes, renameFile, deleteFile } = this.props;
+        const { classes, renameFile, deleteFile, packageJson, webpackDevJs, webpackProdJs } = this.props;
 
         return (
             (visible || null) && (
@@ -209,6 +229,48 @@ class TreeContextMenu extends React.Component {
                             </ListItemIcon>
                             <ListItemText primary="Import" />
                         </ListItem>
+                        {!packageJson &&
+                            <ListItem
+                                button
+                                dense
+                                onClick={() => {
+                                    this.props.createPackageJson();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <CreateOutlinedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Create package.json" />
+                            </ListItem>
+                        }
+                        {!webpackDevJs &&
+                            <ListItem
+                                button
+                                dense
+                                onClick={() => {
+                                    this.props.createWebpackDevJs();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <CreateOutlinedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Create webpack.dev.json" />
+                            </ListItem>
+                        }
+                        {!webpackProdJs &&
+                            <ListItem
+                                button
+                                dense
+                                onClick={() => {
+                                    this.props.createWebpackProdJs();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <CreateOutlinedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Create webpack.prod.json" />
+                            </ListItem>
+                        }
                     </List>
                 </div>
             )

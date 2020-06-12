@@ -68,9 +68,7 @@ export function deleteNpmModules() {
 
 function updatePackageJson(value, getState, dispatch) {
     const packageJson = getState().app.fileSystemObjects.find(f => f.path === "/package.json");
-    packageJson.content = value;
-    console.log("Updating package json: ", packageJson);
-    dispatch(saveFso(packageJson));
+    dispatch(saveFso({...packageJson, content: value}));
 }
 
 function requestModules() {

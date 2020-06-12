@@ -8,7 +8,11 @@ import Button from "@material-ui/core/Button";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 
+import { AppEditorState } from "../../types"
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 
@@ -21,9 +25,31 @@ const styles = {
     }
 };
 
-const mapState = state => {
+function getWarnings(state: AppEditorState) {
+    const fsos = state.app.fileSystemObjects;
+    const warnings = [];
+    if (!fsos.find(f => f.path === "/package.json")) {
+        warnings.push({
+            message: "Missing package.json"
+        })
+    }
+    if (!fsos.find(f => f.path === "/webpack.dev.js")) {
+        warnings.push({
+            message: "Missing webpack.dev.js"
+        })
+    }
+    if (!fsos.find(f => f.path === "/webpack.prod.js")) {
+        warnings.push({
+            message: "Missing webpack.prod.js"
+        })
+    }
+    return warnings;    
+}
+
+const mapState = (state: AppEditorState) => {    
     return {
-        appName: state.app.name
+        warnings: getWarnings(state),
+        appName: state.app.name,        
     };
 };
 
@@ -76,7 +102,7 @@ class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, warnings, appName } = this.props;
         return (
             <AppBar className={classes.appBar}>
                 <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
@@ -96,9 +122,17 @@ class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
                     <Button onClick={this.runPreview}>
                         Run Preview
 					</Button>
+                    <Divider orientation="vertical" flexItem />
+                    {warnings.length > 0 && appName &&                    
+                        <IconButton color="inherit">
+                            <Badge badgeContent={warnings.length} color="secondary">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    }
                     <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
-                        {this.props.appName}
-                    </Typography>
+                        {appName}
+                    </Typography>                    
                     <ProjectMenu anchorEl={this.state.anchorEl} closeMenu={this.closeProjectMenu} />
                 </Toolbar>
             </AppBar>
