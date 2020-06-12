@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
 import { spanToRange } from "../utils";
 
 export class DocumentFormattingEditorProvider implements monaco.languages.DocumentFormattingEditProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
-    constructor(languageClient: LanguageClientType) {
+    constructor(languageClient: LanguageClient) {
         this.languageClient = languageClient;
     }
 
@@ -26,11 +26,17 @@ export class DocumentFormattingEditorProvider implements monaco.languages.Docume
             model.getValue(),
         );
 
-        const response = await this.languageClient.getFormattingEdits(
+        const request = this.languageClient.getFormattingEdits(
             model.uri.path,
             options.insertSpaces,
             options.tabSize
         );
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        })
+
+        const response = await request.wait();
 
         if (!response.result) return;
 

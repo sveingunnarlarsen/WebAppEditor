@@ -1,6 +1,5 @@
 import store from "../store";
 import { monaco, deleteModel, createModel } from "../monaco";
-import { LanguageClient as LanguageClientType, ClientEvent } from "../types/language-client";
 import { provideDiagnostics } from "./providers/diagnosticProvider";
 import { CompletionItemProvider } from "./providers/completionItemProvider";
 import { SignatureHelpProvider } from "./providers/signatureHelpProvider";
@@ -8,14 +7,14 @@ import { HoverProvider } from "./providers/hoverProvider";
 import { DefinitionProvider } from "./providers/definitionProvider";
 import { ReferenceProvider } from "./providers/referenceProvider";
 import { DocumentFormattingEditorProvider } from "./providers/documentFormattingEditProvider";
+import { LanguageClient, ClientEvent } from '../../lib/LanguageClient';
 
 import { FileSystemObject } from "../types";
 import { updateModel } from "../monaco";
 import { spanToRange } from "./utils";
 
 let appId;
-//@ts-ignore
-const client: LanguageClientType = new LanguageClient();
+const client = new LanguageClient();
 
 (async function() {
     try {
@@ -85,11 +84,13 @@ export async function formatAllFiles() {
         const models = monaco.editor.getModels();
         models.forEach(async model => {
             if (model.uri.path.includes(".ts")) {
-                const response = await client.getFormattingEdits(
+                const request = await client.getFormattingEdits(
                     model.uri.path,
                     options.insertSpaces,
                     options.tabSize,
                 );
+
+                const response = await request.wait();
 
                 const textEdits = response.result.map<monaco.languages.TextEdit>(e => ({
                     text: e.newText,

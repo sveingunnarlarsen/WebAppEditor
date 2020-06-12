@@ -1,11 +1,11 @@
 import * as ts from 'typescript';
 import { getFileByPath } from "../../store/utils";
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
 import { spanToRange } from "../utils";
 
 export class ReferenceProvider implements monaco.languages.ReferenceProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
     constructor(languageClient) {
         this.languageClient = languageClient;
@@ -26,11 +26,17 @@ export class ReferenceProvider implements monaco.languages.ReferenceProvider {
             model.getValue(),
         );
 
-        const response = await this.languageClient.findReferences(
+        const request = await this.languageClient.findReferences(
             model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
         );
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        })
+
+        const response = await request.wait();
 
         if (response.result) {
             const l = response.result.map<monaco.languages.Location[]>(symbolRef => {

@@ -1,11 +1,12 @@
 import * as ts from 'typescript';
-import { LanguageClient as LanguageClientType } from "../../types/language-client";
+import { LanguageClient } from "../../../lib/LanguageClient";
+import {join} from 'fs';
 
 export class HoverProvider implements monaco.languages.HoverProvider {
 
-    private languageClient: LanguageClientType;
+    private languageClient: LanguageClient;
 
-    constructor(languageClient: LanguageClientType) {
+    constructor(languageClient: LanguageClient) {
         this.languageClient = languageClient;
     }
 
@@ -23,11 +24,18 @@ export class HoverProvider implements monaco.languages.HoverProvider {
             model.getValue(),
         );
 
-        const response = await this.languageClient.getQuickInfo(
+        
+        const request = this.languageClient.getQuickInfo(
             model.uri.path,
             position.lineNumber - 1,
             position.column - 1,
         );
+
+        token.onCancellationRequested(async e => {
+            await request.cancel();
+        });
+
+        const response = await request.wait();
 
         if (response.result && response.result.displayParts) {
 
