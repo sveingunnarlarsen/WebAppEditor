@@ -1,6 +1,7 @@
 import JSZip from "jszip";
 import store from "../store";
 import { saveAs } from 'file-saver';
+import { throwError, handleAjaxError } from "../actions/error";
 
 export async function exportProjectToZip() {
     const zip = new JSZip();
@@ -17,4 +18,17 @@ export async function exportProjectToZip() {
     zip.generateAsync({ type: "blob" }).then(function(blob) {
         saveAs(blob, `${app.name}.zip`);
     });
+}
+
+export async function exportRuntime() {
+
+    const app = store.getState().app;
+
+    return fetch(`/api/webapp/${app.id}/export/runtime`, {
+        method: "GET",
+    })
+        .then(throwError)
+        .then(response => response.blob())
+        .then(blob => saveAs(blob, `${app.name}.zip`))
+        .catch(error => handleAjaxError(error, store.dispatch));
 }

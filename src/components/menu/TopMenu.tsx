@@ -34,7 +34,7 @@ function getWarnings(state: AppEditorState) {
     const fsos = state.app.fileSystemObjects;
     const warnings = [];
     if (!fsos.find(f => f.path === "/package.json")) {
-        warnings.push({
+        warnings.push({                                                        
             message: "Missing package.json"
         })
     }
@@ -165,8 +165,8 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                             horizontal: 'center',
                         }}
                     >
-                        {this.props.warnings.map(warning => {
-                            return <Typography className={classes.typography}>{warning.message}</Typography>
+                        {this.props.warnings.map((warning, index) => {
+                            return <Typography key={index} className={classes.typography}>{warning.message}</Typography>
                         })}                        
                     </Popover>
                 </Toolbar>

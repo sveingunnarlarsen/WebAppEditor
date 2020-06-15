@@ -9,7 +9,7 @@ import Divider from "@material-ui/core/Divider";
 import { openDialog } from "../../actions";
 import { DialogType } from "../../types/dialog";
 
-import { exportProjectToZip } from "../../helpers/export";
+import { exportProjectToZip, exportRuntime } from "../../helpers/export";
 import { importFolderZip } from "../../helpers/import";
 
 const styles = {
@@ -37,6 +37,11 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
         this.props.openDialog(type);
         this.props.closeMenu();
     };
+
+    exportRuntime = () => {
+        this.props.closeMenu();
+        exportRuntime();
+    }
 
     exportToZip = () => {
         this.props.closeMenu();
@@ -75,6 +80,9 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
 					<input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "folder")} value="" />
                 </MenuItem>
                 <Divider />
+                <MenuItem onClick={this.exportRuntime}>
+                    Export runtime					
+                </MenuItem>
             </Menu>
         );
     }
