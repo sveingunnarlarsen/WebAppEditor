@@ -11,6 +11,8 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import Popover from '@material-ui/core/Popover';
+
 
 import { AppEditorState } from "../../types"
 import store from "../../store";
@@ -18,12 +20,15 @@ import ProjectMenu from "./ProjectMenu";
 
 import { compileProject, compilePreview } from "../../actions/app";
 
-const styles = {
+const styles = theme => ({
     appBar: {
         background: "#333333",
         boxShadow: "none"
-    }
-};
+    },
+    typography: {
+      padding: theme.spacing(2),
+    },
+});
 
 function getWarnings(state: AppEditorState) {
     const fsos = state.app.fileSystemObjects;
@@ -43,13 +48,13 @@ function getWarnings(state: AppEditorState) {
             message: "Missing webpack.prod.js"
         })
     }
-    return warnings;    
+    return warnings;
 }
 
-const mapState = (state: AppEditorState) => {    
+const mapState = (state: AppEditorState) => {
     return {
         warnings: getWarnings(state),
-        appName: state.app.name,        
+        appName: state.app.name,
     };
 };
 
@@ -65,24 +70,37 @@ interface TopMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof
     height: any;
 }
 
-class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
+class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLButtonElement | null, anchorElWarning: HTMLButtonElement | null }> {
     constructor(props) {
         super(props);
         this.state = {
-            anchorEl: null
+            anchorElProjectMenu: null,
+            anchorElWarning: null,
         };
     }
 
     handleProjectMenuToggle(event) {
         this.setState({
-            anchorEl: event.currentTarget
+            anchorElProjectMenu: event.currentTarget
         });
     }
 
     closeProjectMenu = () => {
         this.setState({
-            anchorEl: null
+            anchorElProjectMenu: null
         });
+    }
+
+    handleWarningsToggle(event) {
+        this.setState({
+            anchorElWarning: event.currentTarget
+        });
+    }
+
+    closeWarningsToggle = () => {
+        this.setState({
+            anchorElWarning: null,
+        })
     }
 
     compileProject = () => {
@@ -123,8 +141,8 @@ class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
                         Run Preview
 					</Button>
                     <Divider orientation="vertical" flexItem />
-                    {warnings.length > 0 && appName &&                    
-                        <IconButton color="inherit">
+                    {warnings.length > 0 && appName &&
+                        <IconButton color="inherit" onClick={this.handleWarningsToggle.bind(this)}>
                             <Badge badgeContent={warnings.length} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
@@ -132,8 +150,25 @@ class TopMenu extends React.Component<TopMenuProps, {anchorEl: any}> {
                     }
                     <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
                         {appName}
-                    </Typography>                    
-                    <ProjectMenu anchorEl={this.state.anchorEl} closeMenu={this.closeProjectMenu} />
+                    </Typography>
+                    <ProjectMenu anchorEl={this.state.anchorElProjectMenu} closeMenu={this.closeProjectMenu} />
+                    <Popover
+                        open={Boolean(this.state.anchorElWarning)}
+                        anchorEl={this.state.anchorElWarning}
+                        onClose={this.closeWarningsToggle}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                        }}
+                    >
+                        {this.props.warnings.map(warning => {
+                            return <Typography className={classes.typography}>{warning.message}</Typography>
+                        })}                        
+                    </Popover>
                 </Toolbar>
             </AppBar>
         );
