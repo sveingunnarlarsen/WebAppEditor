@@ -52,6 +52,12 @@ export interface TextDocumentChangedParams {
     path: string;
     content: string;
 }
+export interface TextDocumentPartiallyChangedParams {
+    path: string;
+    start: number;
+    end: number;
+    newText: string;
+}
 export interface TextDocumentDeletedParams {
     path: string;
 }

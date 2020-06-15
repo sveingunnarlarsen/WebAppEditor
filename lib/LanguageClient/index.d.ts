@@ -100,6 +100,7 @@ export declare class LanguageClient {
      *
      */
     textDocumentChanged(path: string, content: string): Promise<void>;
+    textDocumentPartiallyChanged(path: string, newText: string, start: number, end: number): Promise<void>;
     /**
      * Notify the server that a resource was deleted
      * @param path The path to the resouce that was deleted
