@@ -116,22 +116,6 @@ const TMToMonacoToken = (scopes: string[]) => {
     for (let i = scopes.length - 1; i >= 0; i -= 1) {
         const scope = scopes[i];
 
-        /**
-         * Try all possible tokens from high specific token to low specific token
-         *
-         * Example:
-         * 0 meta.function.definition.parameters.cpp
-         * 1 meta.function.definition.parameters
-         *
-         * 2 meta.function.definition.cpp
-         * 3 meta.function.definition
-         *
-         * 4 meta.function.cpp
-         * 5 meta.function
-         *
-         * 6 meta.cpp
-         * 7 meta
-         */
         for (let i = scope.length - 1; i >= 0; i -= 1) {
             const char = scope[i];
             if (char === ".") {

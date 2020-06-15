@@ -56,7 +56,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
     render() {
         const { classes, anchorEl, closeMenu } = this.props;
         return (
-            <Menu
+            <Menu                
                 getContentAnchorEl={null}
                 anchorEl={anchorEl}
                 keepMounted
