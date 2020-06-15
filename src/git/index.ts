@@ -9,7 +9,7 @@ import yargs from "yargs-parser";
 import store from "../store";
 import { getFileById } from "../store/utils";
 import { FileSystemObject } from "../types";
-import { startGitCloneClone, endGitClone } from "../actions";
+import { startGitCloneClone, endGitClone, updateEditors } from "../actions";
 import { createFsos, save, deleteFsos } from "../actions/file";
 import { getFileContent, writeFileContent, fsExists } from "./utils";
 
@@ -434,7 +434,9 @@ class GitCommand {
 
     static async commit(args, opts, print) {
         if (opts.m) {
-            return await git.commit({ fs, dir: currentGitDir, author: { name: configUser.name, email: configUser.email }, message: opts.m });
+            const sha = await git.commit({ fs, dir: currentGitDir, author: { name: configUser.name, email: configUser.email }, message: opts.m });
+            store.dispatch(updateEditors());
+            return sha;
         } else {
             return `Aborting commit due to empty commit message`;
         }
