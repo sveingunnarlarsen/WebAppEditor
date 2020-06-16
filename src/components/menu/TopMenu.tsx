@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/styles";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
+import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +12,8 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Popover from '@material-ui/core/Popover';
 
 
@@ -18,7 +21,7 @@ import { AppEditorState } from "../../types"
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 
-import { compileProject, compilePreview } from "../../actions/app";
+import { compileProject, compilePreview, toggleToEdit, toggleToDisplay } from "../../actions/app";
 
 const styles = theme => ({
     appBar: {
@@ -55,13 +58,16 @@ const mapState = (state: AppEditorState) => {
     return {
         warnings: getWarnings(state),
         appName: state.app.name,
+        appLock: state.app.lock,
     };
 };
 
 function mapDispatch(dispatch) {
     return {
         compile: () => dispatch(compileProject()),
-        compilePreview: () => dispatch(compilePreview())
+        compilePreview: () => dispatch(compilePreview()),
+        toggleToEdit: () => dispatch(toggleToEdit()),
+        toggleToDisplay: () => dispatch(toggleToDisplay())
     };
 }
 
@@ -120,27 +126,53 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
     }
 
     render() {
-        const { classes, warnings, appName } = this.props;
+        const { classes, warnings, appName, appLock } = this.props;
         return (
             <AppBar className={classes.appBar}>
                 <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
                     <Button onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
                         Project
 					</Button>
-                    <Button onClick={this.compileProject}>
-                        Compile
-					</Button>
-                    <Button onClick={this.runApp}>
-                        Run
-					</Button>
-                    <Divider orientation="vertical" flexItem />
-                    <Button onClick={this.compilePreview}>
-                        Compile Preview
-					</Button>
-                    <Button onClick={this.runPreview}>
-                        Run Preview
-					</Button>
-                    <Divider orientation="vertical" flexItem />
+                    {appLock &&
+                        <Button onClick={this.compileProject}>
+                            Compile
+                        </Button>
+                    }
+                    {appName &&
+                        <React.Fragment>    
+                            <Button onClick={this.runApp}>
+                                Run
+                            </Button>
+                            <Divider orientation="vertical" flexItem />
+                        </React.Fragment>
+                    }
+                    {appLock &&
+                        <Button onClick={this.compilePreview}>
+                            Compile Preview
+                        </Button>
+                    }
+                    {appName &&
+                        <React.Fragment>
+                            <Button onClick={this.runPreview}>
+                                Run Preview
+                            </Button>
+                            <Divider orientation="vertical" flexItem />
+                        </React.Fragment>
+                    }                
+                    {!appLock && appName &&
+                        <Tooltip title="Toggle to edit mode">
+                            <IconButton onClick={() => this.props.toggleToEdit()}>
+                                <LockOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                    {appLock && appName &&
+                        <Tooltip title="Toggle to display mode">
+                            <IconButton onClick={() => this.props.toggleToDisplay()}>
+                                <LockOpenOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                    }
                     {warnings.length > 0 && appName &&
                         <IconButton color="inherit" onClick={this.handleWarningsToggle.bind(this)}>
                             <Badge badgeContent={warnings.length} color="secondary">

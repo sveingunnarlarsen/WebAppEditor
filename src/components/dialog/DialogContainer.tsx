@@ -24,6 +24,7 @@ import AjaxError from "./AjaxError";
 import ClientError from "./ClientError";
 import DeleteProject from "./DeleteProject";
 import NpmInstall from "./NpmInstall";
+import AppLocked from "./AppLocked";
 
 import { DialogType, DialogState } from "../../types/dialog";
 import { closeDialog } from "../../actions";
@@ -192,6 +193,12 @@ class DialogContainer extends React.Component<DialogContainerProps> {
                 return (
                     <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} classes={{ paper: classes.refPaper }} open={dialog.visible}>
                         <ClientError close={close} />
+                    </Dialog>
+                );
+            case DialogType.APP_LOCKED:
+                return (
+                    <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} open={dialog.visible}>
+                        <AppLocked close={close} />
                     </Dialog>
                 );
             default:

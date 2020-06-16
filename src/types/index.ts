@@ -11,6 +11,7 @@ export enum Actions {
     UPDATE_EDITORS = "UPDATE_EDITORS",
     TOGGLE_PREVIEW = "TOGGLE_PREVIEW",
     TOGGLE_CLI = "TOGGLE_CLI",
+    SET_APP_LOCK = "SET_APP_LOCK",
     START_GIT_CLONE = "START_GIT_CLONE",
     END_GIT_CLONE = "END_GIT_CLOME",
     REQUEST_MASTERDATA = "REQUEST_MASTERDATA",
@@ -121,6 +122,7 @@ export interface ListApp extends DateProps {
 
 export interface AppState extends ListApp {
     isFetching: boolean;
+    lock: boolean;
     fileSystemObjects: FileSystemObject[];
     updateTree: boolean;
     isSaving: boolean;

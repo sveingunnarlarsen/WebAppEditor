@@ -69,7 +69,7 @@ export function createProject({ type, template, name, description, remote }: pro
     }
 }
 
-export function getProject(id: string) {
+export function getProject(id: string, lock: boolean = false) {
     return function(dispatch, getState) {
         if (id !== getState().app.id) {
             dispatch(reset());
@@ -86,6 +86,7 @@ export function getProject(id: string) {
                     loadProject(getState);
                     dispatch(getNpmModules());
                     dispatch(getCompilationDetails());
+                    dispatch(setAppLock(lock));
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }
@@ -93,7 +94,6 @@ export function getProject(id: string) {
             .catch(error => handleAjaxError(error, dispatch))
     }
 }
-
 
 export function deleteProject() {
     return function(dispatch, getState) {
@@ -119,6 +119,65 @@ export function deleteProject() {
             })
             .catch(error => handleAjaxError(error, dispatch))
     }
+}
+
+export function toggleToEdit() {
+    return function(dispatch, getState) {
+
+        const app = getState().app;
+        
+        return fetch('/api/functions/Locking/Lock', {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                objectType: "App Editor",
+                objectID: app.id,
+                objectKey: app.name,
+            })
+        })
+            .then(throwError)
+            .then(async response => {
+                try {
+                    const json = await response.json();
+                    if (json.object) {
+                        dispatch(openDialog(DialogType.APP_LOCKED, json.object));
+                    } else {
+                        dispatch(getProject(app.id, true));
+                    }
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
+    
+    }
+}
+
+export function toggleToDisplay() {
+    return function(dispatch, getState) {
+
+        const app = getState().app;
+
+        return fetch('/api/functions/Locking/Unlock', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                objectType: "App Editor",
+                objectID: app.id,
+                objectKey: app.name,
+            })
+        })
+            .then(throwError)
+            .then(async () => {
+                try {
+                    dispatch(getProject(app.id, false));
+                } catch (e) {
+                    handleClientError(e, dispatch);
+                }
+            })
+            .catch(error => handleAjaxError(error, dispatch))
+
+    }    
 }
 
 export function saveAppData() {
@@ -177,6 +236,13 @@ export function updateAppData(data: { name: string, description: string, type: '
     return {
         type: Actions.UPDATE_APP_DATA,
         data,
+    }
+}
+
+function setAppLock(lock: boolean) {
+    return {
+        type: Actions.SET_APP_LOCK,
+        lock,
     }
 }
 

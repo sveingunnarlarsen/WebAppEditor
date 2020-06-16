@@ -24,6 +24,7 @@ export enum DialogType {
     CLIENT_ERROR = "CLIENT_ERROR",
     MESSAGE = "MESSAGE",
     NPM_INSTALL = "NPM_INSTALL",
+    APP_LOCKED = "APP_LOCKED",
 }
 
 export interface DialogState {

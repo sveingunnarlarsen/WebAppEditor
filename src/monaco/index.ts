@@ -34,8 +34,11 @@ export function deleteModel(path: string) {
     monaco.editor.getModel(monaco.Uri.parse(path)).dispose();
 }
 
-export function updateModel(model) {
+export function updateModel(model: monaco.editor.ITextModel) {
+    if (model.isDisposed()) return;
+    
     let modified = true;
+    
     const content = model.getValue();
     if (!content) return;
 

@@ -34,10 +34,11 @@ import "./TreeContextMenu.css";
 
 const mapState = (state: AppEditorState) => {
     const fsos = state.app.fileSystemObjects;
+    const lock = state.app.lock;
     const packageJson = fsos.find(f => f.path === "/package.json");
     const webpackDevJs = fsos.find(f => f.path === "/webpack.dev.js");
     const webpackProdJs = fsos.find(f => f.path === "/webpack.prod.js");
-    return { selectedId: state.selectedNode, packageJson, webpackDevJs, webpackProdJs };
+    return { selectedId: state.selectedNode, packageJson, webpackDevJs, webpackProdJs, lock };
 };
 
 function mapDispatch(dispatch) {
@@ -158,10 +159,10 @@ class TreeContextMenu extends React.Component<TreeContextMenuProps, { visible: b
 
     render() {
         const { visible } = this.state;
-        const { classes, renameFile, deleteFile, packageJson, webpackDevJs, webpackProdJs } = this.props;
+        const { classes, renameFile, deleteFile, packageJson, webpackDevJs, webpackProdJs, lock } = this.props;
 
         return (
-            (visible || null) && (
+            ((visible || null) && lock) && (
                 <div
                     ref={ref => {
                         this.root = ref;

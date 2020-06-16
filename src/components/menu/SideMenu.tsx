@@ -23,7 +23,7 @@ import store from "../../store/index";
 import { togglePreview, openDialog, toggleCLI, switchTool } from "../../actions";
 import { closeAllTabs } from "../../actions/editor";
 
-import { Tool } from "../../types";
+import { Tool, AppEditorState } from "../../types";
 import { DialogType } from "../../types/dialog";
 
 const styles = {
@@ -37,6 +37,12 @@ const styles = {
     }
 };
 
+const mapState = (state: AppEditorState) => {
+    return {
+        appName: state.app.name,
+    }
+}
+
 function mapDispatch(dispatch) {
     return {
         switchTool: tool => dispatch(switchTool(tool)),
@@ -47,7 +53,7 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface SideMenuProps extends ReturnType<typeof mapDispatch> {
+interface SideMenuProps extends ReturnType<typeof mapState>, ReturnType<typeof mapDispatch> {
     classes: any;
     width: any;
 }
@@ -58,7 +64,7 @@ class SideMenu extends React.Component<SideMenuProps> {
     }
 
     render() {
-        const { classes, width } = this.props;
+        const { classes, width, appName } = this.props;
         return (
             <Drawer variant="permanent" classes={{ paper: classes.drawer }}>
                 <List style={{ width, top: width }}>
@@ -69,41 +75,45 @@ class SideMenu extends React.Component<SideMenuProps> {
                             </ListItemIcon>
                         </Tooltip>
                     </ListItem>
-                    <ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
-                        <Tooltip title="App settings">
-                            <ListItemIcon className={classes.icon}>
-                                <SettingsOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
-                    <ListItem button onClick={() => this.props.switchTool(Tool.COMPILATION_DETAILS)}>
-                        <Tooltip title="Compilation Details">
-                            <ListItemIcon className={classes.icon}>
-                                <RowingIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
-                    <ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
-                        <Tooltip title="App modules">
-                            <ListItemIcon className={classes.icon}>
-                                <ViewModuleOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
-                    <ListItem button onClick={() => this.props.openSearch()}>
-                        <Tooltip title="Search">
-                            <ListItemIcon className={classes.icon}>
-                                <SearchOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
-                    <ListItem button onClick={() => this.props.togglePreview()}>
-                        <Tooltip title="Preview">
-                            <ListItemIcon className={classes.icon}>
-                                <VerticalSplitOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
+                    {appName &&
+                        <React.Fragment>
+                            <ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
+                                <Tooltip title="App settings">
+                                    <ListItemIcon className={classes.icon}>
+                                        <SettingsOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                            <ListItem button onClick={() => this.props.switchTool(Tool.COMPILATION_DETAILS)}>
+                                <Tooltip title="Compilation Details">
+                                    <ListItemIcon className={classes.icon}>
+                                        <RowingIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                            <ListItem button onClick={() => this.props.switchTool(Tool.NPM)}>
+                                <Tooltip title="App modules">
+                                    <ListItemIcon className={classes.icon}>
+                                        <ViewModuleOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                            <ListItem button onClick={() => this.props.openSearch()}>
+                                <Tooltip title="Search">
+                                    <ListItemIcon className={classes.icon}>
+                                        <SearchOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                            <ListItem button onClick={() => this.props.togglePreview()}>
+                                <Tooltip title="Preview">
+                                    <ListItemIcon className={classes.icon}>
+                                        <VerticalSplitOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                        </React.Fragment>
+                    }
                     <ListItem button onClick={() => this.props.closeAllTabs()}>
                         <Tooltip title="Close all tabs">
                             <ListItemIcon className={classes.icon}>
@@ -125,6 +135,6 @@ class SideMenu extends React.Component<SideMenuProps> {
 }
 
 export default connect(
-    null,
+    mapState,
     mapDispatch
 )(withStyles(styles)(SideMenu));

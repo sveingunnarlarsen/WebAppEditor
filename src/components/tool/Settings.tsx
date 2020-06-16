@@ -26,13 +26,14 @@ import { updateAppData, saveAppData } from "../../actions/app";
 import { KeyCodes } from "../../types/keyCodes";
 
 const mapState = (state: AppEditorState) => {
-    const { name, description, type, settings } = state.app;
+    const { name, description, type, settings, lock } = state.app;
     return {
+        lock,
         data: {
             name,
             description,
             type,
-            settings
+            settings,
         }
     };
 };
@@ -71,10 +72,12 @@ class Settings extends React.Component<SettingsProps> {
     }
 
     updateData = (e, prop, ...path) => {
-        const data = $.extend(true, {}, this.props.data);
-        const toUpdate = path ? path.reduce((a, c) => a[c], data) : data;
-        toUpdate[prop] = e.target.value;
-        this.props.updateAppData(data);
+        if (this.props.lock) {
+            const data = $.extend(true, {}, this.props.data);
+            const toUpdate = path ? path.reduce((a, c) => a[c], data) : data;
+            toUpdate[prop] = e.target.value;
+            this.props.updateAppData(data);
+        }
         if (prop === "repo") {
             setRemoteOrigin(e.target.value);
         }
@@ -86,7 +89,7 @@ class Settings extends React.Component<SettingsProps> {
     };
 
     handleSubmit = e => {
-        if (e.keyCode === KeyCodes.Enter) {
+        if (e.keyCode === KeyCodes.Enter && this.props.lock) {
             this.props.saveAppData();
         }
     };
@@ -193,7 +196,7 @@ class Settings extends React.Component<SettingsProps> {
                         shrink: true
                     }}
                 />
-                <TextField
+                <TextField                                        
                     name="token"
                     value={gitConfig.token || ""}
                     onChange={this.updateConfig}

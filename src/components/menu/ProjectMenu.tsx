@@ -7,6 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Divider from "@material-ui/core/Divider";
 
 import { openDialog } from "../../actions";
+import { AppEditorState } from "../../types";
 import { DialogType } from "../../types/dialog";
 
 import { exportProjectToZip, exportRuntime } from "../../helpers/export";
@@ -18,13 +19,20 @@ const styles = {
     }
 };
 
+const mapState = (state: AppEditorState) => {
+    return {
+        lock: state.app.lock,
+        appName: state.app.name,
+    }
+}
+
 function mapDispatch(dispatch) {
     return {
         openDialog: type => dispatch(openDialog(type))
     };
 }
 
-interface ProjectMenuProps extends ReturnType<typeof mapDispatch> {
+interface ProjectMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
     closeMenu: () => void;
 }
 
@@ -54,7 +62,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
     };
 
     render() {
-        const { classes, anchorEl, closeMenu } = this.props;
+        const { classes, anchorEl, closeMenu, appName, lock } = this.props;
         return (
             <Menu                
                 getContentAnchorEl={null}
@@ -68,21 +76,31 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
             >
                 <MenuItem onClick={() => this.handleClick(DialogType.PROJECT_LIST)}>Open</MenuItem>
                 <MenuItem onClick={() => this.handleClick(DialogType.CREATE_PROJECT)}>Create</MenuItem>
-                <MenuItem onClick={() => this.handleClick(DialogType.DELETE_PROJECT)}>Delete</MenuItem>
-                <Divider />
-                <MenuItem onClick={this.exportToZip}>Export to zip</MenuItem>
-                <MenuItem onClick={() => this.importFolderZip("importZip")}>
-                    Import zip
-					<input id="importZip" accept=".zip" multiple="single" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "zip")} value="" />
-                </MenuItem>
-                <MenuItem onClick={() => this.importFolderZip("importFolder")}>
-                    Import folder
-					<input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "folder")} value="" />
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={this.exportRuntime}>
-                    Export runtime					
-                </MenuItem>
+                {appName &&
+                    <React.Fragment>
+                        {lock &&
+                            <MenuItem onClick={() => this.handleClick(DialogType.DELETE_PROJECT)}>Delete</MenuItem>
+                        }
+                        <Divider />
+                        <MenuItem onClick={this.exportToZip}>Export to zip</MenuItem>
+                        {lock &&
+                            <React.Fragment>
+                                <MenuItem onClick={() => this.importFolderZip("importZip")}>
+                                    Import zip
+                                    <input id="importZip" accept=".zip" multiple="single" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "zip")} value="" />
+                                </MenuItem>
+                                <MenuItem onClick={() => this.importFolderZip("importFolder")}>
+                                    Import folder
+                                    <input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "folder")} value="" />
+                                </MenuItem>
+                            </React.Fragment>
+                        }
+                        <Divider />
+                        <MenuItem onClick={this.exportRuntime}>
+                            Export runtime					
+                        </MenuItem>
+                    </React.Fragment>
+                }
             </Menu>
         );
     }
@@ -93,6 +111,6 @@ ProjectMenu.propTypes = {
 };
 
 export default connect(
-    null,
+    mapState,
     mapDispatch
 )(withStyles(styles)(ProjectMenu));

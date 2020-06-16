@@ -6,6 +6,7 @@ export const initState: AppState = {
     name: "",
     description: "",
     type: null,
+    lock: false,
     settings: {
         entryPoint: {
             javascript: "",
@@ -37,7 +38,7 @@ const requestWebApp = produce((draft, appId) => {
 });
 
 const receiveWebApp = produce((draft, app) => {
-    return { ...initState, ...app };
+    return { ...initState, ...app, lock: draft.lock };
 });
 
 const requestSave = produce(draft => {
@@ -121,13 +122,18 @@ const updateAppData = produce((draft, data) => {
     draft.settings = data.settings;
 });
 
-
+const setAppLock = produce((draft, lock) => {
+    draft.lock = lock;
+});
 
 export function app(state = initState, action) {
 
     switch (action.type) {
         case Actions.RESET:
             return reset(state);
+
+        case Actions.SET_APP_LOCK:
+            return setAppLock(state, action.lock);
 
         case Actions.REQUEST_WEBAPP:
             return requestWebApp(state, action.id);

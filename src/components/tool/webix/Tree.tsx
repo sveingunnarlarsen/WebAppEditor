@@ -41,7 +41,7 @@ const styles = {
 };
 
 const mapState = state => {
-    return { app: state.app, visibleTool: state.visibleTool, toolResized: state.toolResized };
+    return { app: state.app, lock: state.app.lock, visibleTool: state.visibleTool, toolResized: state.toolResized };
 };
 
 function mapDispatch(dispatch) {
@@ -53,7 +53,11 @@ function mapDispatch(dispatch) {
     };
 }
 
-class WebixTree extends React.Component {
+interface WebixTreeProps extends ReturnType<typeof mapState>, ReturnType<typeof mapDispatch> {
+
+}
+
+class WebixTree extends React.Component<WebixTreeProps> {
     constructor(props) {
         super(props);
 
@@ -111,7 +115,7 @@ class WebixTree extends React.Component {
     };
 
     render() {
-        const { classes } = this.props;
+        const { classes, lock } = this.props;
 
         return (
             <React.Fragment>
@@ -127,16 +131,20 @@ class WebixTree extends React.Component {
                             <ExpandLessIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="New file">
-                        <IconButton onClick={() => this.props.newFile()} color="inherit" size="small">
-                            <NoteAddOutlinedIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="New folder">
-                        <IconButton onClick={() => this.props.newFolder()} color="inherit" size="small">
-                            <CreateNewFolderOutlinedIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    {lock &&
+                        <React.Fragment>
+                            <Tooltip title="New file">
+                                <IconButton onClick={() => this.props.newFile()} color="inherit" size="small">
+                                    <NoteAddOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="New folder">
+                                <IconButton onClick={() => this.props.newFolder()} color="inherit" size="small">
+                                    <CreateNewFolderOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </React.Fragment>
+                    }
                 </Toolbar>
                 <div ref="root" style={{ height: "calc(100% - 4.3rem)", width: "100%" }} />
                 <TreeContextMenu container={this} />

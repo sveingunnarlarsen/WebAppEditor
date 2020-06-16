@@ -20,6 +20,7 @@ const mapState = (state: AppEditorState, ownProps) => {
     let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
     return {
         fso,
+        lock: state.app.lock,
         editorResized: state.editorResized,
         updateEditors: state.updateEditors,
         openFileAt: state.editor.openFileAt,
@@ -60,7 +61,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState) {
-        //console.log("Checking if editor should update", this.props, nextProps);
+        if (this.props.lock !== nextProps.lock) {
+            console.log("Component should update because app lock is different");
+            return true;
+        }
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
@@ -124,7 +128,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
             run: () => {
                 formatAllFiles();
             }
-        })
+        });
 
         if (this.props.editorId) {
             editor.addAction({
@@ -186,9 +190,9 @@ class AceEditorContainer extends React.Component<EditorProps> {
         })
         this.setupEditor();
     };
-    
+
     render() {
-        const { fso, viewState } = this.props;
+        const { fso, viewState, openFileAt, lock } = this.props;
 
         const model = getModel(this.props.fso.path);
 
@@ -203,7 +207,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
         return (
             <React.Fragment>
-                <MonacoEditor height="100%" model={model} openFileAt={this.props.openFileAt} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} />
+                <MonacoEditor height="100%" model={model} openFileAt={openFileAt} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} options={{ readOnly: !lock }} />
             </React.Fragment>
         );
     }

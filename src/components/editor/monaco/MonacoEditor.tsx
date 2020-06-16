@@ -11,7 +11,6 @@ const noop = _ => { };
 const useMount = effect => useEffect(effect, []);
 const useUpdate = (effect, deps, applyChanges = true) => {
     const isInitialMount = useRef(true);
-
     useEffect(
         isInitialMount.current || !applyChanges
             ? _ => { isInitialMount.current = false }
@@ -35,7 +34,7 @@ const Editor =
             return _ => editorRef.current ? disposeEditor() : null;
         });
 
-        useUpdate(_ => {
+        useUpdate(_ => {    
             setTokensProvider(editorRef.current);
             editorRef.current.setModel(model);
             if (viewState) {
@@ -58,11 +57,12 @@ const Editor =
         }, [theme], isEditorReady);
 
         useUpdate(_ => {
+            console.log("Updating options: ", options);
             editorRef.current.updateOptions(options);
         }, [options], isEditorReady);
 
-        const createEditor = useCallback(async _ => {
-
+        const createEditor = useCallback(async () => {
+            console.log("Creating editor: ", options);
             editorRef.current = monacoRef.current.editor.create(containerRef.current, {
                 model,
                 ...options,
@@ -90,7 +90,7 @@ const Editor =
             setIsEditorReady(true);
         }, [editorDidMount, model, openFileAt, options, theme]);
 
-        useEffect(_ => {
+        useEffect(() => {
             !isMonacoMounting && !isEditorReady && createEditor();
         }, [isMonacoMounting, isEditorReady, createEditor]);
 
