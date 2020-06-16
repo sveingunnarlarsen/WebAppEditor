@@ -153,7 +153,7 @@ export function toggleToEdit() {
     }
 }
 
-export function toggleToDisplay() {
+export function toggleToDisplay(forceLock: boolean = false) {
     return function(dispatch, getState) {
 
         const app = getState().app;
@@ -169,14 +169,14 @@ export function toggleToDisplay() {
         })
             .then(throwError)
             .then(async () => {
-                try {
+                if (forceLock) {
+                    console.log("Toggle to edit");
+                    dispatch(toggleToEdit());                    
+                } else {
                     dispatch(getProject(app.id, false));
-                } catch (e) {
-                    handleClientError(e, dispatch);
                 }
             })
             .catch(error => handleAjaxError(error, dispatch))
-
     }    
 }
 

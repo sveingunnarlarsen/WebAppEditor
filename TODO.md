@@ -1,7 +1,7 @@
 (Release - 25.06)
 
 Gunnar:
-* Locking project.
+* Locking project(DONE).
 * Show user info. Show connection status, network and socket.
 * Complete import zip.
 * TEST PKG.
