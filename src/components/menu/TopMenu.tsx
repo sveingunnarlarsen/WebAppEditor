@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { withStyles } from "@material-ui/styles";
+import { withStyles, createStyles, WithStyles } from "@material-ui/styles";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -14,6 +14,7 @@ import Badge from '@material-ui/core/Badge';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
 import Popover from '@material-ui/core/Popover';
 
 
@@ -23,21 +24,24 @@ import ProjectMenu from "./ProjectMenu";
 
 import { compileProject, compilePreview, toggleToEdit, toggleToDisplay } from "../../actions/app";
 
-const styles = theme => ({
+const styles = (theme) => createStyles({
     appBar: {
         background: "#333333",
         boxShadow: "none"
     },
     typography: {
-      padding: theme.spacing(2),
+        padding: theme.spacing(2),
     },
+    button: {
+        padding: theme.spacing(2),
+    }
 });
 
 function getWarnings(state: AppEditorState) {
     const fsos = state.app.fileSystemObjects;
     const warnings = [];
     if (!fsos.find(f => f.path === "/package.json")) {
-        warnings.push({                                                        
+        warnings.push({
             message: "Missing package.json"
         })
     }
@@ -71,8 +75,7 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface TopMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
-    classes: any;
+interface TopMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState>, WithStyles<typeof styles> {
     height: any;
 }
 
@@ -133,56 +136,59 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     <Button onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
                         Project
 					</Button>
-                    {appLock &&
-                        <Button onClick={this.compileProject}>
-                            Compile
-                        </Button>
-                    }
-                    {appName &&
-                        <React.Fragment>    
-                            <Button onClick={this.runApp}>
-                                Run
-                            </Button>
-                            <Divider orientation="vertical" flexItem />
-                        </React.Fragment>
-                    }
-                    {appLock &&
-                        <Button onClick={this.compilePreview}>
-                            Compile Preview
-                        </Button>
-                    }
                     {appName &&
                         <React.Fragment>
-                            <Button onClick={this.runPreview}>
+                            <Button className={classes.button} onClick={this.runApp}>
+                                Run
+                            </Button>
+                            {appLock &&
+                                <Button className={classes.button} onClick={this.compileProject}>
+                                    Compile
+                                </Button>
+                            }
+                            <Divider orientation="vertical" flexItem />
+                            <Button className={classes.button} onClick={this.runPreview}>
                                 Run Preview
                             </Button>
+                            {appLock &&
+                                <Button className={classes.button} onClick={this.compilePreview}>
+                                    Compile Preview
+                                </Button>
+                            }
                             <Divider orientation="vertical" flexItem />
+                            {!appLock &&
+                                <Tooltip title="Toggle to edit mode">
+                                    <IconButton onClick={() => this.props.toggleToEdit()}>
+                                        <LockOutlinedIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            }
+                            {appLock &&
+                                <Tooltip title="Toggle to display mode">
+                                    <IconButton onClick={() => this.props.toggleToDisplay()}>
+                                        <LockOpenOutlinedIcon />
+                                    </IconButton>
+
+                                </Tooltip>
+                            }
+                            {warnings.length > 0 && appName &&
+                                <IconButton color="inherit" onClick={this.handleWarningsToggle.bind(this)}>
+                                    <Badge badgeContent={warnings.length} color="secondary">
+                                        <NotificationsIcon />
+                                    </Badge>
+                                </IconButton>
+                            }                            
+                            <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
+                                {appName}
+                            </Typography>
                         </React.Fragment>
-                    }                
-                    {!appLock && appName &&
-                        <Tooltip title="Toggle to edit mode">
-                            <IconButton onClick={() => this.props.toggleToEdit()}>
-                                <LockOutlinedIcon />
-                            </IconButton>
-                        </Tooltip>
                     }
-                    {appLock && appName &&
-                        <Tooltip title="Toggle to display mode">
-                            <IconButton onClick={() => this.props.toggleToDisplay()}>
-                                <LockOpenOutlinedIcon />
-                            </IconButton>
-                        </Tooltip>
+                    {!appName && 
+                        <div style={{flexGrow: 1}}></div>
                     }
-                    {warnings.length > 0 && appName &&
-                        <IconButton color="inherit" onClick={this.handleWarningsToggle.bind(this)}>
-                            <Badge badgeContent={warnings.length} color="secondary">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
-                    }
-                    <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
-                        {appName}
-                    </Typography>
+                    <IconButton>
+                        <AccountCircleOutlinedIcon />
+                    </IconButton>
                     <ProjectMenu anchorEl={this.state.anchorElProjectMenu} closeMenu={this.closeProjectMenu} />
                     <Popover
                         open={Boolean(this.state.anchorElWarning)}
@@ -199,7 +205,7 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     >
                         {this.props.warnings.map((warning, index) => {
                             return <Typography key={index} className={classes.typography}>{warning.message}</Typography>
-                        })}                        
+                        })}
                     </Popover>
                 </Toolbar>
             </AppBar>

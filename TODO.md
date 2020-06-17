@@ -31,3 +31,6 @@ Backlog:
    - import {myApi} from "planet9-apis";
    - const result = await myApi.operation();
 * Protected or Anonymous access to app.
+* ProjectMenu show last 5 projects, changes.
+* Open file when creating file.
+* Show removed diff in popover with mark in margin.

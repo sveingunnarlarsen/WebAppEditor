@@ -1,7 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { withStyles } from "@material-ui/styles";
+import { withStyles, createStyles, WithStyles } from "@material-ui/styles";
+
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Divider from "@material-ui/core/Divider";
@@ -9,15 +9,14 @@ import Divider from "@material-ui/core/Divider";
 import { openDialog } from "../../actions";
 import { AppEditorState } from "../../types";
 import { DialogType } from "../../types/dialog";
-
 import { exportProjectToZip, exportRuntime } from "../../helpers/export";
 import { importFolderZip } from "../../helpers/import";
 
-const styles = {
+const styles = theme =>  createStyles({
     menu: {
         borderRadius: "0px"
     }
-};
+});
 
 const mapState = (state: AppEditorState) => {
     return {
@@ -77,14 +76,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
                 <MenuItem onClick={() => this.handleClick(DialogType.PROJECT_LIST)}>Open</MenuItem>
                 <MenuItem onClick={() => this.handleClick(DialogType.CREATE_PROJECT)}>Create</MenuItem>
                 {appName &&
-                    <React.Fragment>
+                    <div>
                         {lock &&
                             <MenuItem onClick={() => this.handleClick(DialogType.DELETE_PROJECT)}>Delete</MenuItem>
                         }
                         <Divider />
                         <MenuItem onClick={this.exportToZip}>Export to zip</MenuItem>
                         {lock &&
-                            <React.Fragment>
+                            <div>
                                 <MenuItem onClick={() => this.importFolderZip("importZip")}>
                                     Import zip
                                     <input id="importZip" accept=".zip" multiple="single" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "zip")} value="" />
@@ -93,22 +92,18 @@ class ProjectMenu extends React.Component<ProjectMenuProps> {
                                     Import folder
                                     <input id="importFolder" mozdirectory="true" webkitdirectory="true" type="file" style={{ display: "none" }} onChange={e => importFolderZip(e, "folder")} value="" />
                                 </MenuItem>
-                            </React.Fragment>
+                            </div>
                         }
                         <Divider />
                         <MenuItem onClick={this.exportRuntime}>
                             Export runtime					
                         </MenuItem>
-                    </React.Fragment>
+                    </div>
                 }
             </Menu>
         );
     }
 }
-
-ProjectMenu.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
 export default connect(
     mapState,
