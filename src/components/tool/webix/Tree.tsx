@@ -43,7 +43,8 @@ const mapState = (state: AppEditorState) => {
         app: {
             id: state.app.id,
             name: state.app.name,
-            fileSystemObjects: state.app.fileSystemObjects.map(({id, name, value, path, type, image, disabled, parentId}) => ({id, name, value, path, type, image, disabled, parentId}))
+            fileSystemObjects: state.app.fileSystemObjects
+                .map(({ id, name, value, path, type, image, disabled, parentId }) => ({ id, name, value, path, type, image, disabled, parentId }))
         },
         lock: state.app.lock,
         visibleTool: state.visibleTool,
@@ -64,7 +65,7 @@ interface WebixTreeProps extends ReturnType<typeof mapState>, ReturnType<typeof 
     classes: any;
 }
 
-class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
+class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
     appId: string;
     ui: any;
     constructor(props) {
@@ -209,7 +210,7 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
     shouldComponentUpdate(nextProps) {
         if (nextProps.visibleTool !== "EXPLORER") return false;
 
-        //Compare name in tree, only update when name differ.
+        //Compare path in tree, only update when name differ.
         const a = this.props.app.fileSystemObjects;
         const b = nextProps.app.fileSystemObjects;
         if (a.length !== b.length) {
@@ -227,7 +228,7 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
         if (this.props.lock !== nextProps.lock) {
             console.log("Tree component updating because lock differ");
             return true;
-        } 
+        }
         if (this.props.visibleTool !== nextProps.visibleTool) {
             console.log("Tree component updateing because visibleTool differ")
             return true;
@@ -235,7 +236,7 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
         if (this.props.toolResized !== nextProps.toolResized) {
             console.log("Tree component updating because toolResized differ");
             return true;
-        } 
+        }
         return false;
     }
 }

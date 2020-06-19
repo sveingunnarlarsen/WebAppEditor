@@ -2,10 +2,10 @@
 
 Gunnar:
 * Locking project(DONE).
+* Drag and drop files/folders in the ui tree(DONE).
 * Show user info. Show connection status, network and socket.
 * Complete import zip.
 * TEST PKG.
-* Drag and drop files/folders in the ui tree.
 * Verify deployment of runtime assets.
 
 Jørgen:
