@@ -29,12 +29,19 @@ export function getEvents() {
             console.log("Event: ", e);
         },
         onBeforeDrop: function(context, e) {
-            const fsoTarget = getFileById(context.target);
-            if (fsoTarget.type !== 'folder') return;
+            let fsoTarget;
+            if (context.target === "1") {
+                fsoTarget = {path: ""}
+            } else {
+                fsoTarget = getFileById(context.target);
+                if (fsoTarget.type !== 'folder') return false;
+            }                        
 
             const fsosToDrop = context.source.map(id => {
                 const fso = getFileById(id);
                 const newPath = replaceFolderPath(fso.path, fsoTarget.path);
+
+                console.log(newPath);
 
                 return [
                     { ...fso, path: newPath },
@@ -65,6 +72,7 @@ export function getExtensions() {
     const me = this;
     return {
         $dropAllow: function(context, e) {
+            if (context.target === "1") return true;
             const fsoTarget = getFileById(context.target);
             if (fsoTarget.type === 'folder') {
                 console.log(e);
