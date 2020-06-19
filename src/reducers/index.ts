@@ -202,7 +202,7 @@ function dialog(state = initialState.dialog, action) {
 }
 
 function toolResized(state = initialState.toolResized, action) {
-    if (action.type === Actions.RESIZE_TOOL || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
+    if (action.type === Actions.RESIZE_TOOL || action.type === Actions.TOGGLE_CLI || action.type === Actions.TOGGLE_PREVIEW) {
         return state + 1;
     } else if (action.type === Actions.RESET) {
         return initialState.toolResized;
@@ -220,7 +220,7 @@ function editorResized(state = initialState.editorResized, action) {
 }
 
 function terminalResized(state = initialState.terminalResized, action) {
-    if (action.type === Actions.RESIZE_TERMINAL || Actions.TOGGLE_CLI || Actions.TOGGLE_PREVIEW) {
+    if (action.type === Actions.RESIZE_TERMINAL || action.type === Actions.TOGGLE_CLI || action.type === Actions.TOGGLE_PREVIEW) {
         return state + 1;
     } else if (action.type === Actions.RESET) {
         return initialState.terminalResized;

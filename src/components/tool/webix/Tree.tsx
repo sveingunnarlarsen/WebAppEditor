@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withStyles } from "@material-ui/styles";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -13,16 +12,15 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
+import TreeContextMenu from "./TreeContextMenu";
 import * as webix from "../../../../lib/webix";
 import * as treeUtils from "./treeUtils";
 import * as treeEvents from "./treeEvents";
 
-import TreeContextMenu from "./TreeContextMenu";
-
 import { openDialog, setSelectedNode } from "../../../actions";
 import { showFile } from "../../../actions/editor";
+import { AppEditorState } from "../../../types";
 import { DialogType } from "../../../types/dialog";
-
 import { convertFlatToNested } from "../../../helpers/utils";
 
 const styles = {
@@ -40,8 +38,17 @@ const styles = {
     }
 };
 
-const mapState = (state) => {
-    return { app: state.app, lock: state.app.lock, visibleTool: state.visibleTool, toolResized: state.toolResized };
+const mapState = (state: AppEditorState) => {
+    return {
+        app: {
+            id: state.app.id,
+            name: state.app.name,
+            fileSystemObjects: state.app.fileSystemObjects.map(({id, name, value, type, image, disabled, parentId}) => ({id, name, value, type, image, disabled, parentId}))
+        },
+        lock: state.app.lock,
+        visibleTool: state.visibleTool,
+        toolResized: state.toolResized,
+    }
 };
 
 function mapDispatch(dispatch) {
@@ -153,11 +160,13 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
     }
 
     componentWillUnmount() {
+        console.log("Tree component unmounting");
         this.ui.destructor();
         this.ui = null;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log("Tree component did update");
         let state;
         if (this.appId === prevProps.app.id) {
             state = this.ui.getState();
@@ -179,6 +188,7 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
     }
 
     componentDidMount() {
+        console.log("Tree component did mount");
         this.ui = webix.ui(
             treeUtils.options(ReactDOM.findDOMNode(this.refs.root), {
                 type: {
@@ -197,17 +207,35 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
     }
 
     shouldComponentUpdate(nextProps) {
-        if (this.props.app.fileSystemObjects !== nextProps.app.fileSystemObject) {
-            console.log("Updating tree components because fileSystemObjects are different");
+        if (nextProps.visibleTool !== "EXPLORER") return false;
+
+        //Compare name in tree, only update when name differ.
+        const a = this.props.app.fileSystemObjects;
+        const b = nextProps.app.fileSystemObjects;
+        if (a.length !== b.length) {
+            console.log("Tree component updating because array length differ");
             return true;
         }
-
-        if (nextProps.app.id === "") {
-            console.log("Updating tree component because no app is loaded");
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i].name !== b[i].name) {
+                console.log("Tree component updating because a name is not equal b name");
+                console.log(a[i].name);
+                console.log(b[i].name);
+                return true;
+            }
+        }
+        if (this.props.lock !== nextProps.lock) {
+            console.log("Tree component updating because lock differ");
+            return true;
+        } 
+        if (this.props.visibleTool !== nextProps.visibleTool) {
+            console.log("Tree component updateing because visibleTool differ")
             return true;
         }
-
-        console.log("Tree component will not update");
+        if (this.props.toolResized !== nextProps.toolResized) {
+            console.log("Tree component updating because toolResized differ");
+            return true;
+        } 
         return false;
     }
 }
