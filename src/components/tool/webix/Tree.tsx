@@ -43,7 +43,7 @@ const mapState = (state: AppEditorState) => {
         app: {
             id: state.app.id,
             name: state.app.name,
-            fileSystemObjects: state.app.fileSystemObjects.map(({id, name, value, type, image, disabled, parentId}) => ({id, name, value, type, image, disabled, parentId}))
+            fileSystemObjects: state.app.fileSystemObjects.map(({id, name, value, path, type, image, disabled, parentId}) => ({id, name, value, path, type, image, disabled, parentId}))
         },
         lock: state.app.lock,
         visibleTool: state.visibleTool,
@@ -217,8 +217,8 @@ class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
             return true;
         }
         for (var i = 0; i < a.length; ++i) {
-            if (a[i].name !== b[i].name) {
-                console.log("Tree component updating because a name is not equal b name");
+            if (a[i].path !== b[i].path) {
+                console.log("Tree component updating because a path is not equal b path");
                 console.log(a[i].name);
                 console.log(b[i].name);
                 return true;
