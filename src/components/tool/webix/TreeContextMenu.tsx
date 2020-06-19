@@ -68,16 +68,12 @@ const styles = theme => ({
 
 // @ts-ignore
 window.importFileInTree = async function(e) {
-
     const files = await importFiles(e);
-
     console.log("Files to import: ", files);
-
     for (let i = 0; i < files.length; i++) {
         store.dispatch(createFso(files[i]));
     }
     document.getElementById("importFileInTree").value = "";
-
 };
 
 interface TreeContextMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
@@ -117,6 +113,7 @@ class TreeContextMenu extends React.Component<TreeContextMenuProps, { visible: b
     };
 
     handleContextMenu = event => {
+        if (!this.props.lock) return;
         event.preventDefault();
 
         this.setState({ visible: true });

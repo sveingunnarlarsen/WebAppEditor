@@ -8,3 +8,7 @@ export function getFileById(id: string): FileSystemObject {
 export function getFileByPath(path: string): FileSystemObject {
     return store.getState().app.fileSystemObjects.find(f => f.path === path);
 }
+
+export function getFolderChildren(folder: FileSystemObject) {
+    return store.getState().app.fileSystemObjects.filter(f => f.path.startsWith(`${folder.path}/`));
+}

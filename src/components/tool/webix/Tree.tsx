@@ -13,7 +13,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
-import * as webix from "webix/webix.js";
+import * as webix from "../../../../lib/webix";
 import * as treeUtils from "./treeUtils";
 import * as treeEvents from "./treeEvents";
 
@@ -40,7 +40,7 @@ const styles = {
     }
 };
 
-const mapState = state => {
+const mapState = (state) => {
     return { app: state.app, lock: state.app.lock, visibleTool: state.visibleTool, toolResized: state.toolResized };
 };
 
@@ -54,13 +54,14 @@ function mapDispatch(dispatch) {
 }
 
 interface WebixTreeProps extends ReturnType<typeof mapState>, ReturnType<typeof mapDispatch> {
-
+    classes: any;
 }
 
-class WebixTree extends React.Component<WebixTreeProps> {
+class WebixTree extends React.Component<WebixTreeProps, {filter: string}> {
+    appId: string;
+    ui: any;
     constructor(props) {
         super(props);
-
         this.state = {
             filter: "",
         }
@@ -110,8 +111,7 @@ class WebixTree extends React.Component<WebixTreeProps> {
     handleFilterChange = e => {
         this.setState({
             filter: e.target.value,
-        })
-        //this.ui.filter("#value", e.target.value);
+        });
     };
 
     render() {
@@ -189,15 +189,25 @@ class WebixTree extends React.Component<WebixTreeProps> {
                 data: this.getTreeData()
             })
         );
+        webix.extend(this.ui, treeEvents.getExtensions.bind(this)(), true);
+
         this.ui.sort((a, b) => {
             return a.value > b.value ? 1 : -1;
         });
     }
 
     shouldComponentUpdate(nextProps) {
-        if (nextProps.app.fileSystemObjects.length > 0 || nextProps.app.id === "") {
+        if (this.props.app.fileSystemObjects !== nextProps.app.fileSystemObject) {
+            console.log("Updating tree components because fileSystemObjects are different");
             return true;
         }
+
+        if (nextProps.app.id === "") {
+            console.log("Updating tree component because no app is loaded");
+            return true;
+        }
+
+        console.log("Tree component will not update");
         return false;
     }
 }

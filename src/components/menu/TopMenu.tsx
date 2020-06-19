@@ -63,6 +63,7 @@ const mapState = (state: AppEditorState) => {
         warnings: getWarnings(state),
         appName: state.app.name,
         appLock: state.app.lock,
+        user: state.resources.User,
     };
 };
 
@@ -129,7 +130,7 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
     }
 
     render() {
-        const { classes, warnings, appName, appLock } = this.props;
+        const { classes, warnings, appName, appLock } = this.props;        
         return (
             <AppBar className={classes.appBar}>
                 <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
@@ -186,6 +187,9 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     {!appName && 
                         <div style={{flexGrow: 1}}></div>
                     }
+                    <Typography>
+                        {this.props.user ? (this.props.user.name || this.props.user.username) : ""}
+                    </Typography>
                     <IconButton>
                         <AccountCircleOutlinedIcon />
                     </IconButton>

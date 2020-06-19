@@ -42,10 +42,15 @@ export function getFileTypeImageData(fileType) {
     return imageMeta ? imageMeta.image : "";
 }
 
-export function replaceNameInPath(fullPath, newName): string {
+export function replaceNameInPath(fullPath: string, newName: string): string {
     const parts = fullPath.split("/");
     parts[parts.length - 1] = newName;
     return parts.join("/");
+}
+
+export function replaceFolderPath(fullPath: string, newFolderPath: string) : string {
+    const parts = fullPath.split("/");
+    return `${newFolderPath}/${parts[parts.length - 1]}`;
 }
 
 export function getLineAndContentByChar(text, char): { lineNumber: number; lineContent: string } {

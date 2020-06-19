@@ -163,7 +163,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
     addDeltaDecorations = _.debounce(async () => {
         const decorations = await getFsoDeltaDecorations(this.props.fso.path, this.editor.getValue());
         this.deltaDecorations = this.editor.deltaDecorations(this.deltaDecorations, decorations);
-    }, 100);
+    }, 500);
 
     setupEditor = () => {
         fileOpened(this.props.fso.path);
