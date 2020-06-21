@@ -1,16 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Select from "@material-ui/core/Select";
-import Box from "@material-ui/core/Box";
+import { DialogContent, DialogTitle, DialogActions, MenuItem, InputLabel, TextField, Button, Select, Box } from "@material-ui/core";
 
 import { project } from "../../types";
 import { createProject } from '../../actions/app';

@@ -1,5 +1,5 @@
 import { DialogType } from "../types/dialog";
-import { openDialog } from "./";
+import { openDialog, cancelSnackbars } from "./";
 
 export function throwError(response: Response): Response {
     if (!response.ok) {
@@ -9,6 +9,7 @@ export function throwError(response: Response): Response {
 }
 
 export async function handleAjaxError(error: any, dispatch) {
+    dispatch(cancelSnackbars());
     console.log("In handle ajax error", error);
     const status = error.status;
     try {

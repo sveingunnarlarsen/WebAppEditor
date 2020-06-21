@@ -3,6 +3,7 @@ import { EditorState } from "./editor";
 
 export enum Actions {
     RESET = "RESET",
+    CANCEL_SNACKBARS = "CANCEL_SNACKBARS",
     SWITCH_TOOL = "SWITCH_TOOL",
     RESIZE_TOOL = "RESIZE_TOOL",
     RESIZE_EDITOR = "RESIZE_EDITOR",

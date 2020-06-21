@@ -98,7 +98,7 @@ function commandLineVisible(state = initialState.commandLineVisible, action) {
 function isCreating(state = initialState.isCreating, action) {
     if (action.type === Actions.REQUEST_CREATE_WEBAPP) {
         return true;
-    } else if (action.type === Actions.RECEIVE_WEBAPP) {
+    } else if (action.type === Actions.RECEIVE_WEBAPP || action.type === Actions.CANCEL_SNACKBARS) {
         return false;
     }
     return state;
@@ -107,7 +107,7 @@ function isCreating(state = initialState.isCreating, action) {
 function isCompiling(state = initialState.isCompiling, action) {
     if (action.type === Actions.REQUEST_COMPILE) {
         return true;
-    } else if (action.type === Actions.RECEIVE_COMPILE) {
+    } else if (action.type === Actions.RECEIVE_COMPILE || action.type === Actions.CANCEL_SNACKBARS) {
         return false;
     }
     return state;
@@ -116,7 +116,7 @@ function isCompiling(state = initialState.isCompiling, action) {
 function isDeleting(state = initialState.isDeleting, action) {
     if (action.type === Actions.REQUEST_DELETE_WEBAPP) {
         return true;
-    } else if (action.type === Actions.RESET) {
+    } else if (action.type === Actions.RESET || action.type === Actions.CANCEL_SNACKBARS) {
         return false;
     }
     return state;

@@ -1,10 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
-
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import { DialogTitle, DialogActions, Button } from "@material-ui/core";
 
 import { deleteFso } from "../../actions/file";
 
@@ -14,9 +10,8 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface DeleteFileProps {
+interface DeleteFileProps extends ReturnType<typeof mapDispatch> {
     close: () => void;
-    deleteFile: () => void;
 }
 
 class DeleteFile extends React.Component<DeleteFileProps> {

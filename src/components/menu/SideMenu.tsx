@@ -40,6 +40,7 @@ const styles = {
 const mapState = (state: AppEditorState) => {
     return {
         appName: state.app.name,
+        appLock: state.app.lock,
     }
 }
 
@@ -68,15 +69,15 @@ class SideMenu extends React.Component<SideMenuProps> {
         return (
             <Drawer variant="permanent" classes={{ paper: classes.drawer }}>
                 <List style={{ width, top: width }}>
-                    <ListItem button onClick={() => this.props.switchTool(Tool.EXPLORER)}>
-                        <Tooltip title="File explorer">
-                            <ListItemIcon className={classes.icon}>
-                                <DescriptionOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
                     {appName &&
                         <React.Fragment>
+                            <ListItem button onClick={() => this.props.switchTool(Tool.EXPLORER)}>
+                                <Tooltip title="File explorer">
+                                    <ListItemIcon className={classes.icon}>
+                                        <DescriptionOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
                             <ListItem button onClick={() => this.props.switchTool(Tool.SETTINGS)}>
                                 <Tooltip title="App settings">
                                     <ListItemIcon className={classes.icon}>
@@ -112,22 +113,22 @@ class SideMenu extends React.Component<SideMenuProps> {
                                     </ListItemIcon>
                                 </Tooltip>
                             </ListItem>
+                            <ListItem button onClick={() => this.props.closeAllTabs()}>
+                                <Tooltip title="Close all tabs">
+                                    <ListItemIcon className={classes.icon}>
+                                        <CloseOutlinedIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
+                            <ListItem button onClick={() => this.props.toggleCommandLine()}>
+                                <Tooltip title="Terminal">
+                                    <ListItemIcon className={classes.icon}>
+                                        <CallToActionIcon />
+                                    </ListItemIcon>
+                                </Tooltip>
+                            </ListItem>
                         </React.Fragment>
                     }
-                    <ListItem button onClick={() => this.props.closeAllTabs()}>
-                        <Tooltip title="Close all tabs">
-                            <ListItemIcon className={classes.icon}>
-                                <CloseOutlinedIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
-                    <ListItem button onClick={() => this.props.toggleCommandLine()}>
-                        <Tooltip title="Terminal">
-                            <ListItemIcon className={classes.icon}>
-                                <CallToActionIcon />
-                            </ListItemIcon>
-                        </Tooltip>
-                    </ListItem>
                 </List>
             </Drawer>
         );

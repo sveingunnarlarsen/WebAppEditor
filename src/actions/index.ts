@@ -19,6 +19,13 @@ export function reset() {
     }
 }
 
+export function cancelSnackbars() {
+    console.log("Canceling snackbars");
+    return {
+        type: Actions.CANCEL_SNACKBARS,
+    }
+}
+
 export function switchTool(tool: Tool): SwitchToolAction {
     return {
         type: Actions.SWITCH_TOOL,

@@ -1,5 +1,10 @@
 import imageData from "../data/images.json";
 import mime from "mime-types";
+import moment from "moment";
+
+export function formatDate(date: string) {
+    return moment(date).format('LLL');
+}
 
 export function convertFlatToNested(n, r, t) {
     for (var e, h, u, a = [], c = {}, o = 0, f = n.length; f > o; o++) (e = n[o]), (h = e[r]), (u = e[t] || 0), (c[h] = c[h] || []), (e.data = c[h]), 0 != u ? ((c[u] = c[u] || []), c[u].push(e)) : a.push(e);

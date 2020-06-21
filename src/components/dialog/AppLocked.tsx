@@ -1,15 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
-
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import { DialogTitle, DialogContent, DialogActions, TextField, Button, Typography } from "@material-ui/core";
 
 import { AppEditorState } from "../../types";
 import { toggleToDisplay } from "../../actions/app";
+
+import { formatDate } from "../../helpers/utils";
 
 const mapState = (state: AppEditorState) => {
     return {
@@ -53,10 +49,10 @@ class AppLocked extends React.Component<AppLockedProps> {
                         Locked by: {data.createdBy}
                     </Typography>
                     <Typography variant="subtitle1">
-                        Locked at: {data.createdAt}
+                        Locked at: {formatDate(data.createdAt)}
                     </Typography>
                 </DialogContent>
-                <DialogActions>                    
+                <DialogActions>
                     {showUnlock &&
                         <Button onClick={this.forceLock}>Yes, it's me, unlock</Button>
                     }

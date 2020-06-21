@@ -126,7 +126,7 @@ export function toggleToEdit() {
     return function(dispatch, getState) {
 
         const app = getState().app;
-        
+
         return fetch('/api/functions/Locking/Lock', {
             method: "POST",
             headers,
@@ -150,7 +150,7 @@ export function toggleToEdit() {
                 }
             })
             .catch(error => handleAjaxError(error, dispatch))
-    
+
     }
 }
 
@@ -172,13 +172,13 @@ export function toggleToDisplay(forceLock: boolean = false) {
             .then(async () => {
                 if (forceLock) {
                     console.log("Toggle to edit");
-                    dispatch(toggleToEdit());                    
+                    dispatch(toggleToEdit());
                 } else {
                     dispatch(getProject(app.id, false));
                 }
             })
             .catch(error => handleAjaxError(error, dispatch))
-    }    
+    }
 }
 
 export function saveAppData() {
