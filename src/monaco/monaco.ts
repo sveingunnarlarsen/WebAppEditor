@@ -92,6 +92,7 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 //import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
+import {conf} from "./configuration/typescript";
 import {themeDarkPlus} from "./themes";
 
 // @ts-ignore
@@ -108,8 +109,12 @@ self.MonacoEnvironment = {
     }
 }
 
-monaco.languages.register({ id: 'typescript' });
-monaco.languages.register({ id: 'typescript_react' });
+monaco.languages.register({ id: 'typescript', 
+                            extensions: ['.ts', '.tsx'],
+                            aliases: ['TypeScript', 'ts', 'typescript'],
+                            mimetypes: ['text/typescript'] });
+
+monaco.languages.setLanguageConfiguration('typescript', conf);
 
 // @ts-ignore
 monaco.editor.defineTheme("dark", themeDarkPlus);

@@ -54,7 +54,7 @@ const client = new LanguageClient();
     const referenceProvider = new ReferenceProvider(client);
     const documentFormattingEditProvider = new DocumentFormattingEditorProvider(client);
 
-    ["typescript", "typescript_react"].forEach(languageId => {
+    ["typescript"].forEach(languageId => {
         monaco.languages.registerCompletionItemProvider(languageId, completionItemProvider);
         monaco.languages.registerSignatureHelpProvider(languageId, signatureHelpProvider);
         monaco.languages.registerHoverProvider(languageId, hoverProvider);
