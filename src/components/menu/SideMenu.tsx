@@ -12,7 +12,7 @@ import VerticalSplitOutlinedIcon from "@material-ui/icons/VerticalSplitOutlined"
 import ViewModuleOutlinedIcon from "@material-ui/icons/ViewModuleOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CallToActionIcon from "@material-ui/icons/CallToActionOutlined";
-import RowingIcon from "@material-ui/icons/rowing";
+import PermMediaIcon from "@material-ui/icons/PermMedia";
 
 
 import { withStyles } from "@material-ui/styles";
@@ -88,7 +88,7 @@ class SideMenu extends React.Component<SideMenuProps> {
                             <ListItem button onClick={() => this.props.switchTool(Tool.COMPILATION_DETAILS)}>
                                 <Tooltip title="Compilation Details">
                                     <ListItemIcon className={classes.icon}>
-                                        <RowingIcon />
+                                        <PermMediaIcon />
                                     </ListItemIcon>
                                 </Tooltip>
                             </ListItem>
