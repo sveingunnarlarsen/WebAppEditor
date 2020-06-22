@@ -154,6 +154,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
                 }
             });
 
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F, () => {
+                this.props.openSearch();
+            });
+
             editor.onDidFocusEditorWidget(() => {
                 this.props.setActiveEditor(this.props.editorId);
             });

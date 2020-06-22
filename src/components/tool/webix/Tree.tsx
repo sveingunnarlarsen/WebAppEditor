@@ -103,7 +103,9 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
         } as any;
 
         if (fsos.length > 0) {
-            return convertFlatToNested([topNode].concat(app.fileSystemObjects.sort(sortFoldersAndFiles)), "id", "parentId");                        
+            // So position doesn't change when comparing for update.
+            const newArrayRef = app.fileSystemObjects.slice();            
+            return convertFlatToNested([topNode].concat(newArrayRef.sort(sortFoldersAndFiles)), "id", "parentId");                        
         } else {
             return [topNode];
         }
@@ -207,10 +209,12 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
             return true;
         }
         for (var i = 0; i < a.length; ++i) {
+
             if (a[i].path !== b[i].path) {
-                console.log("Tree component updating because a path is not equal b path");
-                console.log(a[i].name);
-                console.log(b[i].name);
+                console.log("Tree component updating because a path is not equal b path");   
+                console.log(i);
+                console.log(a[i]);
+                console.log(b[i]);
                 return true;
             }
         }

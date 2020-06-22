@@ -15,7 +15,11 @@ import { getFileContent, writeFileContent, fsExists } from "./utils";
 
 const fs = new FS("fs");
 const pfs = fs.promises;
+
+
+// @ts-ignore
 window.pfs = pfs;
+// @ts-ignore
 window.git = git;
 
 // @ts-ignore
@@ -94,13 +98,17 @@ async function handleChange() {
                 }
                 await syncAppFilesWithGit();
             }
-            console.log("Git initialized");
+            console.log("Git initialized");                                    
 
             configUser = {
                 name: await git.getConfig({ fs, dir: currentGitDir, path: "user.name" }),
                 email: await git.getConfig({ fs, dir: currentGitDir, path: "user.email" }),
                 token: await git.getConfig({ fs, dir: currentGitDir, path: "user.token" })
             };
+        
+            !configUser.name ? setConfigUser("name", store.getState().resources.User.name) : void(0);
+            !configUser.email ? setConfigUser("email", store.getState().resources.User.email) : void(0);
+
             gitEmitter.end();
         } else if (!app.name) {
             currentAppName = "";

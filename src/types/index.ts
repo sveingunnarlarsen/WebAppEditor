@@ -158,7 +158,30 @@ export interface AppEditorState {
     isUpdatingNpm: boolean;
     isCloning: boolean;
     languageServerConnected: boolean;
-    resources: any;
+    resources: {
+        Config: {
+            allowPublic: boolean;
+            description: string;
+            name: string;
+            role: string;
+        },
+        Languages: {
+            ISOCODE: string;
+            NAME: string;
+        }[],
+        Packages: {
+            id: string;
+            name: string;
+            //And more
+        }[],
+        User: {
+            email: string;
+            language: string;
+            name: string;
+            username; string;
+        },
+        api: any[],
+    };
     app: AppState;
     apps: {
         isFetching: boolean;
