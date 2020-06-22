@@ -21,13 +21,20 @@ function mapDispatch(dispatch) {
 }
 
 const styles: any = {
+    root: {
+        height: 'inherit',
+    },
     list: {
-        height: "40%",
-        overflowY: "auto",
+        maxHeight: "40%",
         overflowX: "hidden",
     },
     icon: {
         height: '30px'
+    },
+    label: {
+        color: "white",
+        backgroundColor: "#333333",
+        padding: "0.5rem"
     }
 }
 
@@ -63,12 +70,12 @@ class CompilationDetails extends React.Component<Props>{
         const { production, development } = this.props.compilationDetails;
         const { classes } = this.props;
         return (
-            <div hidden={!this.props.show} >
-                <p> Development </p>
+            <div className={classes.root} hidden={!this.props.show} >
+                <div className={classes.label}> Development </div>
                 <List className={classes.list} dense={true}>
                     {this.createList(development.assets, false)}
                 </List>
-                <p> Production </p>
+                <div className={classes.label}> Production </div>
                 <List className={classes.list} dense={true}>
                     {this.createList(production.assets, true)}
                 </List>
