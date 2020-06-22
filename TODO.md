@@ -3,7 +3,7 @@
 Gunnar:
 * Locking project(DONE).
 * Drag and drop files/folders in the ui tree(DONE).
-* Show user info. Show connection status, network and socket.
+* Show user info. Show connection status, network and socket, logout button.
 * Complete import zip.
 * TEST PKG.
 * Verify deployment of runtime assets.
@@ -34,3 +34,4 @@ Backlog:
 * ProjectMenu show last 5 projects, changes.
 * Open file when creating file.
 * Show removed diff in popover with mark in margin.
+* Where is git repository relative to origin.
