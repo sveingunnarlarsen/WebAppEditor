@@ -9,7 +9,7 @@ Gunnar:
 * Verify deployment of runtime assets.
 
 Jørgen:
-* Update basic template
+* Update basic template(DONE)
 * Partial file update
 * Test apps created on old build vs new build. Map differences
 * getSignatureHelp server lag. Maybe related to .tsx and/or material-ui
