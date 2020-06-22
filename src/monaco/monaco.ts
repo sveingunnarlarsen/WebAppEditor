@@ -110,11 +110,17 @@ self.MonacoEnvironment = {
 }
 
 monaco.languages.register({ id: 'typescript', 
-                            extensions: ['.ts', '.tsx'],
+                            extensions: ['.ts'],
+                            aliases: ['TypeScript', 'ts', 'typescript'],
+                            mimetypes: ['text/typescript'] });
+
+monaco.languages.register({ id: 'typescript_react', 
+                            extensions: ['.tsx'],
                             aliases: ['TypeScript', 'ts', 'typescript'],
                             mimetypes: ['text/typescript'] });
 
 monaco.languages.setLanguageConfiguration('typescript', conf);
+monaco.languages.setLanguageConfiguration('typescript_react', conf);
 
 // @ts-ignore
 monaco.editor.defineTheme("dark", themeDarkPlus);

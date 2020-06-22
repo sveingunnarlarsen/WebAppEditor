@@ -17,7 +17,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
 import Popover from '@material-ui/core/Popover';
 
-
 import { AppEditorState } from "../../types"
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";

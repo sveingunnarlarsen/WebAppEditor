@@ -58,7 +58,6 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
         }
     });
     
-    /*
     monaco.languages.setTokensProvider("typescript_react", {
         getInitialState: () => new TokenizerState(INITIAL),
         tokenize: (line: string, state: TokenizerState) => {
@@ -73,7 +72,6 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
             }
         }
     });
-    */
     tokensProviderSet = true;
 }
 
