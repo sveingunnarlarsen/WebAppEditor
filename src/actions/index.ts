@@ -20,9 +20,20 @@ export function reset() {
 }
 
 export function cancelSnackbars() {
-    console.log("Canceling snackbars");
     return {
         type: Actions.CANCEL_SNACKBARS,
+    }
+}
+
+export function languageServerConnected() {
+    return {
+        type: Actions.LANGUAGE_SERVER_CONNECTED
+    }
+}
+
+export function languageServerDisconnected() {
+    return {
+        type: Actions.LANGUAGE_SERVER_DISCONNECTED
     }
 }
 

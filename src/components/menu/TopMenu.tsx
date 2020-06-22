@@ -55,6 +55,11 @@ function getWarnings(state: AppEditorState) {
             message: "Missing webpack.prod.js"
         })
     }
+    if (!state.languageServerConnected) {
+        warnings.push({
+            message: "Language server is disconnected"
+        })
+    }
     return warnings;
 }
 

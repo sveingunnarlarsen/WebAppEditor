@@ -47,6 +47,9 @@ export enum Actions {
     UPDATE_APP_DATA = "UPDATE_APP_DATA",
 
     RECEIVE_DEV_COMPILATION_DETAILS = 'RECEIVE_DEV_COMPILATION_DETAILS',
+
+    LANGUAGE_SERVER_CONNECTED = 'LANGUAGE_SERVER_CONNECTED',
+    LANGUAGE_SERVER_DISCONNECTED = 'LANGUAGE_SERVER_DISCONNECTED',
 }
 
 export enum Tool {
@@ -154,6 +157,7 @@ export interface AppEditorState {
     modules: any[];
     isUpdatingNpm: boolean;
     isCloning: boolean;
+    languageServerConnected: boolean;
     resources: any;
     app: AppState;
     apps: {

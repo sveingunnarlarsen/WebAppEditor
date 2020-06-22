@@ -23,6 +23,7 @@ const initialState: AppEditorState = {
     modules: [],
     isUpdatingNpm: false,
     isCloning: false,
+    languageServerConnected: true,
     resources: {
         isFetching: false
     },
@@ -246,6 +247,15 @@ function updateEditors(state = initialState.updateEditors, action) {
     return state;
 }
 
+function languageServerConnected(state = initialState.languageServerConnected, action) {
+    if (action.type === Actions.LANGUAGE_SERVER_CONNECTED) {
+        return true;
+    } else if (action.type === Actions.LANGUAGE_SERVER_DISCONNECTED) {
+        return false;
+    }
+    return state;
+}
+
 const rootReducer = combineReducers<AppEditorState>({
     visibleTool,
     selectedNode,
@@ -262,6 +272,7 @@ const rootReducer = combineReducers<AppEditorState>({
     modules,
     isUpdatingNpm,
     isCloning,
+    languageServerConnected,
     resources,
     app,
     apps,
