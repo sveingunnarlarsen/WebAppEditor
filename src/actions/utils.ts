@@ -1,13 +1,17 @@
 import { ServerFso, FileSystemObject, AppEditorState } from "../types";
-import { getFileTypeImageData } from "../helpers/utils";
+import { getFileTypeImageData, sortFoldersAndFiles } from "../helpers/utils";
 
 export function convertApiWebAppData(json: AppEditorState) {
     const app = json.app;
     const fsos = app.fileSystemObjects.map((f, i, array) => extractFileMeta(f, array));
+    app.updateTree = true;
+    app.fileSystemObjects = fsos.sort(sortFoldersAndFiles);
+    /*
     const folders = fsos.filter(f => f.type === "folder").sort((a, b) => (a.name > b.name ? 1 : -1));
     const files = fsos.filter(f => f.type === "file").sort((a, b) => (a.name > b.name ? 1 : -1));
-    app.updateTree = true;
     app.fileSystemObjects = [...folders].concat([...files]);
+    */
+
     return app;
 }
 

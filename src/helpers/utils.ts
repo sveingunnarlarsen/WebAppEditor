@@ -11,6 +11,24 @@ export function convertFlatToNested(n, r, t) {
     return a;
 }
 
+export function sortFoldersAndFiles(a, b) {
+    if (a.type === b.type) {
+        if (a.path.split('/').length > b.path.split('/').length) {
+            return 1;
+        } else if (a.path.split('/').length === b.path.split('/').length) {
+            if (a.name > b.name) {
+                return 1;
+            } else {
+                return -1;
+            }            
+        } else {
+            return -1;
+        }
+    } else {
+        return a.type === 'folder' ? -1 : 1;
+    }
+}
+
 export function extend(...args: any[]) {
     let extended = {};
     let deep = false;

@@ -21,7 +21,7 @@ import { openDialog, setSelectedNode } from "../../../actions";
 import { showFile } from "../../../actions/editor";
 import { AppEditorState } from "../../../types";
 import { DialogType } from "../../../types/dialog";
-import { convertFlatToNested } from "../../../helpers/utils";
+import { convertFlatToNested, sortFoldersAndFiles } from "../../../helpers/utils";
 
 const styles = {
     input: {
@@ -92,27 +92,20 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
         const { app } = this.props;
         const fsos = app.fileSystemObjects;
 
-        if (fsos.length > 0) {
-            const folders = fsos.filter(f => f.type === "folder").sort((a, b) => (a.name > b.name ? 1 : -1));
-            const files = fsos.filter(f => f.type === "file").sort((a, b) => (a.name > b.name ? 1 : -1));
-            const sorted = [...folders].concat([...files]);
+        const topNode = {
+            id: "1",
+            open: true,
+            image: "",
+            value: app.name,
+            disabled: false,
+            type: "folder",    
+            path: "/",    
+        } as any;
 
-            return convertFlatToNested(
-                [
-                    {
-                        id: "1",
-                        open: true,
-                        image: "",
-                        value: app.name,
-                        disabled: false,
-                        type: "folder"
-                    }
-                ].concat([...JSON.parse(JSON.stringify(sorted))]),
-                "id",
-                "parentId"
-            );
+        if (fsos.length > 0) {
+            return convertFlatToNested([topNode].concat(app.fileSystemObjects.sort(sortFoldersAndFiles)), "id", "parentId");                        
         } else {
-            return [];
+            return [topNode];
         }
     }
 
@@ -201,10 +194,6 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
             })
         );
         webix.extend(this.ui, treeEvents.getExtensions.bind(this)(), true);
-
-        this.ui.sort((a, b) => {
-            return a.value > b.value ? 1 : -1;
-        });
     }
 
     shouldComponentUpdate(nextProps) {

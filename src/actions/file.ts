@@ -7,6 +7,7 @@ import { getFileById } from "../store/utils";
 import { closeFile } from "./editor";
 import { throwError, handleAjaxError, handleClientError } from "./error";
 import { extractFileMeta, destructFileServerProps, getFolderPathFromSelectedNode } from "./utils";
+import { sortFoldersAndFiles } from "../helpers/utils";
 
 import { openDialog, updateEditors } from "./";
 
@@ -41,11 +42,8 @@ export function save(filesToSave: FileSystemObject[] = []) {
                     const json = await response.json();
                     const files = json.fileSystemObjects
                         .map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects))
-                        .sort((a, b) => {
-                            const aFirst = (a.path.split('/').length > b.path.split('/').length);
-                            return aFirst ? 1 : -1;
-                        });
-
+                        .sort(sortFoldersAndFiles);
+                        
                     for (let i = 0; i < files.length; i++) {
                         const originalFso = getFileById(files[i].id);
                         await syncFile(files[i], originalFso);
@@ -80,11 +78,7 @@ export function createFsos(fileSystemObjects: FileSystemObject[]) {
                     const json = await response.json();
                     const files = json.fileSystemObjects
                         .map(f => extractFileMeta(f, getState().app.fileSystemObjects, json.fileSystemObjects))
-                        .sort((a, b) => {
-                            const aFirst = (a.path.split('/').length > b.path.split('/').length);
-                            return aFirst ? 1 : -1;
-                        });
-
+                        .sort(sortFoldersAndFiles);
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
                         await syncFile(file);

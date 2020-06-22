@@ -8,7 +8,7 @@ import { fileUpdated } from "../completer";
 
 const onModelContentChanged = _.debounce((model: monaco.editor.ITextModel) => {
     updateModel(model);
-}, 1000);
+}, 500);
 
 function disposeAllModels() {
     monaco.editor.getModels().forEach(model => {
