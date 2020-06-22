@@ -35,3 +35,4 @@ Backlog:
 * Open file when creating file.
 * Show removed diff in popover with mark in margin.
 * Where is git repository relative to origin.
+* dummy
