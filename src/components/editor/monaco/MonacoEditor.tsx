@@ -5,7 +5,7 @@ import MonacoContainer from './MonacoContainer';
 import { monaco } from "../../../monaco";
 import { getFileByPath } from "../../../store/utils";
 import { showFile, resetOpenAt } from "../../../actions/editor";
-import { themeDark, setTokensProvider } from "../../../monaco/textmate";
+import { setTokensProvider } from "../../../monaco/textmate";
 
 const noop = _ => { };
 const useMount = effect => useEffect(effect, []);

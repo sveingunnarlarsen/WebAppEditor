@@ -61,10 +61,6 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState) {
-        if (this.props.lock !== nextProps.lock) {
-            console.log("Component should update because app lock is different");
-            return true;
-        }
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
@@ -79,6 +75,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
         }
         if (this.props.isSearch && this.props.showLineNumber !== nextProps.showLineNumber) {
             console.log("Component should update because isSearch is true and line numbers are different");
+            return true;
+        }
+        if (this.props.lock !== nextProps.lock) {
+            console.log("Component should update because lock differ");
             return true;
         }
         if (this.props.editorResized !== nextProps.editorResized) {

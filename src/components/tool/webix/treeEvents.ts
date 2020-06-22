@@ -25,6 +25,7 @@ export function getEvents() {
             }
         },
         onBeforeDrag: function(context, e) {
+            if (context.source[0] === "1") return false;
             console.log("Dragging these nodes: ", context.source);
             console.log("Event: ", e);
         },
@@ -38,6 +39,7 @@ export function getEvents() {
             }                        
 
             const fsosToDrop = context.source.map(id => {
+                if (fsoTarget === id) return [];
                 const fso = getFileById(id);
                 const newPath = replaceFolderPath(fso.path, fsoTarget.path);
 
@@ -74,13 +76,9 @@ export function getExtensions() {
         $dropAllow: function(context, e) {
             if (context.target === "1") return true;
             const fsoTarget = getFileById(context.target);
-            if (fsoTarget.type === 'folder') {
-                console.log(e);
-                //e.target.classList("webix_selected");
+            if (fsoTarget.type === 'folder' && !context.source.includes(context.target)) {
                 return true;
             }  else {
-                console.log(e);
-                //e.target.classList.add("no-drop-allowed");
                 return false;            
             }
         }
