@@ -9,6 +9,7 @@ import { ReferenceProvider } from "./providers/referenceProvider";
 import { DocumentFormattingEditorProvider } from "./providers/documentFormattingEditProvider";
 import { LanguageClient, ClientEvent } from '../../lib/LanguageClient';
 
+import { languageServerConnected, languageServerDisconnected } from "../actions";
 import { FileSystemObject } from "../types";
 import { updateModel } from "../monaco";
 import { spanToRange } from "./utils";
@@ -21,14 +22,17 @@ const client = new LanguageClient();
         const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const lsUrl = `${wsProtocol}://${window.location.hostname}:8082`;
         await client.connect(lsUrl);
+        store.dispatch(languageServerConnected());
         console.log("Language client connected");
 
         // @ts-ignore
         client.on("disconnected", async (closeEvent) => {
-            if (closeEvent.wasClean) return;
+            if (closeEvent.wasClean) return;      
+            store.dispatch(languageServerDisconnected());      
             await new Promise(r => setTimeout(r, 1000));
             const result = await client.connect(lsUrl);
             if (result.success) {
+                store.dispatch(languageServerConnected());
                 if (!appId) return;
                 client.initialize(appId);
                 console.log('LanguageClient reconnected');

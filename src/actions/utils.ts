@@ -74,7 +74,11 @@ export function getFolderPathFromSelectedNode(getState: () => AppEditorState) {
         const parts = fso.path.split("/");
         parts.shift();
         parts.pop();
-        return "/" + parts.join("/") + "/";
+        if (parts.length > 0) {
+            return "/" + parts.join("/") + "/";
+        } else {
+            return "/";
+        }     
     } else {
         return "/";
     }
