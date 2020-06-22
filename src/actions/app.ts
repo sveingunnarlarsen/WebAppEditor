@@ -203,6 +203,7 @@ export function compileProject() {
             method: "POST"
         })
             .then(throwError)
+            .then(() => dispatch(getCompilationDetails()))
             .catch(error => handleCompileError(error, dispatch))
             .finally(() => dispatch(receiveCompile()));
     };
@@ -228,6 +229,7 @@ export function compilePreview() {
             method: "POST"
         })
             .then(throwError)
+            .then(() => dispatch(getCompilationDetails()))
             .catch(error => handleCompileError(error, dispatch))
             .finally(() => dispatch(receiveCompile()));
     };
