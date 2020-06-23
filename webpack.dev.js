@@ -62,7 +62,8 @@ module.exports = settings => ({
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`)
+			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`),
+			ENV: JSON.stringify(`development`),
 		}),
 		new htmlWebpackPlugin({
 			templateContent: settings.htmlTemplate,

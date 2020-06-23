@@ -199,8 +199,10 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
         webix.extend(this.ui, treeEvents.getExtensions.bind(this)(), true);
     }
 
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps, nextState) {
         if (nextProps.visibleTool !== "EXPLORER") return false;
+
+        if (this.state.filter !== nextState.filter) return true;
 
         //Compare path in tree, only update when name differ.
         const a = this.props.app.fileSystemObjects;

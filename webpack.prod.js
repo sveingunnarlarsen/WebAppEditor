@@ -19,7 +19,8 @@ module.exports = settings => ({
 		globalObject: 'self',
 		filename: '[name].bundle.js',
 		path: "/",
-		publicPath: `/webapp/${settings.appName}/`
+		//publicPath: `/webapp/${settings.appName}/`
+		publicPath: `/appeditor/`
   	},
 	resolve: {
 		symlinks: false,
@@ -62,7 +63,9 @@ module.exports = settings => ({
 	},
 	plugins: [		
 		new webpack.DefinePlugin({
-			ROOTPATH: JSON.stringify(`/webapp/${settings.appName}`)
+			//ROOTPATH: JSON.stringify(`/webapp/${settings.appName}`),
+			ROOTPATH: JSON.stringify(`/appeditor`),
+			ENV: JSON.stringify(`production`),
 		}),
 		new htmlWebpackPlugin({
 			templateContent: settings.htmlTemplate,

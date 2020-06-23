@@ -1,6 +1,14 @@
+const log = console.log;
+console.log = (...args) => {
+    if (ENV === "development") {
+        log.apply(console, args);
+    }
+}
+
 import "babel-polyfill";
+import "./types/monaco";
+import "./monaco";
 import "./terminal";
-import "./completer";
 import "./git";
 
 import React from "react";

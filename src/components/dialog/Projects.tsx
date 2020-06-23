@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import * as _ from "underscore";
 
 import { withStyles } from "@material-ui/styles";
 import {
@@ -55,26 +56,66 @@ interface ProjectsProps extends ReturnType<typeof mapState>, ReturnType<typeof m
     close: () => void;
 }
 
-class Projects extends React.Component<ProjectsProps, {value: string, page: number, rowsPerPage: number}> {
+class Projects extends React.Component<ProjectsProps, {value: string, page: number, rowsPerPage: number, searchResult: []}> {
     inputRef: HTMLElement;
     constructor(props) {
         super(props);
         this.state = {
             value: "",
             page: 0,
-            rowsPerPage: 25
+            rowsPerPage: 25,
+            searchResult: [],
         };
     }
 
     handleRowClick = id => {
         this.props.close();
         this.props.rowClick(id);
-    };
+    };    
+
+    updateSearchResult = _.debounce(async (value) => {
+        const apps = this.props.apps;
+        
+        const searchResult = await apps.reduce(async (accP, app) => {            
+            const acc = await accP;
+
+            let match = false;
+            const keys = Object.keys(app).filter(key => ['changedBy', 'type', 'description', 'name'].includes(key));
+
+            for (let i = 0; i < keys.length; i++) {
+
+                const key = keys[i];
+                const keyValue = app[key];
+
+                if (keyValue && keyValue.match(new RegExp(value, 'gi'))) {                    
+                    match = true;
+                    continue;
+                }
+            }
+
+            if (match) {
+                acc.push(app);
+            }            
+            await new Promise(resolve => _.defer(resolve));
+            return acc;
+        }, Promise.resolve([]));
+        
+        this.setState({
+            searchResult,
+        });        
+    }, 100);
 
     updateValue = e => {
         this.setState({
             value: e.target.value
-        });
+        });        
+        if (e.target.value) {
+            this.updateSearchResult(e.target.value);
+        } else {
+            this.setState({
+                searchResult: [],
+            })
+        }
     };
 
     handleChangePage = (e, newPage) => {
@@ -94,8 +135,15 @@ class Projects extends React.Component<ProjectsProps, {value: string, page: numb
 
     render() {
         const { classes, apps, close } = this.props;
-        const { value, page, rowsPerPage } = this.state;
-        const searchResult = !value ? apps : apps.filter(app => Object.keys(app).find(key => app[key].toString().indexOf(value) > -1));
+        const { value, page, rowsPerPage, searchResult } = this.state;
+
+        let visibleApps;
+        if (value) {
+            visibleApps = searchResult;
+        } else {
+            visibleApps = apps;
+        }
+                
         return (
             <React.Fragment>
                 <DialogTitle>Projects</DialogTitle>
@@ -128,7 +176,7 @@ class Projects extends React.Component<ProjectsProps, {value: string, page: numb
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {searchResult.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                                {visibleApps.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                                     return (
                                         <TableRow className={classes.tableRow} hover tabIndex={-1} key={row.id} onClick={() => this.handleRowClick(row.id)}>
                                             {columns.map(column => {
@@ -144,7 +192,7 @@ class Projects extends React.Component<ProjectsProps, {value: string, page: numb
                     <TablePagination
                         rowsPerPageOptions={[10, 25, 100]}
                         component="div"
-                        count={searchResult.length}
+                        count={visibleApps.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onChangePage={this.handleChangePage}

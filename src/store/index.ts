@@ -5,12 +5,22 @@ import { createStore, applyMiddleware, Store } from "redux";
 import rootReducer from "../reducers/index";
 import { getMasterData, getWebApps } from '../actions/app';
 
+function getMiddleWare() {
+    if (ENV === "development") {
+        return applyMiddleware(
+            thunkMiddleware,
+            reduxLogger,
+        )
+    } else {
+        return applyMiddleware(
+            thunkMiddleware,
+        )
+    }
+}
+
 const store = createStore(
     rootReducer,
-    applyMiddleware(
-        thunkMiddleware,
-        reduxLogger,
-    )
+    getMiddleWare(),
 );
 
 // @ts-ignore
