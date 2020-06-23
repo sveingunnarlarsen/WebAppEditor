@@ -13,7 +13,8 @@ import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
 import TreeContextMenu from "./TreeContextMenu";
-import * as webix from "../../../../lib/webix";
+import * as webix from "webix/webix.js";
+//import * as webix from "../../../../lib/webix";
 import * as treeUtils from "./treeUtils";
 import * as treeEvents from "./treeEvents";
 
