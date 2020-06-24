@@ -134,7 +134,7 @@ function extractFileData(fileContent, meta) {
     if (isImage(meta.name)) {
         content = fileContent;
     } else {        
-        content = atob(fileContent);
+        content = Buffer.from(fileContent, 'base64').toString();
     }
 
     return {
