@@ -17,7 +17,7 @@ interface CreateProjectProps {
     close: () => void;
 }
 
-class CreateProject extends React.Component<CreateProjectProps, project> {
+class CreateProject extends React.Component<CreateProjectProps, project & {missingName: boolean}> {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +25,8 @@ class CreateProject extends React.Component<CreateProjectProps, project> {
             template: "react",
             name: "",
             description: "",
-            remote: ""
+            remote: "",
+            missingName: false,
         };
     }
 
@@ -41,8 +42,13 @@ class CreateProject extends React.Component<CreateProjectProps, project> {
         });
     };
     updateName = e => {
+        let error = false;
+        if (!e.target.value) {
+            error = true;
+        }
         this.setState({
-            name: e.target.value
+            name: e.target.value,
+            missingName: error,
         });
     };
     updateDescription = e => {
@@ -58,13 +64,19 @@ class CreateProject extends React.Component<CreateProjectProps, project> {
 
     handleSubmit = e => {
         e.preventDefault();
-        this.props.createProject(this.state);
-        this.props.close();
+        if (this.state.name) {
+            this.props.createProject(this.state);
+            this.props.close();
+        } else {
+            this.setState({
+                missingName: true
+            });
+        }
     };
 
     render() {
         const { close } = this.props;
-        const { type, template, name, description, remote } = this.state;
+        const { type, template, name, description, remote, missingName } = this.state;
         return (
             <React.Fragment>
                 <DialogTitle>New Project</DialogTitle>
@@ -98,6 +110,7 @@ class CreateProject extends React.Component<CreateProjectProps, project> {
                         }
                         <Box pt={2} />
                         <TextField
+                            error={missingName}
                             value={name}
                             onChange={this.updateName}
                             fullWidth

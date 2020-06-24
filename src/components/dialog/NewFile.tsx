@@ -21,40 +21,54 @@ interface NewFileProps {
     createFile: (name: string) => void;
 }
 
-class NewFile extends React.Component<NewFileProps, { value: string }> {
+class NewFile extends React.Component<NewFileProps, { value: string, error: boolean }> {
     constructor(props) {
         super(props);
         this.state = {
-            value: ""
+            value: "",
+            error: false,
         };
     }
 
     updateValue = e => {
+        let error = false;
+        if (!e.target.value) {
+            error = true;
+        }
         this.setState({
-            value: e.target.value
+            value: e.target.value,
+            error,
         });
     };
 
     handleSubmit = e => {
         e.preventDefault();
-        this.props.close();
-        this.props.createFile(this.state.value);
+        if (this.state.value) {
+            this.props.close();
+            this.props.createFile(this.state.value);
+        } else {
+            this.setState({
+                error: true,
+            })
+        }
     };
 
     render() {
         const { close } = this.props;
-        const { value } = this.state;
+        const { value, error } = this.state;
         return (
             <React.Fragment>
                 <DialogTitle>New File</DialogTitle>
                 <DialogContent>
                     <form onSubmit={this.handleSubmit}>
                         <TextField
+                            error={error}
                             autoFocus={true}
                             value={value}
                             onChange={this.updateValue}
                             label="Filename"
                             fullWidth
+                            required
                             margin="normal"
                             variant="outlined"
                             InputLabelProps={{
