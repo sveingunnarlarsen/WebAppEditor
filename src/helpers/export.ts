@@ -1,7 +1,9 @@
 import JSZip from "jszip";
+import { extname } from "path";
 import store from "../store";
 import { saveAs } from 'file-saver';
 import { throwError, handleAjaxError } from "../actions/error";
+import { isImage } from "./utils";
 
 export async function exportProjectToZip() {
     const zip = new JSZip();
@@ -10,7 +12,11 @@ export async function exportProjectToZip() {
     for (let i = 0; i < app.fileSystemObjects.length; i++) {
         const fso = app.fileSystemObjects[i];
         if (fso.type === "file") {
-            zip.file(fso.path.substr(1), fso.content);
+            if (isImage(fso.path)) {
+                zip.file(fso.path.substr(1), fso.content);
+            } else {
+                zip.file(fso.path.substr(1), fso.content);
+            }            
         } else {
             zip.folder(fso.path.substr(1));
         }

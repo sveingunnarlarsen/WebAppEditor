@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 import { isImage } from "./utils";
 import store from "../store";
 import { createFsos, save } from "../actions/file";
@@ -6,7 +7,34 @@ export async function importFolderZip(event, zipOrFolder) {
     console.log("Event to import", event);
     console.log("zipOrFolder: ", zipOrFolder);
 
-    const data = await importFiles(event);
+    let data;
+
+    if (zipOrFolder === "zip") {
+        const zip = await JSZip.loadAsync(event.target.files[0]);
+
+        console.log(zip);
+
+        const promises = [];
+    
+        zip.forEach(async (relativePath, zipEntry) => {
+            if (!zipEntry.dir) {
+                const parts = relativePath.split('/');
+
+                promises.push(new Promise(async resolve => {
+                    resolve({
+                        name: parts[parts.length - 1],
+                        path: `/${relativePath}`,
+                        type: 'file',
+                        content: await zipEntry.async('text')                        
+                    })
+                }));
+            }
+        });
+
+        data = await Promise.all(promises);
+    } else {
+        data = await importFiles(event);
+    }    
 
     const fsos = store.getState().app.fileSystemObjects;
     const foldersToCreate = [];
