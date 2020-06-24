@@ -2,6 +2,7 @@ import JSZip from "jszip";
 import { isImage } from "./utils";
 import store from "../store";
 import { createFsos, save } from "../actions/file";
+import { Buffer } from "buffer";
 
 export async function importFolderZip(event, zipOrFolder) {
     console.log("Event to import", event);
@@ -15,7 +16,7 @@ export async function importFolderZip(event, zipOrFolder) {
         console.log(zip);
 
         const promises = [];
-    
+
         zip.forEach(async (relativePath, zipEntry) => {
             if (!zipEntry.dir) {
                 const parts = relativePath.split('/');
@@ -25,7 +26,7 @@ export async function importFolderZip(event, zipOrFolder) {
                         name: parts[parts.length - 1],
                         path: `/${relativePath}`,
                         type: 'file',
-                        content: await zipEntry.async('text')                        
+                        content: await zipEntry.async(isImage(relativePath) ? 'base64' : 'text') 
                     })
                 }));
             }
@@ -34,7 +35,7 @@ export async function importFolderZip(event, zipOrFolder) {
         data = await Promise.all(promises);
     } else {
         data = await importFiles(event);
-    }    
+    }
 
     const fsos = store.getState().app.fileSystemObjects;
     const foldersToCreate = [];
@@ -132,7 +133,7 @@ function extractFileData(fileContent, meta) {
     let content;
     if (isImage(meta.name)) {
         content = fileContent;
-    } else {
+    } else {        
         content = atob(fileContent);
     }
 

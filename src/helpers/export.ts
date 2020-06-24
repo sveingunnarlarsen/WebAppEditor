@@ -1,7 +1,9 @@
 import JSZip from "jszip";
 import { extname } from "path";
-import store from "../store";
 import { saveAs } from 'file-saver';
+
+import store from "../store";
+import { Buffer } from "buffer";
 import { throwError, handleAjaxError } from "../actions/error";
 import { isImage } from "./utils";
 
@@ -12,8 +14,8 @@ export async function exportProjectToZip() {
     for (let i = 0; i < app.fileSystemObjects.length; i++) {
         const fso = app.fileSystemObjects[i];
         if (fso.type === "file") {
-            if (isImage(fso.path)) {
-                zip.file(fso.path.substr(1), fso.content);
+            if (isImage(fso.path)) {                
+                zip.file(fso.path.substr(1), Buffer.from(fso.content, 'base64'));
             } else {
                 zip.file(fso.path.substr(1), fso.content);
             }            
