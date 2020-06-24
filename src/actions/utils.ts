@@ -3,6 +3,11 @@ import { getFileTypeImageData, sortFoldersAndFiles } from "../helpers/utils";
 
 export function convertApiWebAppData(json: AppEditorState) {
     const app = json.app;
+
+    // NOTE(Jorgen): For old apps that dont have these settings
+    if(!app.settings.git) app.settings.git = { repo: null, branch: null };
+    if(!app.settings.projectFolder) app.settings.projectFolder = null;
+    
     const fsos = app.fileSystemObjects.map((f, i, array) => extractFileMeta(f, array));
     app.updateTree = true;
     app.fileSystemObjects = fsos.sort(sortFoldersAndFiles);
