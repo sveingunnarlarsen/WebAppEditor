@@ -2,7 +2,7 @@ const presetEnv = require.resolve("@babel/preset-env");
 const presetReact = require.resolve("@babel/preset-react");
 const classPropPlugin = require.resolve("@babel/plugin-proposal-class-properties");
 const tsPreset = require.resolve("@babel/preset-typescript");
-const porpDecorators = require.resolve("@babel/plugin-proposal-decorators");
+const propDecorators = require.resolve("@babel/plugin-proposal-decorators");
 const webpack = require("webpack");
 const htmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -34,7 +34,7 @@ module.exports = settings => ({
 					loader: "babel-loader",
 					options: {
 						presets: [presetEnv, tsPreset, presetReact],
-						plugins: [[porpDecorators, {legacy: true}], [classPropPlugin, {loose: true}]]
+						plugins: [[propDecorators, {legacy: true}], [classPropPlugin, {loose: true}]]
 					}
 				}]
 			},
