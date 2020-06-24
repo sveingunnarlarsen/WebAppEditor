@@ -414,6 +414,8 @@ class GitCommand {
     }
 
     static async checkout(args, opts, print) {
+        if (!store.getState().app.lock) return "You must be in edit mode to use checkout";
+
         const currentBranch = await git.currentBranch({ fs, dir: currentGitDir });
 
         if (!args.length) {
@@ -494,6 +496,8 @@ class GitCommand {
     }
 
     static async pull(args, opts, print) {
+        if (!store.getState().app.lock) return "You must be in edit mode to use pull";
+
         const ref = args[0];
 
         const result = await git.pull({
