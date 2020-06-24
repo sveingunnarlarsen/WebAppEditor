@@ -5,17 +5,14 @@ export function convertApiWebAppData(json: AppEditorState) {
     const app = json.app;
 
     // NOTE(Jorgen): For old apps that dont have these settings
+    if(!app.settings) app.settings = {entryPoint: {html: null, javascript: null}, git: {repo: null, branch: null}, projectFolder: null};
+    if(!app.settings.entryPoint) app.settings.entryPoint = {html: null, javascript: null};
     if(!app.settings.git) app.settings.git = { repo: null, branch: null };
     if(!app.settings.projectFolder) app.settings.projectFolder = null;
     
     const fsos = app.fileSystemObjects.map((f, i, array) => extractFileMeta(f, array));
     app.updateTree = true;
     app.fileSystemObjects = fsos.sort(sortFoldersAndFiles);
-    /*
-    const folders = fsos.filter(f => f.type === "folder").sort((a, b) => (a.name > b.name ? 1 : -1));
-    const files = fsos.filter(f => f.type === "file").sort((a, b) => (a.name > b.name ? 1 : -1));
-    app.fileSystemObjects = [...folders].concat([...files]);
-    */
 
     return app;
 }
