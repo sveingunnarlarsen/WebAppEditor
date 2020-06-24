@@ -20,6 +20,7 @@ import Popover from '@material-ui/core/Popover';
 import { AppEditorState } from "../../types"
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
+import UserMenu from "./UserMenu";
 
 import { compileProject, compilePreview, toggleToEdit, toggleToDisplay } from "../../actions/app";
 
@@ -84,12 +85,13 @@ interface TopMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof
     height: any;
 }
 
-class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLButtonElement | null, anchorElWarning: HTMLButtonElement | null }> {
+class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLButtonElement | null, anchorElWarning: HTMLButtonElement | null, anchorElUserMenu: HTMLButtonElement | null }> {
     constructor(props) {
         super(props);
         this.state = {
             anchorElProjectMenu: null,
             anchorElWarning: null,
+            anchorElUserMenu: null,
         };
     }
 
@@ -103,6 +105,18 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
         this.setState({
             anchorElProjectMenu: null
         });
+    }
+
+    handleUserMenuToggle(event) {
+        this.setState({
+            anchorElUserMenu: event.currentTarget
+        })
+    }
+
+    closeUserMenu = () => {
+        this.setState({
+            anchorElUserMenu: null
+        })
     }
 
     handleWarningsToggle(event) {
@@ -194,10 +208,11 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     <Typography>
                         {this.props.user ? (this.props.user.name || this.props.user.username) : ""}
                     </Typography>
-                    <IconButton>
+                    <IconButton onClick={this.handleUserMenuToggle.bind(this)}>
                         <AccountCircleOutlinedIcon />
                     </IconButton>
                     <ProjectMenu anchorEl={this.state.anchorElProjectMenu} closeMenu={this.closeProjectMenu} />
+                    <UserMenu anchorEl={this.state.anchorElUserMenu} closeMenu={this.closeUserMenu} />
                     <Popover
                         open={Boolean(this.state.anchorElWarning)}
                         anchorEl={this.state.anchorElWarning}

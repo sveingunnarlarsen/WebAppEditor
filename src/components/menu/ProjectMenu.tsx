@@ -32,6 +32,8 @@ function mapDispatch(dispatch) {
 }
 
 interface ProjectMenuProps extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
+    classes: any;
+    anchorEl: HTMLElement;
     closeMenu: () => void;
 }
 

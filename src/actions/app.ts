@@ -1,4 +1,4 @@
-import { Actions, AppSettings, project, CompilationDetails } from "../types";
+import { Actions, AppSettings, project, CompilationDetails, AppEditorState } from "../types";
 import { DialogType } from "../types/dialog";
 import { cloneGitRepo, deleteGitRepo } from "../git";
 import { loadProject } from "../monaco"
@@ -196,7 +196,7 @@ export function saveAppData() {
 }
 
 export function compileProject() {
-    return function(dispatch, getState) {
+    return function(dispatch, getState) {    
         dispatch(requestCompile());
 
         return fetch(`/api/webapp/${getState().app.id}/deploy`, {
@@ -233,6 +233,21 @@ export function compilePreview() {
             .catch(error => handleCompileError(error, dispatch))
             .finally(() => dispatch(receiveCompile()));
     };
+}
+
+export function signOut() {
+    return function(dispatch, getState: () => AppEditorState) {
+        if (getState().app.lock) {
+            dispatch(toggleToDisplay());
+        }        
+        return fetch(`/user/logout`, {
+            method: "POST",
+        })
+        .then(throwError)
+        .then(() => location.reload())
+        .catch(error => handleAjaxError(error, dispatch))
+
+    }    
 }
 
 export function updateAppData(data: { name: string, description: string, type: 'react' | 'vue', settings: AppSettings }) {
