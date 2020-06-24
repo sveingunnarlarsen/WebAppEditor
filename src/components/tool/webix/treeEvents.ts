@@ -1,4 +1,3 @@
-import * as webix from "../../../../lib/webix";
 import store from "../../../store";
 import { getFileById, getFolderChildren } from "../../../store/utils";
 import { replaceFolderPath } from "../../../helpers/utils";
@@ -25,7 +24,7 @@ export function getEvents() {
             }
         },
         onBeforeDrag: function(context, e) {
-            if (context.source[0] === "1") return false;
+            if (context.source[0] === "1" || !store.getState().app.lock) return false;
             console.log("Dragging these nodes: ", context.source);
             console.log("Event: ", e);
         },

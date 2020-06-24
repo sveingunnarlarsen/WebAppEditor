@@ -14,7 +14,6 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 
 import TreeContextMenu from "./TreeContextMenu";
 import * as webix from "webix/webix.js";
-//import * as webix from "../../../../lib/webix";
 import * as treeUtils from "./treeUtils";
 import * as treeEvents from "./treeEvents";
 
