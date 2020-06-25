@@ -61,7 +61,9 @@ export function createProject({ type, template, name, description, remote }: pro
                     const app = convertApiWebAppData(json);
                     dispatch(receiveWebApp(app));
                     dispatch(setAppLock(true));
-                    remote ? cloneGitRepo(remote) : loadProject(getState);
+                    dispatch(getNpmModules());
+                    loadProject(getState);
+                    if (remote) loadProject(getState);
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }
