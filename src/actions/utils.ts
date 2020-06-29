@@ -1,15 +1,15 @@
-import { ServerFso, FileSystemObject, AppEditorState } from "../types";
+import { ServerFso, FileSystemObject, AppEditorState, AppSettings } from "../types";
 import { getFileTypeImageData, sortFoldersAndFiles } from "../helpers/utils";
 
 export function convertApiWebAppData(json: AppEditorState) {
     const app = json.app;
 
     // NOTE(Jorgen): For old apps that dont have these settings
-    if(!app.settings) app.settings = {entryPoint: {html: null, javascript: null}, git: {repo: null, branch: null}, projectFolder: null};
-    if(!app.settings.entryPoint) app.settings.entryPoint = {html: null, javascript: null};
-    if(!app.settings.git) app.settings.git = { repo: null, branch: null };
-    if(!app.settings.projectFolder) app.settings.projectFolder = null;
-    
+    if (!app.settings) app.settings = { entryPoint: { html: null, javascript: null }, git: { repo: null, branch: null }, projectFolder: null };
+    if (!app.settings.entryPoint) app.settings.entryPoint = { html: null, javascript: null };
+    if (!app.settings.git) app.settings.git = { repo: null, branch: null };
+    if (!app.settings.projectFolder) app.settings.projectFolder = null;
+
     const fsos = app.fileSystemObjects.map((f, i, array) => extractFileMeta(f, array));
     app.updateTree = true;
     app.fileSystemObjects = fsos.sort(sortFoldersAndFiles);
@@ -80,13 +80,14 @@ export function getFolderPathFromSelectedNode(getState: () => AppEditorState) {
             return "/" + parts.join("/") + "/";
         } else {
             return "/";
-        }     
+        }
     } else {
         return "/";
     }
 }
 
-export function destructFileServerProps({ id, path, type, webAppId, content, createdAt, updatedAt, createdBy, changedBy }) {
+export function destructFileServerProps({ id, path, type, webAppId, content, createdAt, updatedAt, createdBy, changedBy }: FileSystemObject) {
+    //{ id: string; path: string; type: 'file' | 'folder'; webAppId: string; content: string; createdAt: string; updatedAt: string; createdBy: string; changedBy: string }) {
     return {
         id,
         path,
@@ -96,7 +97,7 @@ export function destructFileServerProps({ id, path, type, webAppId, content, cre
     };
 }
 
-export function destructAppServerProps({ id, name, type, description, settings }) {
+export function destructAppServerProps({ id, name, type, description, settings }: { id: string; name: string; type: 'file' | 'folder', description: string; settings: AppSettings }) {
     return {
         id,
         name,
