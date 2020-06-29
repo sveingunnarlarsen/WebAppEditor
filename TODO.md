@@ -15,6 +15,7 @@ Gunnar:
 
 
 Jørgen:
+* Partial file update(Backend implemented, frontend remaining)
 * Include api definitions.
  - Build module with apis included in project on refresh.
  - Add module to language server.
@@ -22,7 +23,6 @@ Jørgen:
 * Test apps created on old build vs new build. Map differences(DONE)
 * getSignatureHelp server lag. Maybe related to .tsx and/or material-ui(DONE)
 * TEST PKG(DONE)
-* Partial file update(Backend implemented, frontend remaining)
 
 Both:
 * Dialog with documentation. E.g. Ctrl-S = Save, Supported git commands. (SPECIFY THAT DEVELOPMENT DOES NOT WORK IN HIGH AVAILABILITY ENV)
@@ -50,3 +50,8 @@ Backlog:
 * Add disable option for production (disables users from accessing the production URL)
 * Fix naming convention, App Editor / Pro Code Editor. dont care...
   Just make it consistent across planet9. including the documentation
+* Calculate diagnostics for entire project
+* Don't process providers for big files X > ?. 
+
+
+
