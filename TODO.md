@@ -1,19 +1,28 @@
 (Release - 25.06)
 
 Gunnar:
+* Verify deployment of runtime assets.
+* Include api definitions.
+ - Create api dependency tool section in explorer
+ - Dialog to add apis to project
+ - Many to Many relation between webapp and apis.
+ - Refresh on change   
 * Locking project(DONE).
 * Drag and drop files/folders in the ui tree(DONE).
 * Show user info. Show connection status, network and socket, logout button(DONE).
-* Complete import zip.
-* TEST PKG.
-* Verify deployment of runtime assets.
+* Complete import zip(DONE).
+* TEST PKG(DONE).
+
 
 Jørgen:
+* Include api definitions.
+ - Build module with apis included in project on refresh.
+ - Add module to language server.
 * Update basic template(DONE)
-* Partial file update(Backend implemented, frontend remaining)
 * Test apps created on old build vs new build. Map differences(DONE)
 * getSignatureHelp server lag. Maybe related to .tsx and/or material-ui(DONE)
 * TEST PKG(DONE)
+* Partial file update(Backend implemented, frontend remaining)
 
 Both:
 * Dialog with documentation. E.g. Ctrl-S = Save, Supported git commands. (SPECIFY THAT DEVELOPMENT DOES NOT WORK IN HIGH AVAILABILITY ENV)
@@ -29,9 +38,6 @@ Backlog:
 * Customizable keybindings.
    - VSCode does this very well https://code.visualstudio.com/docs/getstarted/keybindings
 * Include server scripts in editor. (BIG TASK).
-* Include api definitions (As module?).
-   - import {myApi} from "planet9-apis";
-   - const result = await myApi.operation();
 * Protected or Anonymous access to app.
    * Login
 * ProjectMenu show last 5 projects, changes.
