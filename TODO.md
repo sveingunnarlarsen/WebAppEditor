@@ -44,6 +44,7 @@ Backlog:
 * Use MonacoDiffEditor to display diffs, for eksample, show all file diffs when running "git difftool"
 * Calculate diagnostics for entire project
 * Don't process providers for big files X > ?. 
+* Server worker for apps in launchpad.
 
 DONE:
 * Locking project(DONE).
