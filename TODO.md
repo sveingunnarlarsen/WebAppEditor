@@ -15,6 +15,7 @@ Gunnar:
 Jørgen:
 * language port must be configurable
 * Project name write to package.json
+ - Rename also
 * Auto compile new project from template
 * Include api definitions.
  - Build module with apis included in project on refresh.
