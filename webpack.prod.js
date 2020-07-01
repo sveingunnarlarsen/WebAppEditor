@@ -24,7 +24,7 @@ module.exports = settings => ({
   	},
 	resolve: {
 		symlinks: false,
-		extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
+		extensions: [".ts", ".tsx", ".js", ".d.ts"]
 	},
 	module: {
 		rules: [

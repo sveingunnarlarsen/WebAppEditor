@@ -63,7 +63,7 @@ export function createProject({ type, template, name, description, remote }: pro
                     dispatch(setAppLock(true));
                     dispatch(getNpmModules());
                     loadProject(getState);
-                    if (remote) loadProject(getState);
+                    if (remote) cloneGitRepo(remote);
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }
