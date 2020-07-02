@@ -16,58 +16,64 @@ import { spanToRange } from "./utils";
 
 let appId;
 const client = new LanguageClient();
+let initialized = false;
 
-(async function() {
-    try {
-        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const lsUrl = `${wsProtocol}://${window.location.hostname}:8082`;
-        await client.connect(lsUrl);
-        store.dispatch(languageServerConnected());
-        console.log("Language client connected");
+store.subscribe(async () => {
+    const lsPort = store.getState()?.resources?.Config?.languageServer?.port;
+    if (lsPort && !initialized) {
+        initialized = true;
+        try {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const lsUrl = `${wsProtocol}://${window.location.hostname}:${lsPort}`;
+            await client.connect(lsUrl);
+            store.dispatch(languageServerConnected());
+            console.log("Language client connected");
 
-        // @ts-ignore
-        client.on("disconnected", async (closeEvent) => {
-            if (closeEvent.wasClean) return;      
-            store.dispatch(languageServerDisconnected());      
-            await new Promise(r => setTimeout(r, 1000));
-            const result = await client.connect(lsUrl);
-            if (result.success) {
-                store.dispatch(languageServerConnected());
-                if (!appId) return;
-                client.initialize(appId);
-                console.log('LanguageClient reconnected');
-            }
+            // @ts-ignore
+            client.on("disconnected", async (closeEvent) => {
+                if (closeEvent.wasClean) return;
+                store.dispatch(languageServerDisconnected());
+                await new Promise(r => setTimeout(r, 1000));
+                const result = await client.connect(lsUrl);
+                if (result.success) {
+                    store.dispatch(languageServerConnected());
+                    if (!appId) return;
+                    client.initialize(appId);
+                    console.log('LanguageClient reconnected');
+                }
+            });
+
+        } catch (e) {
+            console.log("Error connecting to language server", e);
+        }
+
+        if (client.isConnected) {
+            store.subscribe(handleChange);
+        }
+
+        const completionItemProvider = new CompletionItemProvider(client);
+        const signatureHelpProvider = new SignatureHelpProvider(client);
+        const hoverProvider = new HoverProvider(client);
+        const definitionProvider = new DefinitionProvider(client);
+        const referenceProvider = new ReferenceProvider(client);
+        const documentFormattingEditProvider = new DocumentFormattingEditorProvider(client);
+
+        ["typescript", "typescript_react"].forEach(languageId => {
+            monaco.languages.registerCompletionItemProvider(languageId, completionItemProvider);
+            monaco.languages.registerSignatureHelpProvider(languageId, signatureHelpProvider);
+            monaco.languages.registerHoverProvider(languageId, hoverProvider);
+            monaco.languages.registerDefinitionProvider(languageId, definitionProvider);
+            monaco.languages.registerReferenceProvider(languageId, referenceProvider);
+            monaco.languages.registerDocumentFormattingEditProvider(languageId, documentFormattingEditProvider);
         });
 
-    } catch (e) {
-        console.log("Error connecting to language server", e);
+        // @ts-ignore
+        client.on('publishDiagnostics', (result) => {
+            provideDiagnostics(result);
+        });
+
     }
-
-    if (client.isConnected) {
-        store.subscribe(handleChange);
-    }
-
-    const completionItemProvider = new CompletionItemProvider(client);
-    const signatureHelpProvider = new SignatureHelpProvider(client);
-    const hoverProvider = new HoverProvider(client);
-    const definitionProvider = new DefinitionProvider(client);
-    const referenceProvider = new ReferenceProvider(client);
-    const documentFormattingEditProvider = new DocumentFormattingEditorProvider(client);
-
-    ["typescript", "typescript_react"].forEach(languageId => {
-        monaco.languages.registerCompletionItemProvider(languageId, completionItemProvider);
-        monaco.languages.registerSignatureHelpProvider(languageId, signatureHelpProvider);
-        monaco.languages.registerHoverProvider(languageId, hoverProvider);
-        monaco.languages.registerDefinitionProvider(languageId, definitionProvider);
-        monaco.languages.registerReferenceProvider(languageId, referenceProvider);
-        monaco.languages.registerDocumentFormattingEditProvider(languageId, documentFormattingEditProvider);
-    });
-
-    // @ts-ignore
-    client.on('publishDiagnostics', (result) => {
-        provideDiagnostics(result);
-    });
-})();
+});
 
 function handleChange() {
     if (store.getState().app.id && store.getState().app.id !== appId) {
