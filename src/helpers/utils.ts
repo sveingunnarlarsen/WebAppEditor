@@ -1,6 +1,14 @@
 import imageData from "../data/images.json";
+import md5 from "blueimp-md5";
 import mime from "mime-types";
 import moment from "moment";
+
+export function generateGravatarLink(email: string) {
+    email = email.trim().toLowerCase();
+    console.log("Email: ", email);
+    const hash = md5(email);
+    return email ? `http://www.gravatar.com/avatar/${hash}?s=40&d=retro&r=g` : '';
+}
 
 export function formatDate(date: string) {
     return moment(date).format('LLL');

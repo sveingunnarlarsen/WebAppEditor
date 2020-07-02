@@ -4,7 +4,7 @@ import * as _ from "underscore";
 import { throwError, handleAjaxError } from "../../actions/error";
 import { getFileByPath } from "../../store/utils";
 import { installNpmModule } from "../../actions/npm";
-import { formatDate } from "../../helpers/utils";
+import { formatDate, generateGravatarLink } from "../../helpers/utils";
 
 import { withStyles } from "@material-ui/styles";
 import {
@@ -22,7 +22,9 @@ import {
     TableBody,
     TableContainer,
     TablePagination,
-    Typography
+    Typography,
+    Avatar,
+    Chip
 } from "@material-ui/core";
 
 interface SingleResult {
@@ -38,10 +40,6 @@ interface SingleResult {
             homepage: string;
             repository: string;
             bugs: string;
-        }
-        author: {
-            name: string;
-            email: string;
         }
         publisher: {
             username: string;
@@ -161,7 +159,7 @@ class NpmInstall extends React.Component<NpmInstallProps, NpmInstallState> {
                             autoFocus={true}
                             value={value}
                             onChange={this.updateValue}
-                            label="Name"
+                            label="Search npm registry"
                             fullWidth
                             margin="normal"
                             variant="outlined"
@@ -182,14 +180,17 @@ class NpmInstall extends React.Component<NpmInstallProps, NpmInstallState> {
                                                     <div style={{width: "80%"}}>
                                                         <Typography>{row.package.name}</Typography>
                                                         <Typography>{row.package.description}</Typography>
-                                                        {row.package.keywords &&
-                                                            <Typography>Keywords: {row.package.keywords.join(" ")}</Typography>
-                                                        }
+                                                        {row.package.keywords?.map(key => {
+                                                            return (
+                                                                <Chip label={key} />
+                                                            )
+                                                        })}
                                                         <Typography>{row.package.version}</Typography>
-                                                        <a href={row.package.links.homepage} target={"_blank"}>{row.package.links.homepage}</a>
+                                                        <a href={row.package.links?.homepage} target={"_blank"}>{row.package.links?.homepage}</a>
                                                         <Typography>Published: {formatDate(row.package.date)}</Typography>
                                                     </div>
                                                     <div style={{position: "relative", width: "100%"}}>
+                                                        <Avatar src={generateGravatarLink(row.package.publisher?.email)} style={{position: "absolute", top: 0, right: 0}}></Avatar>
                                                         <Button color={"primary"} style={{position: "absolute", bottom: 0, right: 0}} onClick={() => this.handleRowClick(row)}>Install</Button>
                                                     </div>
                                                 </div>

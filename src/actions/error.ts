@@ -10,9 +10,7 @@ export function throwError(response: Response): Response {
 }
 
 export async function handleAjaxError(error: any, dispatch?) {
-    if (!dispatch) {
-        dispatch = store.dispatch;
-    }
+    if (!dispatch) dispatch = store.dispatch;
     dispatch(cancelSnackbars());
     console.log("In handle ajax error", error);
     const status = error.status;
@@ -24,7 +22,8 @@ export async function handleAjaxError(error: any, dispatch?) {
     }
 }
 
-export async function handleClientError(error: any, dispatch) {
+export async function handleClientError(error: any, dispatch?) {
+    if (!dispatch) dispatch = store.dispatch;
     console.log("In handle client error", error);
     return dispatch(openDialog(DialogType.CLIENT_ERROR, { error }));
 }
