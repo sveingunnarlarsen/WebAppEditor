@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { throwError, handleAjaxError } from "../../actions/error";
 import * as _ from "underscore";
+import { throwError, handleAjaxError } from "../../actions/error";
 import { getFileByPath } from "../../store/utils";
-
 import { installNpmModule } from "../../actions/npm";
+import { formatDate } from "../../helpers/utils";
 
 import { withStyles } from "@material-ui/styles";
 import {
@@ -31,23 +31,23 @@ interface SingleResult {
         scope: string;
         version: string;
         description: string;
+        keywords: string[];
+        date: string;
+        links: {
+            npm: string;
+            homepage: string;
+            repository: string;
+            bugs: string;
+        }
+        author: {
+            name: string;
+            email: string;
+        }
+        publisher: {
+            username: string;
+            email: string;
+        }
     };
-    keywords: string[];
-    date: string;
-    links: {
-        npm: string;
-        homepage: string;
-        repository: string;
-        bugs: string;
-    }
-    author: {
-        name: string;
-        email: string;
-    }
-    publisher: {
-        username: string;
-        email: string;
-    }
     score: {
         final: number;
         detail: {
@@ -71,13 +71,13 @@ const styles = {
         minHeight: "50vh",
     },
     tableRow: {
-        cursor: "pointer"
+        
     }
 };
 
 function mapDispatch(dispatch) {
     return {
-        installNpmModule: (name, version) => dispatch(installNpmModule({name, version})),
+        installNpmModule: (name, version) => dispatch(installNpmModule({ name, version })),
     };
 }
 
@@ -176,14 +176,23 @@ class NpmInstall extends React.Component<NpmInstallProps, NpmInstallState> {
                             <TableBody>
                                 {packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                                     return (
-                                        <TableRow key={row.package.name} className={classes.tableRow} hover tabIndex={-1} onClick={() => this.handleRowClick(row)}>
+                                        <TableRow key={row.package.name} className={classes.tableRow} hover tabIndex={-1}>
                                             <TableCell>
-                                                <Typography>{row.package.name}</Typography>
-                                                <Typography>{row.package.description}</Typography>
-                                                <Typography>{row.keywords}</Typography>
-                                                <Typography>{row.package.version}</Typography>
-                                                <Typography>{row.links.homepage}</Typography>
-                                                <Typography>{row.date}</Typography>
+                                                <div style={{display: "flex"}}>
+                                                    <div style={{width: "80%"}}>
+                                                        <Typography>{row.package.name}</Typography>
+                                                        <Typography>{row.package.description}</Typography>
+                                                        {row.package.keywords &&
+                                                            <Typography>Keywords: {row.package.keywords.join(" ")}</Typography>
+                                                        }
+                                                        <Typography>{row.package.version}</Typography>
+                                                        <a href={row.package.links.homepage} target={"_blank"}>{row.package.links.homepage}</a>
+                                                        <Typography>Published: {formatDate(row.package.date)}</Typography>
+                                                    </div>
+                                                    <div style={{position: "relative", width: "100%"}}>
+                                                        <Button color={"primary"} style={{position: "absolute", bottom: 0, right: 0}} onClick={() => this.handleRowClick(row)}>Install</Button>
+                                                    </div>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     )
