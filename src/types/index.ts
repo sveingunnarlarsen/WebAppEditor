@@ -164,6 +164,10 @@ export interface AppEditorState {
             description: string;
             name: string;
             role: string;
+            languageServer: {
+                enabled: boolean;
+                port: number;
+            };
         },
         Languages: {
             ISOCODE: string;
