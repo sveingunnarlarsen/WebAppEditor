@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/styles";
-import PropTypes from "prop-types";
+import SplitPane from "react-split-pane";
 import { connect } from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,6 +11,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 
+import Dependencies from "./Dependencies";
 import WebixTree from "./webix/Tree";
 
 const styles = {
@@ -55,3 +56,18 @@ class FileExplorer extends React.Component<FileExplorerProps> {
 }
 
 export default withStyles(styles)(FileExplorer);
+
+/*
+            <div style={{ display }} className={classes.container}>
+                <SplitPane
+                    split="horizontal"
+                    defaultSize={"80%"}
+                    onDragFinished={() => {
+                        console.log("Resize command line ended");
+                    }}
+                >
+                <div></div>                    
+                <div><Dependencies /></div>
+                </SplitPane>
+            </div>
+*/
