@@ -137,7 +137,7 @@ class DialogContainer extends React.Component<DialogContainerProps> {
                 );
             case DialogType.NPM_INSTALL:
                 return (
-                    <Dialog maxWidth="xs" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>
                         <NpmInstall close={close} />
                     </Dialog>
                 );

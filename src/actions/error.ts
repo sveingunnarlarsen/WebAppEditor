@@ -1,3 +1,4 @@
+import store from "../store";
 import { DialogType } from "../types/dialog";
 import { openDialog, cancelSnackbars } from "./";
 
@@ -8,7 +9,10 @@ export function throwError(response: Response): Response {
     return response;
 }
 
-export async function handleAjaxError(error: any, dispatch) {
+export async function handleAjaxError(error: any, dispatch?) {
+    if (!dispatch) {
+        dispatch = store.dispatch;
+    }
     dispatch(cancelSnackbars());
     console.log("In handle ajax error", error);
     const status = error.status;

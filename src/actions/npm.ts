@@ -4,6 +4,7 @@ import { DialogType } from "../types/dialog";
 import { openDialog } from "./";
 import { saveFso } from "./file";
 import { throwError, handleAjaxError, handleClientError } from "./error";
+import { getFileByPath } from "../store/utils";
 
 export function getNpmModules() {
     return function(dispatch, getState) {
@@ -20,6 +21,18 @@ export function getNpmModules() {
                 }
             })
             .catch(error => handleAjaxError(error, dispatch));
+    };
+}
+
+export function installNpmModule({name, version}: {name: string; version: string}) {
+    return function(dispatch, getState) {    
+        const packageJson = getFileByPath('/package.json');
+        if (packageJson) {
+            const packageJsonObj = JSON.parse(packageJson.content);
+            packageJsonObj.dependencies[name] = `^${version}`;
+            updatePackageJson(JSON.stringify(packageJsonObj), getState, dispatch);
+            dispatch(installNpmModules());
+        }
     };
 }
 

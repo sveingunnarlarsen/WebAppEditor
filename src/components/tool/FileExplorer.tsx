@@ -49,6 +49,16 @@ class FileExplorer extends React.Component<FileExplorerProps> {
         const display = this.props.show ? "" : "none";
         return (
             <div style={{ display }} className={classes.container}>
+                <WebixTree />
+            </div>
+        );
+    }
+}
+
+export default withStyles(styles)(FileExplorer);
+
+/*
+            <div style={{ display }} className={classes.container}>
                 <SplitPane
                     split="horizontal"
                     defaultSize={"80%"}
@@ -56,12 +66,8 @@ class FileExplorer extends React.Component<FileExplorerProps> {
                         console.log("Resize command line ended");
                     }}
                 >
-                <div><WebixTree /></div>                    
+                <div></div>                    
                 <div><Dependencies /></div>
                 </SplitPane>
             </div>
-        );
-    }
-}
-
-export default withStyles(styles)(FileExplorer);
+*/
