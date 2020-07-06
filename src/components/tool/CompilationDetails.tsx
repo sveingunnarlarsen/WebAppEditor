@@ -3,7 +3,7 @@ import { withStyles, WithStyles } from "@material-ui/styles";
 import { connect } from 'react-redux';
 import { AppEditorState } from '../../types/index'
 import FolderIcon from '@material-ui/icons/Folder'
-import { Link, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Link, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from '@material-ui/core';
 import { getFileTypeImageData } from '../../helpers/utils';
 import { extname } from 'path';
 
@@ -21,8 +21,8 @@ function mapDispatch(dispatch) {
 }
 
 const styles: any = {
-    root: {
-        height: 'inherit',
+    container: {
+        height: '100%',
     },
     list: {
         maxHeight: "40%",
@@ -31,11 +31,9 @@ const styles: any = {
     icon: {
         height: '30px'
     },
-    label: {
-        color: "white",
-        backgroundColor: "#333333",
-        padding: "0.5rem"
-    }
+    toolbar: {
+        minHeight: "2rem",
+    },
 }
 
 interface Props extends ReturnType<typeof mapState> {
@@ -70,12 +68,16 @@ class CompilationDetails extends React.Component<Props>{
         const { production, development } = this.props.compilationDetails;
         const { classes } = this.props;
         return (
-            <div className={classes.root} hidden={!this.props.show} >
-                <div className={classes.label}> Development </div>
+            <div className={classes.container} hidden={!this.props.show} >
+                <Toolbar className={classes.toolbar}>
+                    <Typography>Development</Typography>
+                </Toolbar>
                 <List className={classes.list} dense={true}>
                     {this.createList(development.assets, false)}
                 </List>
-                <div className={classes.label}> Production </div>
+                <Toolbar className={classes.toolbar}>
+                    <Typography>Production</Typography>
+                </Toolbar>
                 <List className={classes.list} dense={true}>
                     {this.createList(production.assets, true)}
                 </List>

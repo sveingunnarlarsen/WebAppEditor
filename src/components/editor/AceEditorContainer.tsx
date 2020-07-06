@@ -20,6 +20,7 @@ const mapState = (state: AppEditorState, ownProps) => {
     let fso = state.app.fileSystemObjects.find(f => f.id === ownProps.fileId);
     return {
         fso,
+        isDark: state.darkState,
         lock: state.app.lock,
         editorResized: state.editorResized,
         updateEditors: state.updateEditors,
@@ -61,6 +62,10 @@ class AceEditorContainer extends React.Component<EditorProps> {
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState) {
+        if (this.props.isDark !== nextProps.isDark) {
+            console.log("Component should update because theme has changed");
+            return true;
+        }
         if (this.props.fso.id !== nextProps.fso.id) {
             if (this.props.keepEditorState) {
                 this.props.keepEditorState(this.editor);
@@ -196,7 +201,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
     };
 
     render() {
-        const { fso, viewState, openFileAt, lock } = this.props;
+        const { fso, viewState, openFileAt, lock, isDark } = this.props;
 
         const model = getModel(this.props.fso.path);
 
@@ -211,7 +216,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
 
         return (
             <React.Fragment>
-                <MonacoEditor height="100%" model={model} openFileAt={openFileAt} viewState={viewState} theme="dark" editorDidMount={this.handleEditorDidMount} options={{ readOnly: !lock }} />
+                <MonacoEditor height="100%" model={model} openFileAt={openFileAt} viewState={viewState} theme={isDark ? "dark" : "light"} editorDidMount={this.handleEditorDidMount} options={{ readOnly: !lock }} />
             </React.Fragment>
         );
     }

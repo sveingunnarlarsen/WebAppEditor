@@ -68,6 +68,8 @@ const Editor =
                 ...options,
             });
 
+            monacoRef.current.editor.setTheme(theme);
+
             setTokensProvider(editorRef.current);
 
             // @ts-ignore

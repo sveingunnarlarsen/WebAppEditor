@@ -342,8 +342,18 @@ class GitCommand {
         for (let i = 0; i < diffFiles.length; i++) {
             const filepath = diffFiles[i];
             let { object: fileHEAD } = await git.readObject({ fs, dir: currentGitDir, oid: sha, filepath, encoding: "utf8" });
-            let fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
+            let fileWORKDIR;
 
+            try {
+                fileWORKDIR = await getFileContent(pfs, `${currentGitDir}/${filepath}`);
+            } catch (e) {
+                if (e.message.indexOf('ENOENT') > -1) {
+                    fileWORKDIR = "";   
+                } else {
+                    throw e;
+                }
+            }
+            
             const diff = JsDiff.structuredPatch(filepath, filepath, fileHEAD as string, fileWORKDIR);
 
             ret += forcedChalk.yellow("diff --git a/" + filepath + " b/" + filepath);

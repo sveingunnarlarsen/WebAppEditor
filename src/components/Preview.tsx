@@ -29,7 +29,7 @@ class Preview extends React.Component<PreviewProps> {
 
             return (
                 <div className={useClass} style={{ width: "100%", height: "100%" }}>
-                    <iframe src={link} id="iframeRun" height="100%" width="100%" align="center" />;
+                    <iframe src={link} style={{border: "none"}} height="100%" width="100%"/>;
                 </div>
             );
         }

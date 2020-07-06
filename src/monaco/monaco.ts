@@ -93,7 +93,7 @@ import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 //import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
 import {conf} from "./configuration/typescript";
-import {themeDarkPlus} from "./themes";
+import {themeDarkPlus, themeLightPlus} from "./themes";
 
 // @ts-ignore
 self.MonacoEnvironment = {
@@ -124,6 +124,8 @@ monaco.languages.setLanguageConfiguration('typescript_react', conf);
 
 // @ts-ignore
 monaco.editor.defineTheme("dark", themeDarkPlus);
+// @ts-ignore
+monaco.editor.defineTheme("light", themeLightPlus);
 monaco.editor.setTheme("dark");
 
 export default monaco;

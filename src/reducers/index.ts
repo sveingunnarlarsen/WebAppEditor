@@ -8,6 +8,7 @@ import { initState as appInitState, app } from "./app";
 import { initState as editorInitState, editor } from "./editor";
 
 const initialState: AppEditorState = {
+    darkState: true,
     visibleTool: Tool.EXPLORER,
     selectedNode: "",
     previewVisible: false,
@@ -256,7 +257,15 @@ function languageServerConnected(state = initialState.languageServerConnected, a
     return state;
 }
 
+function darkState(state = initialState.darkState, action) {
+    if (action.type === Actions.TOGGLE_THEME) {
+        return !state;
+    }
+    return state;
+}
+
 const rootReducer = combineReducers<AppEditorState>({
+    darkState,
     visibleTool,
     selectedNode,
     previewVisible,

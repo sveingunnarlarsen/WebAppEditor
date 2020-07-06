@@ -30,8 +30,6 @@ import { DialogType } from "../../../types/dialog";
 import { importFiles } from "../../../helpers/import";
 import { calculateContextPos } from "../../../helpers/utils";
 
-import "./TreeContextMenu.css";
-
 const mapState = (state: AppEditorState) => {
     const fsos = state.app.fileSystemObjects;
     const lock = state.app.lock;

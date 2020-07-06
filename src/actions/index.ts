@@ -50,6 +50,12 @@ export function toggleCLI(): Action {
     };
 }
 
+export function toggleTheme(): Action {
+    return {
+        type: Actions.TOGGLE_THEME
+    }
+}
+
 export function togglePreview(): Action {
     return {
         type: Actions.TOGGLE_PREVIEW

@@ -18,13 +18,10 @@ import { DialogType } from "../../types/dialog";
 
 const styles: any = {
     container: {
-        background: "#252526",
-        height: "100%"
+        height: "100%",
     },
     toolbar: {
-        background: "#333333",
         minHeight: "2rem",
-        color: "white"
     },
     rightTools: {
         marginLeft: "auto",

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { withStyles, Styles } from "@material-ui/styles";
 import * as _ from "underscore";
 
+import { getResizerHorizontalCss, getResizerVerticalCss } from "../../css/inline";
 import { resizeEditor } from "../../actions";
 import { AppEditorState } from "../../types";
 import { EditorContainer as EditorContainerType } from "../../types/editor";
@@ -78,10 +79,14 @@ class EditorContainer extends React.Component<EditorContainerProps> {
         let content;
         if (editor1 && editor2) {
             content = (
-                <SplitPane ref={ref => { this.paneRef = ref }} split={split} defaultSize={"50%"} onDragFinished={() => {
-                    console.log("Editor container drag finished, recalculating");
-                    this.recalculateWidth();
-                }}>
+                <SplitPane ref={ref => { this.paneRef = ref }}
+                    split={split}
+                    defaultSize={"50%"}
+                    resizerStyle={split === "vertical" ? getResizerVerticalCss() : getResizerHorizontalCss()}
+                    onDragFinished={() => {
+                        console.log("Editor container drag finished, recalculating");
+                        this.recalculateWidth();
+                    }}>
                     {this.createEditor(editor1)}
                     {this.createEditor(editor2)}
                 </SplitPane>

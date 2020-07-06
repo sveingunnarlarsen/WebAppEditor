@@ -101,7 +101,7 @@ class DialogContainer extends React.Component<DialogContainerProps> {
                 );
             case DialogType.PROJECT_LIST:
                 return (
-                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} classes={{ paper: classes.projectsPaper }} open={dialog.visible}>
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }}  open={dialog.visible}>
                         <Projects close={close} />
                     </Dialog>
                 );

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { connect } from "react-redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -9,27 +9,62 @@ import Content from "./components/Content";
 import DialogContainer from "./components/dialog/DialogContainer";
 import SnackbarContainer from "./components/snackbar/SnackbarContainer";
 
+import store from "./store";
 import { getMasterData } from "./actions/app";
 import { initTextMate } from "./monaco/textmate";
-import store from "./store";
+import { AppEditorState } from "./types"
+
+import "./App.css";
 
 initTextMate();
 store.dispatch(getMasterData());
 
-import "./App.css"; //TODO: Clean up css
+const mapState = (state: AppEditorState) => {
+    return {
+        darkState: state.darkState,
+    };
+};
 
-const menuWidth = "3.5rem";
 
-class App extends React.Component {
+class App extends React.Component<ReturnType<typeof mapState>> {
     constructor(props) {
         super(props);
     }
 
     render() {
+        const menuWidth = "3.5rem";
+        const isDark = this.props.darkState;
+
         const muiTheme = createMuiTheme({
-            palette: {
-                type: "dark"
-            }
+            palette: isDark ? {
+                type: "dark",
+                background: {
+                    default: "#252526"
+                },
+                primary: {
+                    main: "#F59825",
+                    contrastText: "#fff"
+                },
+            } : {
+                type: "light"
+            },
+            overrides: isDark ? {
+                MuiToolbar: {
+                    root: {
+                        backgroundColor: "#333333",
+                    }
+                },
+                MuiDrawer: {
+                    paper: {
+                        backgroundColor: "#333333",
+                    }
+                },
+                MuiTablePagination: {
+                    toolbar: {
+                        backgroundColor: "transparent",
+                    }
+                }
+            } : {},
         });
 
         return (
@@ -45,4 +80,4 @@ class App extends React.Component {
     }
 }
 
-export default App;
+export default connect(mapState)(App);

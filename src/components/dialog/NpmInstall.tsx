@@ -202,6 +202,7 @@ class NpmInstall extends React.Component<NpmInstallProps, NpmInstallState> {
                         </Table>
                     </TableContainer>
                     <TablePagination
+                        color="transparent"
                         rowsPerPageOptions={[10, 25, 100]}
                         component="div"
                         count={packages.length}

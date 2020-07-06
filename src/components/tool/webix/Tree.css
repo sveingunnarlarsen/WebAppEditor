@@ -1,0 +1,97 @@
+.webix_tree_none {
+    width: 0px;
+}
+
+.webix_view {
+    overflow-y: auto!important;
+    overflow-x: hidden!important;
+    height: 100% !important;
+    width: 100% !important;
+    background-color: transparent;
+}
+
+.webix_dark .webix_tree_item {
+    font-family: "72", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: #fafafa;
+}
+
+.webix_light .webix_tree_item {
+    font-family: "72", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: #475466;
+}
+
+.webix_tree_item.webix_selected {
+    background: #094771!important;
+}
+
+.webix_top {
+    background: none;
+    background-image: linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit-linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
+}
+
+.webix_bottom {
+    background: none;
+    background-image: linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
+    background-image: -webkit-linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
+}
+
+.treeMarker {
+    border-top: 1px dashed orange;
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    left: 0px;
+    display: none;
+}
+
+.webix_tree_leaves {
+    transition: height 0.3s;
+    overflow: hidden;
+}
+
+.webix_disabled {
+    color: #bb0000!important;
+}
+
+.webix_changed {
+    color: wheat!important;
+}
+
+.webix_changed::after {
+    content: "M";
+    right: 10px;
+    position: absolute;
+}
+
+.webix_compare_new {
+    background: #b6d957;
+}
+
+.webix_compare_deleted {
+    background: #f33334;
+}
+
+.webix_compare_changed {
+    background: yellow;
+}
+
+.webix_drag_zone,
+.webix_drag_main,
+.webix_drag_multiple,
+.webix_drag_multiple_last {
+    background-color: #3f5161!important;
+    color: white;
+}
+
+.webix_tree.webix_scroll_cont >.webix_tree_leaves {
+    padding: 0px;
+}
+
+.webix_tree_item.webix_selected span {
+    color: white;
+}

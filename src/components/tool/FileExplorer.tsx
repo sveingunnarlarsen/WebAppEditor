@@ -16,21 +16,8 @@ import WebixTree from "./webix/Tree";
 
 const styles = {
     container: {
-        background: "#252526",
         width: "100%",
         height: "100%",
-    },
-    input: {
-        color: "white"
-    },
-    label: {
-        color: "white",
-        padding: "0.5rem"
-    },
-    toolbar: {
-        background: "#333333",
-        minHeight: "2rem",
-        color: "white"
     }
 };
 

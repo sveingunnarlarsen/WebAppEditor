@@ -28,7 +28,6 @@ import { DialogType } from "../../types/dialog";
 
 const styles = {
     drawer: {
-        background: "#333333",
         border: "none",
         zIndex: 1
     },

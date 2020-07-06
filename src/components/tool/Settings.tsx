@@ -20,10 +20,16 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 
 import { getConfigUser, setConfigUser, setRemoteOrigin } from "../../git";
 import { AppEditorState } from "../../types";
-
 import { updateAppData, saveAppData } from "../../actions/app";
-
 import { KeyCodes } from "../../types/keyCodes";
+
+const styles: any = {
+    container: {
+        padding: "1rem",
+        height: "100%",
+        overflowY: "auto",
+    }
+};
 
 const mapState = (state: AppEditorState) => {
     const { name, description, type, settings, lock } = state.app;
@@ -36,14 +42,6 @@ const mapState = (state: AppEditorState) => {
             settings,
         }
     };
-};
-
-const styles: any = {
-    container: {
-        padding: "1rem",
-        height: "100%",
-        overflowY: "auto",
-    }
 };
 
 function mapDispatch(dispatch) {

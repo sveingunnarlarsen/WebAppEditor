@@ -11,6 +11,10 @@ const mapState = state => {
 };
 
 class XTerminal extends React.Component {
+    terminal: Terminal;
+    fitAddon: FitAddon;
+    terminalRef: HTMLElement;
+    container: any;
     constructor(props) {
         super(props);
         this.terminal = new Terminal({

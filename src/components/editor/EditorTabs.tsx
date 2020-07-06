@@ -15,21 +15,13 @@ import { base64ToArrayBuffer, isImage, getMimeType } from "../../helpers/utils";
 
 const styles: Styles<any, any> = {
     tabs: {
-        background: "#252526",
         minHeight: "auto",
-        color: "white"
-    },
-    indicator: {
-        background: "#1B4870"
     },
     tab: {
         minHeight: "auto",
         maxWidth: "100%",
         padding: 5,
         textTransform: "none",
-    },
-    tabSelected: {
-        background: "#333333"
     },
     tabWrap: {
         flexDirection: "row"
@@ -101,7 +93,7 @@ class EditorTabs extends React.Component<EditorTabsProps> {
         return tabs.map(id => {
             const file = files.find(f => f.id === id);
             const style = file.modified ? { color: "wheat" } : null;
-            return <Tab classes={{ root: classes.tab, wrapper: classes.tabWrap, selected: classes.tabSelected }} label={this.getTabLabel(file)} key={id} value={id} style={style} />;
+            return <Tab classes={{ root: classes.tab, wrapper: classes.tabWrap }} label={this.getTabLabel(file)} key={id} value={id} style={style} />;
         });
     }
 
@@ -121,7 +113,7 @@ class EditorTabs extends React.Component<EditorTabsProps> {
 
         return (
             <React.Fragment>
-                <Tabs variant="scrollable" scrollButtons="auto" classes={{ indicator: classes.indicator }} className={classes.tabs} value={activeTab} onChange={this.handleChange.bind(this)}>
+                <Tabs indicatorColor="primary" variant="scrollable" scrollButtons="auto" className={classes.tabs} value={activeTab} onChange={this.handleChange.bind(this)}>
                     {this.createTabs(tabs)}
                 </Tabs>
                 {content}

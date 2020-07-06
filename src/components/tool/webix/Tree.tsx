@@ -23,18 +23,11 @@ import { AppEditorState } from "../../../types";
 import { DialogType } from "../../../types/dialog";
 import { convertFlatToNested, sortFoldersAndFiles } from "../../../helpers/utils";
 
+import "./Tree.css";
+
 const styles = {
-    input: {
-        color: "white"
-    },
-    label: {
-        color: "white",
-        padding: "0.5rem"
-    },
     toolbar: {
-        background: "#333333",
         minHeight: "2rem",
-        color: "white"
     }
 };
 
@@ -47,6 +40,7 @@ const mapState = (state: AppEditorState) => {
                 .map(({ id, name, value, path, type, image, disabled, parentId }) => ({ id, name, value, path, type, image, disabled, parentId }))
         },
         lock: state.app.lock,
+        isDark: state.darkState,
         visibleTool: state.visibleTool,
         toolResized: state.toolResized,
     }
@@ -118,12 +112,12 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
     };
 
     render() {
-        const { classes, lock } = this.props;
+        const { classes, lock, isDark } = this.props;
 
         return (
             <React.Fragment>
                 <Toolbar className={classes.toolbar}>
-                    <Input defaultValue="" placeholder="Filter" className={classes.input} onChange={this.handleFilterChange} />
+                    <Input defaultValue="" placeholder="Filter" onChange={this.handleFilterChange} />
                     <Tooltip title="Expand all">
                         <IconButton onClick={() => this.ui.openAll()} color="inherit" size="small">
                             <ExpandMoreIcon fontSize="small" />
@@ -149,7 +143,7 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
                         </React.Fragment>
                     }
                 </Toolbar>
-                <div ref="root" style={{ height: "calc(100% - 4.3rem)", width: "100%" }} />
+                <div className={isDark ? "webix_dark" : "webix_light"} ref="root" style={{ height: "calc(100% - 4.3rem)", width: "100%" }} />
                 <TreeContextMenu container={this} />
             </React.Fragment>
         );
@@ -201,6 +195,7 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
     shouldComponentUpdate(nextProps, nextState) {
         if (nextProps.visibleTool !== "EXPLORER") return false;
 
+        if (this.props.isDark !== nextProps.isDark) return true;
         if (this.state.filter !== nextState.filter) return true;
 
         //Compare path in tree, only update when name differ.

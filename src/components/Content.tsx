@@ -10,6 +10,9 @@ import ToolContent from "./tool/ToolContent";
 import EditorTop from "./editor/EditorTop";
 import Preview from "./Preview";
 import TerminalContainer from "./terminal/TerminalContainer";
+
+import {getResizerVerticalCss, getResizerHorizontalCss} from "../css/inline";
+
 import "./Content.css";
 
 const styles: any = {
@@ -71,11 +74,12 @@ class Content extends React.Component<ContentProps, ContentState> {
         const useClass = this.state.isDragging ? classes.nonInteractive : classes.interactive;
 
         return (
-            <div style={{ position: "absolute", top, left, width: `calc(100% - ${left})`, height: `calc(100% - ${top})`, background: "#252526" }}>
+            <div style={{ position: "absolute", top, left, width: `calc(100% - ${left})`, height: `calc(100% - ${top})` }}>
                 <SplitPane
                     split="vertical"
                     defaultSize={defaultPreviewSize}
                     className={splitPanePreviewClass}
+                    resizerStyle={getResizerVerticalCss()}
                     onDragStarted={() => {
                         this.setState({
                             isDragging: true,
@@ -95,6 +99,7 @@ class Content extends React.Component<ContentProps, ContentState> {
                         split="horizontal"
                         defaultSize={defaultContentSize}
                         className={splitPaneContentSize}
+                        resizerStyle={getResizerHorizontalCss()}
                         pane2Style={{ background: "#000000" }}
                         onDragFinished={() => {
                             console.log("Resize command line ended");
@@ -106,6 +111,7 @@ class Content extends React.Component<ContentProps, ContentState> {
                         <SplitPane
                             split="vertical"
                             defaultSize={"15%"}
+                            resizerStyle={getResizerVerticalCss()}
                             onDragFinished={() => {
                                 console.log("Resize tool ended");
                                 this.props.resizeTool();

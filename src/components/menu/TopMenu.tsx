@@ -6,6 +6,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
+import Switch from "@material-ui/core/Switch";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
@@ -22,12 +23,12 @@ import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 import UserMenu from "./UserMenu";
 
+import { toggleTheme } from "../../actions";
 import { compileProject, compilePreview, toggleToEdit, toggleToDisplay } from "../../actions/app";
 
 const styles = (theme) => createStyles({
     appBar: {
-        background: "#333333",
-        boxShadow: "none"
+        boxShadow: "none",
     },
     typography: {
         padding: theme.spacing(2),
@@ -65,6 +66,7 @@ function getWarnings(state: AppEditorState) {
 
 const mapState = (state: AppEditorState) => {
     return {
+        darkState: state.darkState,
         warnings: getWarnings(state),
         appName: state.app.name,
         appLock: state.app.lock,
@@ -77,7 +79,8 @@ function mapDispatch(dispatch) {
         compile: () => dispatch(compileProject()),
         compilePreview: () => dispatch(compilePreview()),
         toggleToEdit: () => dispatch(toggleToEdit()),
-        toggleToDisplay: () => dispatch(toggleToDisplay())
+        toggleToDisplay: () => dispatch(toggleToDisplay()),
+        toggleTheme: () => dispatch(toggleTheme())
     };
 }
 
@@ -93,6 +96,10 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
             anchorElWarning: null,
             anchorElUserMenu: null,
         };
+    }
+
+    handleThemeToggle = () => {
+        this.props.toggleTheme();
     }
 
     handleProjectMenuToggle(event) {
@@ -148,43 +155,43 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
     }
 
     render() {
-        const { classes, warnings, appName, appLock } = this.props;        
+        const { classes, warnings, appName, appLock, darkState } = this.props;        
         return (
             <AppBar className={classes.appBar}>
                 <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
-                    <Button onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
+                    <Button color="inherit" onClick={this.handleProjectMenuToggle.bind(this)} endIcon={<ArrowDropDownIcon />}>
                         Project
 					</Button>
                     {appName &&
                         <React.Fragment>
-                            <Button className={classes.button} onClick={this.runApp}>
+                            <Button color="inherit" className={classes.button} onClick={this.runApp}>
                                 Run
                             </Button>
                             {appLock &&
-                                <Button className={classes.button} onClick={this.compileProject}>
+                                <Button color="inherit" className={classes.button} onClick={this.compileProject}>
                                     Compile
                                 </Button>
                             }
                             <Divider orientation="vertical" flexItem />
-                            <Button className={classes.button} onClick={this.runPreview}>
+                            <Button color="inherit" className={classes.button} onClick={this.runPreview}>
                                 Run Preview
                             </Button>
                             {appLock &&
-                                <Button className={classes.button} onClick={this.compilePreview}>
+                                <Button color="inherit" className={classes.button} onClick={this.compilePreview}>
                                     Compile Preview
                                 </Button>
                             }
                             <Divider orientation="vertical" flexItem />
                             {!appLock &&
                                 <Tooltip title="Toggle to edit mode">
-                                    <IconButton onClick={() => this.props.toggleToEdit()}>
+                                    <IconButton color="inherit" onClick={() => this.props.toggleToEdit()}>
                                         <LockOutlinedIcon />
                                     </IconButton>
                                 </Tooltip>
                             }
                             {appLock &&
                                 <Tooltip title="Toggle to display mode">
-                                    <IconButton onClick={() => this.props.toggleToDisplay()}>
+                                    <IconButton color="inherit" onClick={() => this.props.toggleToDisplay()}>
                                         <LockOpenOutlinedIcon />
                                     </IconButton>
 
@@ -205,10 +212,11 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     {!appName && 
                         <div style={{flexGrow: 1}}></div>
                     }
+                    <Switch color="primary" checked={darkState} onChange={this.handleThemeToggle} />
                     <Typography>
                         {this.props.user ? (this.props.user.name || this.props.user.username) : ""}
                     </Typography>
-                    <IconButton onClick={this.handleUserMenuToggle.bind(this)}>
+                    <IconButton color="inherit" onClick={this.handleUserMenuToggle.bind(this)}>
                         <AccountCircleOutlinedIcon />
                     </IconButton>
                     <ProjectMenu anchorEl={this.state.anchorElProjectMenu} closeMenu={this.closeProjectMenu} />

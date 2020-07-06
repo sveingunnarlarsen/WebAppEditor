@@ -1,5 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/styles";
+import { Typography } from "@material-ui/core";
 import { connect } from "react-redux";
 
 import { AppEditorState } from "../../types";
@@ -14,11 +15,10 @@ import { Tool } from "../../types";
 const styles = {
     container: {
         height: "100%",
-        overflow: "hidden",
+        width: "100%"
     },
-    label: {
-        color: "white",
-        padding: "0.5rem"
+    header: {
+        padding: "0.5rem",
     }
 };
 
@@ -42,14 +42,14 @@ class ToolContent extends React.Component<ToolContentProps> {
             <React.Fragment>
                 {appName &&
                     <div className={classes.container}>
-                        <div className={classes.label}>{visibleTool}</div>
-                        <FileExplorer show={visibleTool === Tool.EXPLORER ? true : false} />
-                        <Settings show={visibleTool === Tool.SETTINGS ? true : false} />
-                        <NpmExplorer show={visibleTool === Tool.NPM ? true : false} />
+                        <Typography className={classes.header}>{visibleTool}</Typography>
+                        <FileExplorer show={visibleTool === Tool.EXPLORER} />
+                        <Settings show={visibleTool === Tool.SETTINGS} />
+                        <NpmExplorer show={visibleTool === Tool.NPM} />
                         <CompilationDetails show={visibleTool === Tool.COMPILATION_DETAILS} />
                     </div>
                 }
-                {!appName && 
+                {!appName &&
                     <div className={classes.container}></div>
                 }
             </React.Fragment>
