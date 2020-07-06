@@ -2,7 +2,6 @@
 
 Gunnar:
 * Verify deployment of runtime assets.
-* Where is git repository relative to origin.
 * Show compiled apps in http://localhost:8080/cockpit.html#run-application (Add toggle openui5/webapp)
 * Add disable option for production (disables users from accessing the production URL)
 * Include api definitions.
@@ -55,4 +54,6 @@ DONE:
 * Update basic template(DONE)
 * Test apps created on old build vs new build. Map differences(DONE)
 * getSignatureHelp server lag. Maybe related to .tsx and/or material-ui(DONE)
+* Where is git repository relative to origin.
 * Install single npm module from pluss button in npm view and write to package.json(DONE)
+* Where is git repository relative to origin.(DONE)
