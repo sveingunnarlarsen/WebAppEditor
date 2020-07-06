@@ -5,7 +5,6 @@ import { loadProject } from "../monaco"
 import { getNpmModules } from "./npm";
 import { throwError, handleAjaxError, handleCompileError, handleClientError } from "./error";
 import { convertApiWebAppData, destructAppServerProps } from "./utils";
-
 import { reset, openDialog } from "./";
 
 const headers = {
@@ -63,7 +62,12 @@ export function createProject({ type, template, name, description, remote }: pro
                     dispatch(setAppLock(true));
                     dispatch(getNpmModules());
                     loadProject(getState);
-                    if (remote) cloneGitRepo(remote);
+                    if (remote) {
+                        cloneGitRepo(remote);
+                        return;
+                    }
+                    dispatch(compilePreview());
+                    dispatch(compileProject());
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }

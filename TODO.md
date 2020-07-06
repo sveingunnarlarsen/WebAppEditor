@@ -8,13 +8,9 @@ Gunnar:
  - Create api dependency tool section in explorer
  - Dialog to add apis to project
  - Many to Many relation between webapp and apis.
- - Refresh on change   
+ - Refresh on change
 
 Jørgen:
-* language port must be configurable(DONE)
-* Project name write to package.json (DONE)
- - Rename also
-* Auto compile new project from template
 * Include api definitions.
  - Build module with apis included in project on refresh.
  - Add module to language server.
@@ -22,7 +18,8 @@ Jørgen:
 Both:
 * Dialog with documentation. E.g. Ctrl-S = Save, Supported git commands. (SPECIFY THAT DEVELOPMENT DOES NOT WORK IN HIGH AVAILABILITY ENV)
 
-(After release)
+Bugs:
+* Compiling one Vue project then a different one sometimes crashes (Jørgen)
 
 Backlog:
 * Include server scripts in editor. (BIG TASK).
@@ -57,3 +54,6 @@ DONE:
 * Where is git repository relative to origin.
 * Install single npm module from pluss button in npm view and write to package.json(DONE)
 * Where is git repository relative to origin.(DONE)
+* language port must be configurable (DONE)
+* Project name write to package.json (DONE)
+* Auto compile new project from template (DONE)
