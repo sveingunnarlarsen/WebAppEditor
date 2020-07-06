@@ -26,6 +26,7 @@ const mapState = (state: AppEditorState, ownProps) => {
         updateEditors: state.updateEditors,
         openFileAt: state.editor.openFileAt,
         setSearch: state.editor.setSearch,
+        centerScroll: state.centerScroll,
     }
 };
 
@@ -56,6 +57,7 @@ class AceEditorContainer extends React.Component<EditorProps> {
     deltaDecorations: string[] = [];
     editor: monaco.editor.IStandaloneCodeEditor;
     dontFocus: boolean = false;
+    centerScrollRef: monaco.IDisposable;
 
     constructor(props) {
         super(props);
@@ -109,6 +111,19 @@ class AceEditorContainer extends React.Component<EditorProps> {
                 this.props.resetSetSearch();
             });
         }
+
+        if (this.props.centerScroll !== nextProps.centerScroll) {
+            if (nextProps.centerScroll) {
+                this.centerScrollRef = this.editor.onDidChangeCursorPosition((event) => {
+                    if (event.secondaryPositions.length === 0 && event.source !== 'mouse') {
+                        this.editor.revealLineInCenter(event.position.lineNumber);
+                    }
+                });
+            } else if (this.centerScrollRef?.dispose) {
+                this.centerScrollRef.dispose();
+            }
+        }
+
         return false;
     }
 

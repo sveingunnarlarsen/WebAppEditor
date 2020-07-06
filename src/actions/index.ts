@@ -56,6 +56,12 @@ export function toggleTheme(): Action {
     }
 }
 
+export function toggleCenterScroll(): Action {
+    return {
+        type: Actions.TOGGLE_CENTER_SCROLL
+    }
+}
+
 export function togglePreview(): Action {
     return {
         type: Actions.TOGGLE_PREVIEW

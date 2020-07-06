@@ -17,13 +17,14 @@ import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
 import Popover from '@material-ui/core/Popover';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { AppEditorState } from "../../types"
 import store from "../../store";
 import ProjectMenu from "./ProjectMenu";
 import UserMenu from "./UserMenu";
 
-import { toggleTheme } from "../../actions";
+import { toggleTheme, toggleCenterScroll } from "../../actions";
 import { compileProject, compilePreview, toggleToEdit, toggleToDisplay } from "../../actions/app";
 
 const styles = (theme) => createStyles({
@@ -71,6 +72,7 @@ const mapState = (state: AppEditorState) => {
         appName: state.app.name,
         appLock: state.app.lock,
         user: state.resources.User,
+        centerScroll: state.centerScroll,
     };
 };
 
@@ -80,7 +82,8 @@ function mapDispatch(dispatch) {
         compilePreview: () => dispatch(compilePreview()),
         toggleToEdit: () => dispatch(toggleToEdit()),
         toggleToDisplay: () => dispatch(toggleToDisplay()),
-        toggleTheme: () => dispatch(toggleTheme())
+        toggleTheme: () => dispatch(toggleTheme()),
+        toggleCenterScroll: () => dispatch(toggleCenterScroll()),
     };
 }
 
@@ -100,6 +103,10 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
 
     handleThemeToggle = () => {
         this.props.toggleTheme();
+    }
+
+    toggleCenterScroll = () => {
+        this.props.toggleCenterScroll();
     }
 
     handleProjectMenuToggle(event) {
@@ -155,7 +162,7 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
     }
 
     render() {
-        const { classes, warnings, appName, appLock, darkState } = this.props;        
+        const { classes, warnings, appName, appLock, darkState, centerScroll } = this.props;        
         return (
             <AppBar className={classes.appBar}>
                 <Toolbar style={{ minHeight: this.props.height, paddingLeft: this.props.height }}>
@@ -212,6 +219,10 @@ class TopMenu extends React.Component<TopMenuProps, { anchorElProjectMenu: HTMLB
                     {!appName && 
                         <div style={{flexGrow: 1}}></div>
                     }
+                    <FormControlLabel
+                        control={<Switch color="primary" checked={centerScroll} onChange={this.toggleCenterScroll} />}
+                        label="Center Scrolling"
+                    />
                     <Switch color="primary" checked={darkState} onChange={this.handleThemeToggle} />
                     <Typography>
                         {this.props.user ? (this.props.user.name || this.props.user.username) : ""}

@@ -13,6 +13,7 @@ export enum Actions {
     TOGGLE_PREVIEW = "TOGGLE_PREVIEW",
     TOGGLE_CLI = "TOGGLE_CLI",
     TOGGLE_THEME = "TOGGLE_THEME",
+    TOGGLE_CENTER_SCROLL = "TOGGLE_CENTER_SCROLL",
     SET_APP_LOCK = "SET_APP_LOCK",
     START_GIT_CLONE = "START_GIT_CLONE",
     END_GIT_CLONE = "END_GIT_CLOME",
@@ -144,6 +145,7 @@ export interface CompilationDetails {
 
 export interface AppEditorState {
     darkState: boolean;
+    centerScroll: boolean;
     visibleTool: Tool;
     selectedNode: string;
     previewVisible: boolean;

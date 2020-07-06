@@ -9,6 +9,7 @@ import { initState as editorInitState, editor } from "./editor";
 
 const initialState: AppEditorState = {
     darkState: true,
+    centerScroll: false,
     visibleTool: Tool.EXPLORER,
     selectedNode: "",
     previewVisible: false,
@@ -264,8 +265,16 @@ function darkState(state = initialState.darkState, action) {
     return state;
 }
 
+function centerScroll(state = initialState.centerScroll, action) {
+    if(action.type === Actions.TOGGLE_CENTER_SCROLL) {
+        return !state;
+    }
+    return state;
+}
+
 const rootReducer = combineReducers<AppEditorState>({
     darkState,
+    centerScroll,
     visibleTool,
     selectedNode,
     previewVisible,
