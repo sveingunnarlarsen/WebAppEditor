@@ -11,8 +11,8 @@ Gunnar:
  - Refresh on change   
 
 Jørgen:
-* language port must be configurable
-* Project name write to package.json
+* language port must be configurable(DONE)
+* Project name write to package.json (DONE)
  - Rename also
 * Auto compile new project from template
 * Include api definitions.
