@@ -16,7 +16,6 @@ import { getFileContent, writeFileContent, fsExists } from "./utils";
 const fs = new FS("fs");
 const pfs = fs.promises;
 
-
 // @ts-ignore
 window.pfs = pfs;
 // @ts-ignore
@@ -96,7 +95,6 @@ function checkOidWithRemote(oid: string) {
     }
     return '';
 }
-
 
 async function handleChange() {
     try {
@@ -528,9 +526,10 @@ class GitCommand {
         });
 
         console.log("Git push result: ", result);
-        getRemoteInfo();
+        await getRemoteInfo();
 
         let message = ``;
+        console.log("Push result", result);
         if (result.ok && result.ok.length > 0) {
             message = result.ok.map(m => m).join("\n");
         }
@@ -563,7 +562,7 @@ class GitCommand {
         });
         console.log("Pull done");
         await syncGitFilesWithApp();
-        getRemoteInfo();
+        await getRemoteInfo();
 
         return result;
     }
