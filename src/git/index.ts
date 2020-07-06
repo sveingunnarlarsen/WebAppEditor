@@ -45,6 +45,10 @@ const corsProxy = `${location.origin}/gitProxy`;
 
 let currentAppName: string = "";
 let currentGitDir: string = "";
+let remoteInfo: {[key: string]: git.GetRemoteInfoResult} = {};
+
+// @ts-ignore
+window.remoteInfo = remoteInfo;
 
 let configUser: { name: string; email: string; token: string } = {
     name: "",
@@ -63,6 +67,34 @@ export async function setConfigUser(prop, value) {
 
 export async function setRemoteOrigin(value) {
     await git.addRemote({ fs, dir: currentGitDir, remote: "origin", url: value, force: true });
+}
+
+async function getRemoteInfo() {   
+    console.log("Getting remote info");
+    try {
+        const remotes = await git.listRemotes({fs, dir: currentGitDir});
+        for (let i = 0; i < remotes.length; i++) {
+            const remote = remotes[i];
+            remoteInfo[remote.remote] = await git.getRemoteInfo({http, corsProxy, url: remote.url});            
+        }
+        console.log("Remotes: ", remoteInfo);
+    } catch (e) {
+        console.log('Error getting remote info: ', e.message);
+    }
+}
+
+function checkOidWithRemote(oid: string) {
+    const remotes = Object.keys(remoteInfo);
+    for (let i = 0; i < remotes.length; i++) {
+        const remote = remoteInfo[remotes[i]];
+        const heads = Object.keys(remote.refs.heads);
+        for (let y = 0; y < heads.length; y++) {
+            if (remote.refs.heads[heads[y]] === oid) {
+                return `(${remotes[i]}/${heads[y]})`;
+            }
+        }
+    }
+    return '';
 }
 
 async function handleChange() {
@@ -109,6 +141,7 @@ async function handleChange() {
             !configUser.name ? setConfigUser("name", store.getState().resources.User.name) : void(0);
             !configUser.email ? setConfigUser("email", store.getState().resources.User.email) : void(0);
 
+            await getRemoteInfo();
             gitEmitter.end();
         } else if (!app.name) {
             currentAppName = "";
@@ -387,7 +420,7 @@ class GitCommand {
         for (let i = 0; i < commits.length; i++) {
             const commit = commits[i];
             console.log("Commit: ", commit);
-            ret += forcedChalk.yellow(`commit ${commit.oid}\n`);
+            ret += forcedChalk.yellow(`commit ${commit.oid} `) + forcedChalk.red(checkOidWithRemote(commit.oid)) + '\n';
             ret += `Author: ${commit.commit.committer.name} <${commit.commit.committer.email}>\n`;
             ret += `Date: ${new Date(parseInt(commit.commit.committer.timestamp + '000'))}\n \n`;
             ret += `\t ${commit.commit.message}\n \n`;
@@ -494,6 +527,7 @@ class GitCommand {
         });
 
         console.log("Git push result: ", result);
+        getRemoteInfo();
 
         let message = ``;
         if (result.ok && result.ok.length > 0) {
@@ -528,6 +562,7 @@ class GitCommand {
         });
         console.log("Pull done");
         await syncGitFilesWithApp();
+        getRemoteInfo();
 
         return result;
     }
@@ -538,6 +573,7 @@ class GitCommand {
 
     static async remote(args, opts, print) {
         const subCommand = args[0];
+        console.log("Remote: ", args, opts);
         if (subCommand === "add") {
             if (!args[1] || !args[2]) return `usage: git remote add <name> <url>`;
             await git.addRemote({ fs, dir: currentGitDir, remote: args[1], url: args[2] });
