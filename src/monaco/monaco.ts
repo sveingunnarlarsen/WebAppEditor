@@ -92,7 +92,8 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 //import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
 
-import {conf} from "./configuration/typescript";
+import {conf as confTypescript} from "./configuration/typescript";
+import {conf as confVue} from "./configuration/vue";
 import {themeDarkPlus, themeLightPlus} from "./themes";
 
 // @ts-ignore
@@ -119,8 +120,18 @@ monaco.languages.register({ id: 'typescript_react',
                             aliases: ['TypeScript', 'ts', 'typescript'],
                             mimetypes: ['text/typescript'] });
 
-monaco.languages.setLanguageConfiguration('typescript', conf);
-monaco.languages.setLanguageConfiguration('typescript_react', conf);
+/*
+monaco.languages.register({
+    id: 'vue',
+    extensions: ['.vue'],
+    aliases: ['Vue', 'vue'],
+    mimetypes: ['text/vue'],
+});
+*/
+
+monaco.languages.setLanguageConfiguration('typescript', confTypescript);
+monaco.languages.setLanguageConfiguration('typescript_react', confTypescript);
+//monaco.languages.setLanguageConfiguration('vue', confVue);
 
 // @ts-ignore
 monaco.editor.defineTheme("dark", themeDarkPlus);

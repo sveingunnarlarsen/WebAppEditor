@@ -1,5 +1,6 @@
 import { DialogState, DialogType } from "./dialog";
 import { EditorState } from "./editor";
+import { Resources } from "./resources";
 
 export enum Actions {
     RESET = "RESET",
@@ -25,6 +26,8 @@ export enum Actions {
     REQUEST_DELETE_WEBAPP = "REQUEST_DELETE_WEBAPP",
     REQUEST_WEBAPP = "REQUEST_WEBAPP",
     RECEIVE_WEBAPP = "RECEIVE_WEBAPP",
+    REQUEST_APIS = "REQUEST_APIS",
+    RECEIVE_APIS = "RECEIVE_APIS",
     START_MODULE_UPDATE = "START_MODULE_UPDATE",
     END_MODULE_UPDATE = "END_MODULE_UPDATE",
     REQUEST_MODULES = "REQUEST_MODULES",
@@ -162,34 +165,7 @@ export interface AppEditorState {
     isUpdatingNpm: boolean;
     isCloning: boolean;
     languageServerConnected: boolean;
-    resources: {
-        Config: {
-            allowPublic: boolean;
-            description: string;
-            name: string;
-            role: string;
-            languageServer: {
-                enabled: boolean;
-                port: number;
-            };
-        },
-        Languages: {
-            ISOCODE: string;
-            NAME: string;
-        }[],
-        Packages: {
-            id: string;
-            name: string;
-            //And more
-        }[],
-        User: {
-            email: string;
-            language: string;
-            name: string;
-            username; string;
-        },
-        api: any[],
-    };
+    resources: Resources;
     app: AppState;
     apps: {
         isFetching: boolean;

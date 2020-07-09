@@ -31,20 +31,20 @@ export function getResizerHorizontalCss(): CSSProperties {
             zIndex: 1,
             boxSizing: "border-box",
             backgroundClip: "padding-box",
-            height: "4px",
+            height: "2px",
             cursor: "n-resize",
-            borderTop: "2px solid #333333",
-            borderBottom: "2px solid #333333"
+            borderTop: "1px solid #1E1E1E",
+            borderBottom: "1px solid #1E1E1E"
         }
     } else {
         return {
             zIndex: 1,
             boxSizing: "border-box",
             backgroundClip: "padding-box",
-            height: "4px",
+            height: "2px",
             cursor: "n-resize",
-            borderTop: "2px solid #4554B2",
-            borderBottom: "2px solid #4554B2"
+            borderTop: "1px solid #4554B2",
+            borderBottom: "1px solid #4554B2"
         }
     }
 }

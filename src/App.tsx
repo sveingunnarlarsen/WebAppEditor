@@ -11,6 +11,7 @@ import SnackbarContainer from "./components/snackbar/SnackbarContainer";
 
 import store from "./store";
 import { getMasterData } from "./actions/app";
+import { getApis } from "./actions/resources";
 import { initTextMate } from "./monaco/textmate";
 import { AppEditorState } from "./types"
 
@@ -18,6 +19,7 @@ import "./App.css";
 
 initTextMate();
 store.dispatch(getMasterData());
+store.dispatch(getApis());
 
 const mapState = (state: AppEditorState) => {
     return {

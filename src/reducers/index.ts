@@ -6,6 +6,7 @@ import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 
 import { initState as appInitState, app } from "./app";
 import { initState as editorInitState, editor } from "./editor";
+import { initState as resourcesInitState, resources} from "./resources";
 
 const initialState: AppEditorState = {
     darkState: true,
@@ -26,9 +27,7 @@ const initialState: AppEditorState = {
     isUpdatingNpm: false,
     isCloning: false,
     languageServerConnected: true,
-    resources: {
-        isFetching: false
-    },
+    resources: resourcesInitState,
     app: appInitState,
     apps: {
         isFetching: false,
@@ -163,17 +162,6 @@ function isCloning(state = initialState.isCloning, action) {
         return false;
     }
     return state;
-}
-
-function resources(state = initialState.resources, action) {
-    switch (action.type) {
-        case Actions.REQUEST_MASTERDATA:
-            return fetching(state);
-        case Actions.RECEIVE_MASTERDATA:
-            return doneFetching(state, action.data);
-        default:
-            return state;
-    }
 }
 
 function apps(state = initialState.apps, action) {

@@ -14,10 +14,13 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 import Dependencies from "./Dependencies";
 import WebixTree from "./webix/Tree";
 
+import { getResizerHorizontalCss } from "../../css/inline";
+
 const styles = {
     container: {
         width: "100%",
         height: "100%",
+        position: "relative",
     }
 };
 
@@ -36,25 +39,20 @@ class FileExplorer extends React.Component<FileExplorerProps> {
         const display = this.props.show ? "" : "none";
         return (
             <div style={{ display }} className={classes.container}>
-                <WebixTree />
+                <SplitPane
+                    split="horizontal"
+                    defaultSize={"80%"}
+                    resizerStyle={getResizerHorizontalCss()}
+                    onDragFinished={() => {
+
+                    }}
+                >
+                    <div className={classes.container}><WebixTree /></div>
+                    <div className={classes.container}><Dependencies /></div>
+                </SplitPane>
             </div>
         );
     }
 }
 
 export default withStyles(styles)(FileExplorer);
-
-/*
-            <div style={{ display }} className={classes.container}>
-                <SplitPane
-                    split="horizontal"
-                    defaultSize={"80%"}
-                    onDragFinished={() => {
-                        console.log("Resize command line ended");
-                    }}
-                >
-                <div></div>                    
-                <div><Dependencies /></div>
-                </SplitPane>
-            </div>
-*/

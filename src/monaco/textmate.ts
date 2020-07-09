@@ -1,5 +1,5 @@
 import { loadWASM } from 'onigasm'; // peer dependency of 'monaco-textmate'
-import { Registry, INITIAL, StackElement } from 'monaco-textmate'; // peer dependency
+import { Registry, INITIAL, StackElement, IGrammarDefinition } from 'monaco-textmate'; // peer dependency
 import monaco from "./monaco";
 
 let registry;
@@ -16,16 +16,29 @@ export async function initTextMate() {
                 }
             }
             if (scopeName === "source.tsx") {
-                return {
+                const res: IGrammarDefinition = {
                     format: 'json',
                     content: await (await fetch(`${location.origin}/public/tokenization/TypeScriptReact.tmLanguage.json`)).text()
                 }
+                console.log(res);
+                return res;
             }
+            /*
+            if (scopeName === "source.vue") {
+                const res: IGrammarDefinition = {
+                    format: 'json',
+                    content: await (await fetch(`${location.origin}/public/tokenization/TypeScriptReact.tmLanguage.json`)).text()
+                }
+                console.log(res);
+                return res;
+            }
+            */
         }
     });
 
     await registry.loadGrammar("source.ts");
     await registry.loadGrammar("source.tsx");
+    //await registry.loadGrammar("source.vue");
 
     console.log("Onigasm loaded");
 }
@@ -42,6 +55,7 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
 
     const grammarTypeScript = await registry.loadGrammar("source.ts");
     const grammarTypeScriptReact = await registry.loadGrammar("source.tsx");
+    //const grammarVue = await registry.loadGrammar("source.vue");
 
     monaco.languages.setTokensProvider("typescript", {
         getInitialState: () => new TokenizerState(INITIAL),
@@ -72,6 +86,22 @@ export async function setTokensProvider(editor: monaco.editor.ICodeEditor) {
             }
         }
     });
+    /*
+    monaco.languages.setTokensProvider("vue", {
+        getInitialState: () => new TokenizerState(INITIAL),
+        tokenize: (line: string, state: TokenizerState) => {
+            const res = grammarVue.tokenizeLine(line, state.ruleStack)
+            return {
+                endState: new TokenizerState(res.ruleStack),
+                tokens: res.tokens.map(token => ({
+                    ...token,
+                    // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
+                    scopes: TMToMonacoToken(token.scopes),
+                })),
+            }
+        }
+    });
+    */
     tokensProviderSet = true;
 }
 

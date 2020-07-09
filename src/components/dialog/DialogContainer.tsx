@@ -25,6 +25,7 @@ import ClientError from "./ClientError";
 import DeleteProject from "./DeleteProject";
 import NpmInstall from "./NpmInstall";
 import AppLocked from "./AppLocked";
+import AddDependency from "./AddDependency";
 
 import { DialogType, DialogState } from "../../types/dialog";
 import { closeDialog } from "../../actions";
@@ -93,6 +94,12 @@ class DialogContainer extends React.Component<DialogContainerProps> {
     getDialogContent(dialog) {
         const { close, classes } = this.props;
         switch (dialog.type) {
+            case DialogType.ADD_DEPENDENCY:
+                return (
+                    <Dialog maxWidth="lg" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }}  open={dialog.visible}>
+                        <AddDependency close={close} />
+                    </Dialog>
+                )
             case DialogType.CREATE_PROJECT:
                 return (
                     <Dialog maxWidth="sm" fullWidth={true} PaperComponent={PaperComponent} style={{ margin: "auto" }} open={dialog.visible}>

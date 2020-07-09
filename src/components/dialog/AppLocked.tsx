@@ -42,7 +42,7 @@ class AppLocked extends React.Component<AppLockedProps> {
         return (
             <React.Fragment>
                 <DialogContent>
-                    <Typography variant="h6">
+                    <Typography color="primary" variant="h6">
                         Application is locked
                     </Typography>
                     <Typography variant="subtitle1">

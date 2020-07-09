@@ -28,56 +28,14 @@
     background: #094771!important;
 }
 
-.webix_top {
-    background: none;
-    background-image: linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit-linear-gradient(top, orange, orange 10%, transparent 10%, transparent 100%);
-}
-
-.webix_bottom {
-    background: none;
-    background-image: linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
-    background-image: -webkit-linear-gradient(bottom, orange, orange 10%, transparent 10%, transparent 100%);
-}
-
-.treeMarker {
-    border-top: 1px dashed orange;
-    width: 100%;
-    height: 1px;
-    position: absolute;
-    left: 0px;
-    display: none;
-}
-
 .webix_tree_leaves {
     transition: height 0.3s;
     overflow: hidden;
 }
 
-.webix_disabled {
-    color: #bb0000!important;
-}
-
-.webix_changed {
-    color: wheat!important;
-}
-
-.webix_changed::after {
-    content: "M";
-    right: 10px;
-    position: absolute;
-}
-
-.webix_compare_new {
-    background: #b6d957;
-}
-
-.webix_compare_deleted {
-    background: #f33334;
-}
-
-.webix_compare_changed {
-    background: yellow;
+.webix_drag_over {
+    background: transparent;
+    border: 2px #F59825 solid;
 }
 
 .webix_drag_zone,

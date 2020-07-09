@@ -143,7 +143,7 @@ class WebixTree extends React.Component<WebixTreeProps, { filter: string }> {
                         </React.Fragment>
                     }
                 </Toolbar>
-                <div className={isDark ? "webix_dark" : "webix_light"} ref="root" style={{ height: "calc(100% - 4.3rem)", width: "100%" }} />
+                <div className={isDark ? "webix_dark" : "webix_light"} ref="root" style={{ height: "calc(100% - 2rem)", width: "100%" }} />
                 <TreeContextMenu container={this} />
             </React.Fragment>
         );

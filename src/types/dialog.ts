@@ -25,6 +25,7 @@ export enum DialogType {
     MESSAGE = "MESSAGE",
     NPM_INSTALL = "NPM_INSTALL",
     APP_LOCKED = "APP_LOCKED",
+    ADD_DEPENDENCY = "ADD_DEPENDENCY"
 }
 
 export interface DialogState {
