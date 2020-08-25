@@ -1,6 +1,6 @@
 import { DialogState, DialogType } from "./dialog";
 import { EditorState } from "./editor";
-import { Resources } from "./resources";
+import { Resources, Api } from "./resources";
 
 export enum Actions {
     RESET = "RESET",
@@ -50,6 +50,7 @@ export enum Actions {
     SET_SELECTED_NODE = "SET_SELECTED_NODE",
     UPDATE_FILE_STATE = "UPDATE_FILE_STATE",
     UPDATE_APP_DATA = "UPDATE_APP_DATA",
+    UPDATE_APP_APIS = "UPDATE_APP_APIS",
 
     RECEIVE_DEV_COMPILATION_DETAILS = 'RECEIVE_DEV_COMPILATION_DETAILS',
 
@@ -133,6 +134,7 @@ export interface AppState extends ListApp {
     isFetching: boolean;
     lock: boolean;
     fileSystemObjects: FileSystemObject[];
+    apis: Api[];
     updateTree: boolean;
     isSaving: boolean;
 }

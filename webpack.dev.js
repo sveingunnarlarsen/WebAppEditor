@@ -20,6 +20,7 @@ module.exports = settings => ({
 		filename: '[name].bundle.js',
 		path: "/",
 		publicPath: `/api/webapp/${settings.appId}/preview/`
+		//publicPath: `/`
   	},
 	resolve: {
 		symlinks: false,
@@ -63,6 +64,7 @@ module.exports = settings => ({
 	plugins: [
 		new webpack.DefinePlugin({
 			ROOTPATH: JSON.stringify(`/api/webapp/${settings.appId}/preview`),
+			//ROOTPATH: JSON.stringify(`/`),
 			ENV: JSON.stringify(`development`),
 		}),
 		new htmlWebpackPlugin({

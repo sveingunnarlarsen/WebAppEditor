@@ -52,6 +52,7 @@ function mapDispatch(dispatch) {
 }
 
 interface SettingsProps {
+    lock: boolean;
     classes: any;
     show: boolean;
     data: { name: string, description: string, type: 'react' | 'vue', settings: any };

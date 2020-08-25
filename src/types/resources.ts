@@ -46,10 +46,10 @@ export interface Api {
     name: string;
     description: string;
     apiType: string;
-    paths: ApiPaths[];
+    paths: ApiPath[];
 }
 
-export interface ApiPaths {
+export interface ApiPath {
     id: string;
     description: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',

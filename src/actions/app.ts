@@ -1,5 +1,6 @@
 import { Actions, AppSettings, project, CompilationDetails, AppEditorState } from "../types";
 import { DialogType } from "../types/dialog";
+import { Api } from "../types/resources";
 import { cloneGitRepo, deleteGitRepo } from "../git";
 import { loadProject } from "../monaco"
 import { getNpmModules } from "./npm";
@@ -10,6 +11,7 @@ import { reset, openDialog } from "./";
 const headers = {
     "Content-Type": "application/json"
 };
+
 
 export function getMasterData() {
     return function(dispatch) {
@@ -254,6 +256,13 @@ export function signOut() {
         .catch(error => handleAjaxError(error, dispatch))
 
     }    
+}
+
+export function updateAppApis(apis: Api[]) {
+    return {
+        type: Actions.UPDATE_APP_APIS,
+        apis,
+    }
 }
 
 export function updateAppData(data: { name: string, description: string, type: 'react' | 'vue', settings: AppSettings }) {

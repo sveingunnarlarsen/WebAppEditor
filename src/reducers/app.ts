@@ -24,6 +24,7 @@ export const initState: AppState = {
     createdBy: "",
     isFetching: false,
     fileSystemObjects: [],
+    apis: [],
     updateTree: false,
     isSaving: false,
 };
@@ -122,6 +123,10 @@ const updateAppData = produce((draft, data) => {
     draft.settings = data.settings;
 });
 
+const updateAppApis = produce((draft, apis) => {
+    draft.apis = apis;
+});
+
 const setAppLock = produce((draft, lock) => {
     draft.lock = lock;
 });
@@ -179,6 +184,9 @@ export function app(state = initState, action) {
 
         case Actions.UPDATE_APP_DATA:
             return updateAppData(state, action.data);
+
+        case Actions.UPDATE_APP_APIS:
+            return updateAppApis(state, action.apis);
 
         case Actions.UPDATE_FILE_STATE:
             return updateFileState(state, action.file);

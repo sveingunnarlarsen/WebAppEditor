@@ -1,4 +1,5 @@
 import { ServerFso, FileSystemObject, AppEditorState, AppSettings } from "../types";
+import { Api } from "../types/resources";
 import { getFileTypeImageData, sortFoldersAndFiles } from "../helpers/utils";
 
 export function convertApiWebAppData(json: AppEditorState) {
@@ -97,12 +98,13 @@ export function destructFileServerProps({ id, path, type, webAppId, content, cre
     };
 }
 
-export function destructAppServerProps({ id, name, type, description, settings }: { id: string; name: string; type: 'file' | 'folder', description: string; settings: AppSettings }) {
+export function destructAppServerProps({ id, name, type, description, settings, apis }: { id: string; name: string; type: 'file' | 'folder', description: string; settings: AppSettings, apis: Api[] }) {
     return {
         id,
         name,
         type,
         description,
         settings,
+        apis,
     }
 }
