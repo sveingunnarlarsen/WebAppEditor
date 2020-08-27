@@ -5,7 +5,9 @@ import { throwError, handleAjaxError, handleClientError } from './error';
 export function getApis() {
     return function(dispatch, getState) {
 
-        return fetch(`/api/scripteditor/data/apis`)
+        return fetch(`/api/functions/API/ListWithApis`, {
+            method: 'POST',
+        })
             .then(throwError)
             .then(async response => {
                 try {
