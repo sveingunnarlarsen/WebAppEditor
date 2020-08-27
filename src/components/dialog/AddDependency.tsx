@@ -60,7 +60,7 @@ const mapState = (state: AppEditorState) => {
 function mapDispatch(dispatch) {
     return {
         updateAppApis: apis => dispatch(updateAppApis(apis)),
-        saveAppData: () => dispatch(saveAppData()),
+        saveAppData: () => dispatch(saveAppData(true)),
     };
 }
 

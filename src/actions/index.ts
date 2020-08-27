@@ -3,11 +3,14 @@ import { Actions, Tool } from "../types";
 import { SetSelectedNodeAction, SwitchToolAction } from "../types/actions";
 import { DialogAction, DialogType } from "../types/dialog";
 import { getWebApps } from "./app";
+import { getApis } from "./resources";
 
 export function openDialog(dialog: DialogType, data?) {
     return function(dispatch, getState) {
         if (dialog === DialogType.PROJECT_LIST) {
             dispatch(getWebApps());
+        } else if (dialog === DialogType.ADD_DEPENDENCY) {
+            dispatch(getApis());
         }
         return dispatch(openDialogAction(dialog, data));
     };

@@ -189,7 +189,7 @@ export function toggleToDisplay(forceLock: boolean = false) {
     }
 }
 
-export function saveAppData() {
+export function saveAppData(compileApi: boolean = false) {
     return function(dispatch, getState) {
         return fetch(`/api/webapp/${getState().app.id}`, {
             method: "PATCH",
@@ -199,12 +199,24 @@ export function saveAppData() {
             })
         })
             .then(throwError)
+            .then(() => compileApi ? dispatch(compileApiDefinitions()) : null)
+            .catch(error => handleAjaxError(error, dispatch));
+    }
+}
+
+export function compileApiDefinitions() {
+    return function(dispatch, getState) {
+        return fetch(`/api/webapp/${getState().app.id}/compileApiDefinitions`, {
+            method: "POST",
+            headers,
+        })
+            .then(throwError)
             .catch(error => handleAjaxError(error, dispatch));
     }
 }
 
 export function compileProject() {
-    return function(dispatch, getState) {    
+    return function(dispatch, getState) {
         dispatch(requestCompile());
 
         return fetch(`/api/webapp/${getState().app.id}/deploy`, {
@@ -247,15 +259,15 @@ export function signOut() {
     return function(dispatch, getState: () => AppEditorState) {
         if (getState().app.lock) {
             dispatch(toggleToDisplay());
-        }        
+        }
         return fetch(`/user/logout`, {
             method: "POST",
         })
-        .then(throwError)
-        .then(() => location.reload())
-        .catch(error => handleAjaxError(error, dispatch))
+            .then(throwError)
+            .then(() => location.reload())
+            .catch(error => handleAjaxError(error, dispatch))
 
-    }    
+    }
 }
 
 export function updateAppApis(apis: Api[]) {

@@ -20,7 +20,7 @@ function mapDispatch(dispatch) {
     return {
         open: () => dispatch(openDialog(DialogType.ADD_DEPENDENCY)),
         updateAppApis: apis => dispatch(updateAppApis(apis)),
-        saveAppData: () => dispatch(saveAppData()),
+        saveAppData: () => dispatch(saveAppData(true)),
     }
 }
 
