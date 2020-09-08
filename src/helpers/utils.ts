@@ -4,6 +4,7 @@ import mime from "mime-types";
 import moment from "moment";
 
 export function generateGravatarLink(email: string) {
+    email = email ? email : '';
     email = email.trim().toLowerCase();
     console.log("Email: ", email);
     const hash = md5(email);

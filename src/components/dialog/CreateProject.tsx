@@ -22,7 +22,7 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
         super(props);
         this.state = {
             type: "react",
-            template: "react",
+            template: "react-typescript",
             name: "",
             description: "",
             remote: "",
@@ -45,9 +45,10 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
         let error = false;
         if (!e.target.value) {
             error = true;
-        }
+        }        
+        const name = e.target.value.replace(/[^\w]/gi, "");
         this.setState({
-            name: e.target.value,
+            name,
             missingName: error,
         });
     };
