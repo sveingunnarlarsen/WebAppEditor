@@ -102,6 +102,7 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
                             <Select fullWidth value={template} onChange={this.updateTemplate}>
                                 <MenuItem value={"react-typescript"}>Typescript</MenuItem>
                                 <MenuItem value={"react"}>Basic</MenuItem>
+                                <MenuItem value={null}>None</MenuItem>
                             </Select>
                         }
                         {type === 'vue' && !remote &&

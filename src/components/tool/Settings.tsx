@@ -11,6 +11,9 @@ import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import FormLabel from "@material-ui/core/FormLabel";
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -26,7 +29,7 @@ import { KeyCodes } from "../../types/keyCodes";
 const styles: any = {
     container: {
         padding: "1rem",
-        height: "100%",
+        height: "95%",
         overflowY: "auto",
     }
 };
@@ -86,6 +89,15 @@ class Settings extends React.Component<SettingsProps> {
         setConfigUser(e.target.name, e.target.value);
         this.setState({ git: { [e.target.name]: e.target.value } });
     };
+
+    unSelect = (type) => {
+        console.log(type);
+        console.log(this.props);
+        if (type === getConfigUser().type) {
+            setConfigUser('type', '');
+            this.setState({ git: { type: '' } });
+        }
+    }
 
     handleSubmit = e => {
         if (e.keyCode === KeyCodes.Enter && this.props.lock) {
@@ -195,7 +207,7 @@ class Settings extends React.Component<SettingsProps> {
                         shrink: true
                     }}
                 />
-                <TextField                                        
+                <TextField
                     name="token"
                     value={gitConfig.token || ""}
                     onChange={this.updateConfig}
@@ -206,7 +218,30 @@ class Settings extends React.Component<SettingsProps> {
                     InputLabelProps={{
                         shrink: true
                     }}
-                />
+                />                
+                <RadioGroup row title="Token type" 
+                    name="type"
+                    value={gitConfig.type || ""} 
+                    onChange={this.updateConfig}>
+                    <FormControlLabel
+                        value="GitHub"
+                        control={<Radio onClick={() => this.unSelect('GitHub')} size="small" color="primary" />}
+                        label="GitHub"
+                        labelPlacement="end"                        
+                    />
+                    <FormControlLabel
+                        value="BitBucket"
+                        control={<Radio onClick={() => this.unSelect('BitBucket')} size="small" color="primary" />}
+                        label="BitBucket"
+                        labelPlacement="end"
+                    />
+                    <FormControlLabel
+                        value="GitLab"
+                        control={<Radio onClick={() => this.unSelect('GitLab')} size="small" color="primary" />}
+                        label="GitLab"
+                        labelPlacement="end"
+                    />
+                </RadioGroup>
             </div>
         );
     }

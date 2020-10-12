@@ -68,8 +68,10 @@ export function createProject({ type, template, name, description, remote }: pro
                         cloneGitRepo(remote);
                         return;
                     }
-                    dispatch(compilePreview());
-                    dispatch(compileProject());
+                    if (template) {
+                        dispatch(compilePreview());
+                        dispatch(compileProject());
+                    }
                 } catch (e) {
                     handleClientError(e, dispatch);
                 }

@@ -74,7 +74,7 @@ export enum FsoType {
 
 export type project = {
     type: 'react' | 'vue',
-    template: 'react' | 'react-typescript' | 'vue',
+    template: 'react' | 'react-typescript' | 'vue' | null,
     name: string,
     description: string,
     remote?: string

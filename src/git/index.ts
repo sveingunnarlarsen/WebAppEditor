@@ -49,10 +49,11 @@ let remoteInfo: {[key: string]: git.GetRemoteInfoResult} = {};
 // @ts-ignore
 window.remoteInfo = remoteInfo;
 
-let configUser: { name: string; email: string; token: string } = {
+let configUser: { name: string; email: string; token: string, type: string } = {
     name: "",
     email: "",
     token: "",
+    type: "",
 };
 
 export function getConfigUser() {
@@ -66,6 +67,31 @@ export async function setConfigUser(prop, value) {
 
 export async function setRemoteOrigin(value) {
     await git.addRemote({ fs, dir: currentGitDir, remote: "origin", url: value, force: true });
+}
+
+function getAuth() {
+    switch (configUser.type) {
+        case "GitHub":
+            return {
+                username: configUser.token,
+                password: 'x-oauth-basic',
+            }
+        case "BitBucket":
+            return {
+                username: 'x-token-auth',
+                password: configUser.token,                
+            }
+        case "GitLab":
+            return {
+                username: 'oauth2',
+                password: configUser.token,
+            }
+        default:
+            return {
+                username: configUser.email,
+                password: configUser.token,
+            }
+    }
 }
 
 async function getRemoteInfo() {   
@@ -134,7 +160,8 @@ async function handleChange() {
             configUser = {
                 name: await git.getConfig({ fs, dir: currentGitDir, path: "user.name" }),
                 email: await git.getConfig({ fs, dir: currentGitDir, path: "user.email" }),
-                token: await git.getConfig({ fs, dir: currentGitDir, path: "user.token" })
+                token: await git.getConfig({ fs, dir: currentGitDir, path: "user.token" }),
+                type: await git.getConfig({ fs, dir: currentGitDir, path: "user.type" }),
             };
         
             !configUser.name ? setConfigUser("name", store.getState().resources.User.name) : void(0);
@@ -459,6 +486,7 @@ class GitCommand {
         if (!store.getState().app.lock) return "You must be in edit mode to use checkout";
 
         const currentBranch = await git.currentBranch({ fs, dir: currentGitDir });
+        console.log(`Checkout with branch: ${currentBranch}`);
 
         if (!args.length) {
             return;
@@ -520,7 +548,7 @@ class GitCommand {
             corsProxy,
             ref: branch,
             remote,
-            onAuth: () => ({ username: token }),
+            onAuth: () => getAuth(),
             onMessage: print,
             force: opts.force ? true : false
         });
@@ -543,23 +571,27 @@ class GitCommand {
         if (!store.getState().app.lock) return "You must be in edit mode to use pull";
 
         const ref = args[0];
-
-        const result = await git.pull({
-            fs,
-            http,
-            dir: currentGitDir,
-            corsProxy,
-            ref,
-            remote: "origin",
-            singleBranch: true,
-            fastForwardOnly: false,
-            author: {
-                name: configUser.name,
-                email: configUser.email
-            },
-            onAuth: () => ({ username: configUser.token }),
-            onMessage: print
-        });
+        let result;
+        try {
+            result = await git.pull({
+                fs,
+                http,
+                dir: currentGitDir,
+                corsProxy,
+                ref,
+                remote: "origin",
+                singleBranch: true,
+                fastForwardOnly: false,
+                author: {
+                    name: configUser.name,
+                    email: configUser.email
+                },
+                onAuth: () => getAuth(),
+                onMessage: print
+            });
+        } catch (e) {
+            console.log('Error during git pull: ', e);
+        }
         console.log("Pull done");
         await syncGitFilesWithApp();
         await getRemoteInfo();
@@ -628,17 +660,22 @@ export async function cloneGitRepo(url: string) {
     store.dispatch(startGitCloneClone());
     async function clone() {
         console.log("Start clone");
-        await git.clone({
-            fs,
-            http,
-            dir: currentGitDir,
-            corsProxy,
-            url,
-            singleBranch: false,
-            noCheckout: false,
-            noTags: true,
-            depth: 100
-        });
+        try {
+            await git.clone({
+                fs,
+                http,
+                dir: currentGitDir,
+                corsProxy,
+                url,
+                singleBranch: false,
+                noCheckout: false,
+                noTags: true,
+                depth: 100
+            });
+        } catch (e) {
+            console.log('Error cloning: ', e.message);
+            store.dispatch(endGitClone());
+        }
         gitEmitter.removeEventListener("initEnd", clone);
         console.log("Clone done");
         await syncGitFilesWithApp();
