@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { DialogContent, DialogTitle, DialogActions, MenuItem, InputLabel, TextField, Button, Select, Box } from "@material-ui/core";
 
-import { project } from "../../types";
+import { project, AppEditorState } from "../../types";
 import { createProject } from '../../actions/app';
 
 function mapDispatch(dispatch) {
@@ -12,12 +12,22 @@ function mapDispatch(dispatch) {
     };
 }
 
-interface CreateProjectProps {
-    createProject: (opts: project) => void;
+const mapState = (state: AppEditorState) => {
+    return {
+        existingProjectNames: state.apps.list.map(w => w.name),
+    }
+}
+
+interface Props extends ReturnType<typeof mapDispatch>, ReturnType<typeof mapState> {
     close: () => void;
 }
 
-class CreateProject extends React.Component<CreateProjectProps, project & {missingName: boolean}> {
+interface State extends project {
+    missingName: boolean;
+    duplicateName: boolean;
+}
+
+class CreateProject extends React.Component<Props, State> {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,6 +37,7 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
             description: "",
             remote: "",
             missingName: false,
+            duplicateName: false,
         };
     }
 
@@ -45,12 +56,13 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
         let error = false;
         if (!e.target.value) {
             error = true;
-        }        
+        }
         const name = e.target.value.replace(/[^\w]/gi, "");
-        this.setState({
+        this.setState((prevState, props) => ({
             name,
+            duplicateName: props.existingProjectNames.includes(name),
             missingName: error,
-        });
+        }));
     };
     updateDescription = e => {
         this.setState({
@@ -77,7 +89,8 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
 
     render() {
         const { close } = this.props;
-        const { type, template, name, description, remote, missingName } = this.state;
+        const { type, template, name, description, remote, missingName, duplicateName } = this.state;
+
         return (
             <React.Fragment>
                 <DialogTitle>New Project</DialogTitle>
@@ -112,9 +125,10 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
                         }
                         <Box pt={2} />
                         <TextField
-                            error={missingName}
+                            error={missingName || duplicateName}
                             value={name}
                             onChange={this.updateName}
+                            helperText={duplicateName ? 'Duplicate Project Name' : undefined}
                             fullWidth
                             required
                             label="Name"
@@ -150,7 +164,7 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={close}>Close</Button>
-                    <Button onClick={this.handleSubmit}>OK</Button>
+                    <Button disabled={duplicateName} onClick={this.handleSubmit}>OK</Button>
                 </DialogActions>
             </React.Fragment>
         );
@@ -158,6 +172,6 @@ class CreateProject extends React.Component<CreateProjectProps, project & {missi
 }
 
 export default connect(
-    null,
+    mapState,
     mapDispatch
 )(CreateProject);

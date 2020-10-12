@@ -11,6 +11,8 @@ export function openDialog(dialog: DialogType, data?) {
             dispatch(getWebApps());
         } else if (dialog === DialogType.ADD_DEPENDENCY) {
             dispatch(getApis());
+        } else if (dialog === DialogType.CREATE_PROJECT) {
+            dispatch(getWebApps());
         }
         return dispatch(openDialogAction(dialog, data));
     };
